@@ -336,14 +336,14 @@ DataGraph *  DataGraph::loadGraph(const String  graphName,
   double * eeyHigh = new double[n];
   for (int k=0; k<n; k++)
     {
-    x[k]       = g->GetPointX(k);
-    exLow[k]   = g->GetErrorXlow(k);
-    exHigh[k]  = g->GetErrorXhigh(k);
-    y[k]       = g->GetPointY(k);
-    eyLow[k]   = g->GetErrorYlow(k);
-    eyHigh[k]  = g->GetErrorYhigh(k);
-    eeyLow[k]  = h1e1->GetBinContent(k);
-    eeyHigh[k] = h1e2->GetBinContent(k);
+//    x[k]       = g->GetPointX(k);
+//    exLow[k]   = g->GetErrorXlow(k);
+//    exHigh[k]  = g->GetErrorXhigh(k);
+//    y[k]       = g->GetPointY(k);
+//    eyLow[k]   = g->GetErrorYlow(k);
+//    eyHigh[k]  = g->GetErrorYhigh(k);
+//    eeyLow[k]  = h1e1->GetBinContent(k);
+//    eeyHigh[k] = h1e2->GetBinContent(k);
     }
   DataGraph * dg = new DataGraph(graphName, xTitle, yTitle, legendText, xMin, xMax, yMin, yMax, n,
                                x, exLow, exHigh,y,eyLow,eyHigh,eeyLow,eeyHigh,0);
