@@ -189,7 +189,7 @@ void ParticleThermalProperties::calculateAllProperties(double _temp, double _muB
     deltaN_qmu_term1  += theta*fugacity*besselKn2/doubleJ; // baryon diffusion contribution
 
     double I_1_1 = exp(-arg)/arg*(2./(arg*arg) + 2./arg - 0.5);
-    double I_1_2 = 3.0/8.0*ROOT::Math::expint_n(2, arg);
+    double I_1_2 = 3.0/8.0*ROOT::Math::Expint_n(2, arg);
     double I_1_n = I_1_1 + I_1_2;
     double double_factorial    = 1.;  // record (2k-5)!!
     double factorial           = 2.;  // record k! start with 2!
@@ -199,7 +199,7 @@ void ParticleThermalProperties::calculateAllProperties(double _temp, double _muB
       double_factorial    *= (2*k - 5);
       factorial           *= k;
       factor_2_to_k_power *= 2;
-      double rrr = ROOT::Math::expint_n(2*k-2, arg);
+      double rrr = ROOT::Math::Expint_n(2*k-2, arg);
       double I_1_k = (3.*double_factorial/factor_2_to_k_power/factorial*rrr);
       I_1_n += I_1_k;
       }
