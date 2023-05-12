@@ -98,7 +98,7 @@ constexpr double sqrtTwoPi()
 //! \f$1/ \sqrt{2\pi}\f$
 constexpr double oneOverSqrtTwoPi()
 {
-//  return 1.0/sqrt(twoPi());
+//  return 1.0/sqrt(twoPi());  this is a test
   return 0.3989422804014327028632180827116826549172;
 }
 
