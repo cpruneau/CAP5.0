@@ -2,6 +2,7 @@
 #define CAP_Exceptions
 #include <iostream>
 #include "TString.h"
+#include "Aliases.hpp"
 namespace CAP
 {
 
