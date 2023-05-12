@@ -16,7 +16,7 @@ endif()
 # Project CAP
 ################################################################################################
 project(CAP VERSION 1.0 DESCRIPTION "Correlation Analysis Package" LANGUAGES CXX)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 # configure_file(TutorialConfig.h.in TutorialConfig.h)
 set(CAP_ROOT "${CAP_SRC}")
