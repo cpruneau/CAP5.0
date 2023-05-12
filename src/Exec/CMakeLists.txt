@@ -9,8 +9,8 @@ ROOT_GENERATE_DICTIONARY(G__Exec RunAnalysis.hpp RunDerivedCalculation.hpp RunSu
 ################################################################################################
 add_library(Exec SHARED RunAnalysis.cpp RunDerivedCalculation.cpp RunSubsample.cpp G__Exec.cxx)
 
-target_link_libraries(Exec Base  Particles  Global ParticleSingle  ParticlePair NuDyn Performance SubSample CAPPythia BasicGen  Ampt ThermalGas   Therminator  ${ROOT_LIBRARIES} ${EXTRA_LIBS} )
-target_include_directories(Exec  PUBLIC Base  Particles  Exec Global ParticleSingle  ParticlePair NuDyn Performance SubSample CAPPythia   BasicGen  Ampt  HadronGas  Therminator ${EXTRA_INCLUDES})
+target_link_libraries(Exec Base  Particles  Global ParticleSingle  ParticlePair NuDyn Performance SubSample CAPPythia BasicGen  Ampt    Therminator  ${ROOT_LIBRARIES} ${EXTRA_LIBS} )
+target_include_directories(Exec  PUBLIC Base  Particles  Exec Global ParticleSingle  ParticlePair NuDyn Performance SubSample CAPPythia   BasicGen  Ampt    Therminator ${EXTRA_INCLUDES})
 
 #target_link_libraries(Exec Base  Particles  Global ParticleSingle  ParticlePair NuDyn Performance SubSample  BasicGen  Ampt  ThermalGas  Therminator  ${ROOT_LIBRARIES} ${EXTRA_LIBS} )
 #target_include_directories(Exec  PUBLIC Base  Particles  Exec Global ParticleSingle  ParticlePair NuDyn Performance SubSample  BasicGen  Ampt  HadronGas  Therminator ${EXTRA_INCLUDES})
