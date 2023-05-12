@@ -1,7 +1,7 @@
 #ifndef CAP_Exceptions
 #define CAP_Exceptions
 #include <iostream>
-//#include "Aliases.hpp"
+#include "TString.h"
 namespace CAP
 {
 
