@@ -90,14 +90,16 @@ constexpr double twoPiCube()
 //! \f$ \sqrt{2\pi}\f$
 constexpr double sqrtTwoPi()
 {
-  return sqrt(twoPi());
+//  return sqrt(twoPi());
+  return 2.506628274631000241612355239340104162693;
 }
 
 //!
 //! \f$1/ \sqrt{2\pi}\f$
 constexpr double oneOverSqrtTwoPi()
 {
-  return 1.0/sqrt(twoPi());
+//  return 1.0/sqrt(twoPi());
+  return 0.3989422804014327028632180827116826549172;
 }
 
 
