@@ -10,58 +10,465 @@ namespace Math
 //class Rotation<Q>;
 
 template <typename T>
-class VectorLorentz
+class VectorLorentz : public Vector<T>
 {
 protected:
   T v0;
 
 public:
 
-  VectorLorentz();
+  VectorLorentz()
+  :
+  v0(0),
+  Vector<T>(0,0,0,0)
+  { }
 
-  VectorLorentz(const T & v0, const T & v1, const T & v2, const T & v3, int storageType=0);
+  VectorLorentz(const T & _v0, const T & _v1, const T & _v2, const T & _v3, int _storageType)
+  :
+  v0(_v0),
+  Vector<T>(_v1,_v2,_v3,_storageType)
+  {  }
 
-  VectorLorentz(T * values, int storageType=0);
+  VectorLorentz(T * _values, int _storageType)
+  :
+  v0(_values[0]),
+  Vector<T>(_values[1],_values[2],_values[3],_storageType)
+  {  }
 
-  VectorLorentz(const std::vector<T> values, int storageType=0);
+  VectorLorentz(std::vector<T> _values, int _storageType)
+  :
+  v0(_values[0]),
+  Vector<T>(_values[1],_values[2],_values[3],_storageType)
+  {  }
 
-  VectorLorentz(const VectorLorentz<T> & source);
+  VectorLorentz(const VectorLorentz<T> & source)
+  :
+  v0(source.v0),
+  Vector<T>(source.v1,source.v2,source.v3,v.storageType)
+  {   }
 
-  int storage() const
+  virtual ~VectorLorentz() {};
+
+  //!
+  //! Returns the value stored at the give index.
+  //!
+  T operator() (unsigned int index) const
   {
-  return storageType;
+  switch (index)
+    {
+      case 0: return v0;
+      case 1: return v1;
+      case 2: return v2;
+      case 3: return v3;
+      default: throw MathException("index>3","VectorLorentz<T>::operator()");
+    }
+  }
+
+  T operator[] (unsigned int index) const
+  {
+  switch (storageType)
+    {
+      case 0: // cartesian coordinates storage and output
+      switch (index)
+        {
+          case 0: return v0; //!> t
+          case 1: return v1; //!> x
+          case 2: return v2; //!> y
+          case 3: return v3; //!> z
+          default: throw MathException("index>3","VectorLorentz<T>::operator []");
+        }
+
+      case 1: // spherical coordinates storage and cartesian output
+      switch (index)
+        {
+          case 0: return v0;                           //!> t
+          case 1: return v3*std::sin(v2)*std::cos(v1); //!> x
+          case 2: return v3*std::sin(v2)*std::sin(v1); //!> y
+          case 3: return v3*std::cos(v2);              //!> z
+          default: throw MathException("index>3","VectorLorentz<T>::operator []");
+        }
+
+      case 2: // cylindrical coordinates storage and cartesian output
+      switch (index)
+        {
+          case 0: return v0;              //!> t
+          case 1: return v2*std::cos(v1); //!> x
+          case 2: return v2*std::sin(v1); //!> y
+          case 3: return v3;              //!> z
+          default: throw MathException("index>3","VectorLorentz<T>::operator []");
+        }
+
+      default: throw MathException("Internal error","VectorLorentz<T>::operator[]");
+    }
   }
 
 
-  virtual ~VectorLorentz() {};
-  virtual T  operator() (unsigned int index) const ;   // throw (MathException);
-  virtual T  operator[] (unsigned int index) const ;   // throw (MathException);
-  virtual T  x()  const ;   // throw (MathException);
-  virtual T  y()  const ;   // throw (MathException);
-  virtual T  z()  const ;   // throw (MathException);
+  T t()  const
+  {
+  switch (storageType)
+    {
+      case 0: return v0; //!> x
+      case 1: return v0;
+      case 2: return v0;
+      case 3: xxxxxx
+      default: throw MathException("Internal error","VectorLorentz<T>::x()");
+    }
+  }
 
-  void setTXYZ(const T * values)  ;   // throw (MathException);
+  T x()  const
+  {
+  switch (storageType)
+    {
+      case 0: return v1;
+      case 1: return v3*std::sin(v2)*std::cos(v1);
+      case 2: return v2*std::cos(v1);
 
-  void setTXYZ(const std::vector<T> & values)  ;   // throw (MathException);
+      case 10: return v1;
+      case 11: return v3*std::sin(v2)*std::cos(v1);
+      case 12: return v2*std::cos(v1);
 
-  void setTXYZ(const T & x, const T & y, const T & z)  ;   // throw (MathException);
+      default: throw MathException("Internal error","VectorLorentz<T>::x()");
+    }
+  }
 
-  void setFromTXYZ(const T & x, const T & y, const T & z)  ;   // throw (MathException);
+  T y()  const
+  {
+  switch (storageType)
+    {
+      case 0: return v2;
+      case 1: return v3*std::sin(v2)*std::sin(v1);
+      case 2: return v2*std::sin(v1);
+      default: throw MathException("Internal error","VectorLorentz<T>::y()");
+    }
+  }
 
-  void setPhiThetaRT(const T & phi, const T & theta, const T & r, const T & t)  ;   // throw (MathException);
 
-  void setPhiRhoZT(const T & phi, const T & rho, const T & z, const T & t)  ;   // throw (MathException);
+  T z()  const
+  {
+  switch (storageType)
+    {
+      case 0: return v3;
+      case 1: return v3*std::cos(v2);
+      case 2: return v3;
+      default: throw MathException("Internal error","VectorLorentz<T>::z()");
+    }
+  }
 
-  T  phi() const  ;   // throw (MathException);
-  T  cosPhi() const  ;   // throw (MathException);
-  T  sinPhi() const  ;   // throw (MathException);
-  T  theta() const  ;   // throw (MathException);
-  T  cosTheta() const  ;   // throw (MathException);
-  T  sinTheta() const  ;   // throw (MathException);
-  T  modulus() const  ;   // throw (MathException);
-  T  modulusSquare() const  ;   // throw (MathException);
-  T  perp() const  ;   // throw (MathException);
-  T  perpSquare() const  ;   // throw (MathException);
+  void setTXYZ(const T * values)
+  {
+  v0 = values[0];
+  v1 = values[1];
+  v2 = values[2];
+  v3 = values[3];
+  storageType = 0;
+  }
+
+  void setTXYZ(const std::vector<T> & values)
+  {
+  v0 = values[0];
+  v1 = values[1];
+  v2 = values[2];
+  v3 = values[3];
+  storageType = 0;
+  }
+
+  void setTXYZ(const VectorLorentz<T> & otherVector)
+  {
+  v0 = otherVector.t();
+  v1 = otherVector.x();
+  v2 = otherVector.y();
+  v3 = otherVector.z();
+  storageType = 0;
+  }
+
+  void setTXYZ(const T & t, const T & x, const T & y, const T & z)
+  {
+  v0 = t;
+  v1 = x;
+  v2 = y;
+  v3 = z;
+  storageType = 0;
+  }
+
+  void setFromTXYZ(const T & t, const T & x, const T & y, const T & z)
+  {
+  switch (storageType)
+    {
+      default: throw MathException("Internal error","VectorLorentz<T>::setFromXYZ()");
+      break;
+
+      case 0:
+      v0 = t;
+      v1 = x;
+      v2 = y;
+      v3 = z;
+      break;
+
+      case 1:
+      {
+      T rhoSq = x*x + y*y;
+      v0 = t;
+      v1 = std::atan2(y,x);
+      v2 = std::atan2(std::sqrt(rhoSq),z);
+      v3 = std::sqrt(rhoSq + z*z);
+      break;
+      }
+
+      case 2:
+      v0 = t;
+      v1 = std::atan2(y,x);
+      v2 = std::sqrt(x*x + y*y);
+      v3 = z;
+      break;
+    }
+  }
+
+
+  void setTPhiThetaR(const T & t, const T & phi, const T & theta, const T & r)
+  {
+  v0 = t;
+  v1 = phi;
+  v2 = theta;
+  v3 = r;
+  storageType = 1;
+  }
+
+
+  void setTPhiRhoZ(const T & t, const T & phi, const T & rho, const T & z)
+  {
+  v0 = t;
+  v1 = phi;
+  v2 = rho;
+  v3 = z;
+  storageType = 2;
+  }
+
+  T  phi() const
+  {
+  switch (storageType)
+    {
+      case 0: return std::atan2(v2,v1);
+      case 1: return v1;
+      case 2: return v1;
+      default: throw MathException("Internal error","VectorLorentz<T>::phi()");
+    }
+  }
+
+  T  cosPhi() const
+  {
+  switch (storageType)
+    {
+      case 0: return v1/std::sqrt(v1*v1+v2*v2);
+      case 1: return std::cos(v1);
+      case 2: return std::cos(v1);
+      default: throw MathException("Internal error","VectorLorentz<T>::cosPhi()");
+    }
+  }
+
+  T  sinPhi() const
+  {
+  switch (storageType)
+    {
+      case 0: return v2/std::sqrt(v1*v1+v2*v2);
+      case 1: return std::sin(v1);
+      case 2: return std::sin(v1);
+      default: throw MathException("Internal error","VectorLorentz<T>::sinPhi()");
+    }
+  }
+
+
+  T theta() const
+  {
+  switch (storageType)
+    {
+      case 0: return std::atan2(std::sqrt(v1*v1+v2*v2),v3);
+      case 1: return v2;
+      case 2: return std::atan2(v2,v3);
+      default: throw MathException("Internal error","VectorLorentz<T>::theta()");
+    }
+  }
+
+  T  cosTheta() const
+  {
+  switch (storageType)
+    {
+      case 0: return v3/std::sqrt(v1*v1+v2*v2+v3*v3);
+      case 1: return std::cos(v2);
+      case 2: return v3/std::sqrt(v2*v2+v3*v3);
+      default: throw MathException("Internal error","VectorLorentz<T>::cosTheta()");
+    }
+  }
+
+  T sinTheta() const
+  {
+  switch (storageType)
+    {
+      case 0: return v3/std::sqrt(v1*v1+v2*v2+v3*v3);
+      case 1: return std::cos(v2);
+      case 2: return v3/std::sqrt(v2*v2+v3*v3);
+      default: throw MathException("Internal error","VectorLorentz<T>::sinTheta()");
+    }
+  }
+
+  T modulus() const
+  {
+  switch (storageType)
+    {
+      case 0: return std::sqrt(v1*v1+v2*v2+v3*v3);
+      case 1: return v3;
+      case 2: return std::sqrt(v2*v2+v3*v3);
+      default: throw MathException("Internal error","VectorLorentz<T>::modulus()");
+    }
+  }
+
+  T  modulusSquare() const
+  {
+  switch (storageType)
+    {
+      case 0: return v1*v1+v2*v2+v3*v3;
+      case 1: return v3*v3;
+      case 2: return v2*v2+v3*v3;
+      default: throw MathException("Internal error","VectorLorentz<T>::modulusSquare()");
+    }
+  }
+
+  T  perp() const
+  {
+  switch (storageType)
+    {
+      case 0: return std::sqrt(v1*v1+v2*v2);
+      case 1: return v3*std::sin(v2);
+      case 2: return v2;
+      default: throw MathException("Internal error","VectorLorentz<T>::perp()");
+    }
+  }
+
+  T perpSquare() const
+  {
+  switch (storageType)
+    {
+      default:
+      throw MathException("Internal error","VectorLorentz<T>::perpSquare()");
+      break;
+
+      case 0:
+      return v1*v1+v2*v2;
+      break;
+
+      case 1:
+      {
+      T rho = v3*std::sin(v2);
+      return rho*rho;
+      break;
+      }
+      case 2: return v2*v2;
+    }
+  }
+
+  Vector3<T> xyz() const
+  {
+  return  Vector<T> v(x(), y(), z(),0);
+  }
+
+  T massSquare() const
+  {
+  return modulusSquare();
+  }
+
+
+  T mass() const
+  {
+  T mSq = modulusSquare();
+  if (mSq<0) throw MathException("modulusSquare()<0","mass()");
+  return std::sqrt(mSq);
+  }
+
+  T betaX() const
+  {
+  T tt = t();
+  if (tt<=0) throw MathException("t<=0","betaX()");
+  return x()/tt;
+  }
+
+  T betaY() const
+  {
+  T tt = t();
+  if (tt<=0) throw MathException("t<=0","betaY()");
+  return y()/tt;
+  }
+
+  T betaZ() const
+  {
+  T tt = t();
+  if (tt<=0) throw MathException("t<=0","betaZ()");
+  return z()/tt;
+  }
+
+  T beta() const
+  {
+  T tt = t();
+  if (tt<=0) throw MathException("t<=0","beta()");
+  return std::sqrt(x()*x()+y()*y()+z()*z())/tt;
+  }
+
+  T betaSquare() const
+  {
+  T tt = t();
+  if (tt<=0) throw MathException("t<=0","beta()");
+  return (x()*x()+y()*y()+z()*z())/(tt*tt);
+  }
+
+
+  Vector3<T> betaVector() const
+  {
+  T tt = t();
+  if (tt<=0) throw MathException("t<=0","betaVector()");
+  return Vector3<T>(x()/tt,y()/tt,z()/tt,0);
+  }
+
+  T gammaSquare() const
+  {
+  T bSq = betaSquare();
+  if (bSq>=1) throw MathException("betaSq()>=1","gamma()");
+  return 1.0/(1-bSq);
+  }
+
+
+  T gamma() const
+  {
+  T bSq = betaSquare();
+  if (bSq>=1) throw MathException("betaSq()>=1","gamma()");
+  return 1.0/sqtd::sqrt(1-bSq);
+  }
+
+  T pseudoRapidity() const
+  {
+  T ct = cosTheta();
+  if (ct*ct < 1) return -0.5* std::log( (1.0-ct)/(1.0+ct) );
+  T zz = z();
+  return (zz == 0) ? 0 : ((zz>0) ? 1E10 : -1E10);
+  }
+
+  //!
+  //!Transverse mass square
+  //!
+  T transverseMassSquare() const
+  {
+  T mSq    = massSquare();
+  T perpSq = perpSquare();
+  return mSq+perpSq;
+  }
+
+  //!
+  //!Transverse mass
+  //!
+  T transverseMass() const
+  {
+  T mSq    = massSquare();
+  T perpSq = perpSquare();
+  return std:sqrt(mSq+perpSq);
+  }
+
 
 
   template <typename Q>
@@ -91,7 +498,7 @@ public:
   }
 
   template <typename Q>
-  VectorLorentz<T> & operator+= (const VectorLorentz<Q> & otherVector)
+  VectorLorentz & operator+= (const VectorLorentz<Q> & otherVector)
   {
   T tt = t() + otherVector.t();
   T xx = x() + otherVector.x();
@@ -102,7 +509,7 @@ public:
   }
 
   template <typename Q>
-  VectorLorentz<T> & operator-= (const VectorLorentz<Q> & otherVector)
+  VectorLorentz & operator-= (const VectorLorentz<Q> & otherVector)
   {
   T tt = t() - otherVector.t();
   T xx = x() - otherVector.x();
@@ -113,440 +520,15 @@ public:
   }
 
   //! Unary minus.
-  VectorLorentz operator - () const ;   // throw (MathException);
-
-
-  // Scalar product.
-  template <typename Q>
-  T  scalarProduct(const VectorLorentz<Q> & otherVector) const
+  VectorLorentz operator- () const ;
   {
-  return x()*otherVector.x() - (x()*otherVector.x() + y()*otherVector.y() + z()*otherVector.z());
-  }
-
-  void boostX(const T & beta);
-  void boostY(const T & beta);
-  void boostZ(const T & beta);
-  void boost(const T & betaX,const T & betaY,const T & betaZ);
-  void boost(const Vector3<T> & v);
-
-  virtual void print() const ;   // throw (MathException);
-
-  ClassDef(VectorLorentz,1)
-
- // friend class CAP::Math::LorentzVector;
-};
-
-
-//! Addition of two Vector3s.
-template <typename T, typename Q>
-VectorLorentz<T> operator+ (const VectorLorentz<T> & left, const VectorLorentz<Q> & right)
-{
-  T xx = left.x() + right.x();
-  T yy = left.y() + right.y();
-  T zz = left.z() + right.z();
-  return VectorLorentz<T>(xx,yy,zz,left.storage());
-}
-
-//! Subtraction of two Vector3s.
-template <typename T, typename Q>
-VectorLorentz<T> operator- (const VectorLorentz<T> & left, const VectorLorentz<Q> & right)
-{
-  T xx = left.x() - right.x();
-  T yy = left.y() - right.y();
-  T zz = left.z() - right.z();
-  return VectorLorentz<T>(xx,yy,zz,left.storage());
-}
-
-//! Scalar product of two Vector3s.
-template <typename T, typename Q>
-T operator * (const VectorLorentz<T> & left, const VectorLorentz<Q> & right)
-  {
-  return left.x()*right.x() + left.y()*right.y() + left.z()*right.z();
-  }
-
-
-//! Scaling by a scalar value from the right
-template <typename T, typename Q>
-VectorLorentz<T> operator* (const VectorLorentz<T> & left, Q  a)
-  {
-  VectorLorentz<T> v(0,0,0,left.storage());
-  v.setFromXYZ(a*left.x(), a*left.y(), a*left.z());
-  return v;
-  }
-
-
-//! Scaling by a scalar value from the left
-template <typename T, typename Q>
-VectorLorentz<T> operator* (const Q & a, const VectorLorentz<T> & right)
-  {
-  VectorLorentz<T> v(0,0,0,right.storageType);
-  v.setFromXYZ(a*right.x(), a*right.y(), a*right.z());
-  return v;
-  }
-
-// ====
-
-template <typename T>
-VectorLorentz<T>::VectorLorentz()
-:
-v1(0),
-v2(0),
-v3(0),
-storageType(0)
-{ }
-
-template <typename T>
-VectorLorentz<T>::VectorLorentz(const T & _v1, const T & _v2, const T & _v3, int _storageType)
-:
-v1(_v1),
-v2(_v2),
-v3(_v3),
-storageType(_storageType)
-{  }
-
-
-template <typename T>
-VectorLorentz<T>::VectorLorentz(T * _values, int _storageType)
-:
-v1(_values[0]),
-v2(_values[1]),
-v3(_values[2]),
-storageType(_storageType)
-{ }
-
-template <typename T>
-VectorLorentz<T>::VectorLorentz(std::vector<T> _values, int _storageType)
-:
-v1(_values[0]),
-v2(_values[1]),
-v3(_values[2]),
-storageType(_storageType)
-{ }
-
-template <typename T>
-VectorLorentz<T>::VectorLorentz(const VectorLorentz<T> & source)
-:
-v1(source.v1),
-v2(source.v1),
-v3(source.v2),
-storageType(source.storageType)
-{ }
-
-//!
-//! Returns the value stored at the give index.
-//!
-template <typename T>
-T VectorLorentz<T>::operator() (unsigned int index) const ;   // throw (MathException)
-{
-  switch (index)
-    {
-      case 0: return v1;
-      case 1: return v2;
-      case 2: return v3;
-      default: throw MathException("index>2","VectorLorentz<T>::operator()");
-    }
-}
-
-
-template <typename T>
-T VectorLorentz<T>::operator[] (unsigned int index) const ;   // throw (MathException)
-{
-  switch (storageType)
-    {
-      case 0: // cartesian coordinates storage and output
-      switch (index)
-        {
-          case 0: return v1; //!> x
-          case 1: return v2; //!> y
-          case 2: return v3;              //!> z
-          default: throw MathException("index>2","VectorLorentz<T>::operator []");
-        }
-
-      case 1: // spherical coordinates storage and cartesian output
-      switch (index)
-        {
-          case 0: return v3*std::sin(v2)*std::cos(v1); //!> x
-          case 1: return v3*std::sin(v2)*std::sin(v1); //!> y
-          case 2: return v3*std::cos(v2);              //!> z
-          default: throw MathException("index>2","VectorLorentz<T>::operator []");
-        }
-
-      case 2: // cylindrical coordinates storage and cartesian output
-      switch (index)
-        {
-          case 0: return v2*std::cos(v1); //!> x
-          case 1: return v2*std::sin(v1); //!> y
-          case 2: return v3;              //!> z
-          default: throw MathException("index>2","VectorLorentz<T>::operator []");
-        }
-
-      default: throw MathException("Internal error","VectorLorentz<T>::operator[]");
-
-    }
-}
-
-
-template <typename T>
-T   VectorLorentz<T>::x()  const ;   // throw (MathException)
-{
-  switch (storageType)
-    {
-      case 0: return v1; //!> x
-      case 1: return v3*std::sin(v2)*std::cos(v1); //!> x
-      case 2: return v2*std::cos(v1); //!> x
-      default: throw MathException("Internal error","VectorLorentz<T>::x()");
-    }
-}
-
-template <typename T>
-T   VectorLorentz<T>::y()  const ;   // throw (MathException)
-{
-  switch (storageType)
-    {
-      case 0: return v2; //!> y
-      case 1: return v3*std::sin(v2)*std::sin(v1); //!> x
-      case 2: return v2*std::sin(v1); //!> y
-      default: throw MathException("Internal error","VectorLorentz<T>::y()");
-    }
-}
-
-
-template <typename T>
-T   VectorLorentz<T>::z()  const ;   // throw (MathException)
-{
-  switch (storageType)
-    {
-      case 0: return v3;              //!> z
-      case 1: return v3*std::cos(v2); //!> x
-      case 2: return v3;              //!> z
-      default: throw MathException("Internal error","VectorLorentz<T>::z()");
-    }
-}
-
-template <typename T>
-void VectorLorentz<T>::setXYZ(const T * values) ;   // throw (MathException)
-{
-  v1 = values[0];
-  v2 = values[1];
-  v3 = values[2];
-  storageType = 0;
-}
-
-template <typename T>
-void VectorLorentz<T>::setXYZ(const std::vector<T> & values) ;   // throw (MathException)
-{
-  v1 = values.x();
-  v2 = values.y();
-  v3 = values.z();
-  storageType = 0;
-}
-
-template <typename T>
-void VectorLorentz<T>::setXYZ(const T & x, const T & y, const T & z) ;   // throw (MathException)
-{
-  v1 = x;
-  v2 = y;
-  v3 = z;
-  storageType = 0;
-}
-
-template <typename T>
-void VectorLorentz<T>::setFromXYZ(const T & x, const T & y, const T & z) ;   // throw (MathException)
-{
-  switch (storageType)
-    {
-      default: throw MathException("Internal error","VectorLorentz<T>::setFromXYZ()");
-      break;
-
-      case 0:
-      v1 = x;
-      v2 = y;
-      v3 = z;
-      break;
-
-      case 1:
-      {
-      T rhoSq = x*x + y*y;
-      v1 = std::atan2(y,x);
-      v2 = std::atan2(std::sqrt(rhoSq),z);
-      v3 = std::sqrt(rhoSq + z*z);
-      break;
-      }
-
-      case 2:
-      v1 = std::atan2(y,x);
-      v2 = std::sqrt(x*x + y*y);
-      v3 = z;
-      break;
-    }
-}
-
-
-template <typename T>
-void VectorLorentz<T>::setPhiThetaR(const T & phi, const T & theta, const T & r) ;   // throw (MathException)
-{
-  v1 = phi;
-  v2 = theta;
-  v3 = r;
-  storageType = 1;
-}
-
-
-template <typename T>
-void VectorLorentz<T>::setPhiRhoZ(const T & phi, const T & rho, const T & z) ;   // throw (MathException)
-{
-  v1 = phi;
-  v2 = rho;
-  v3 = z;
-  storageType = 2;
-}
-
-template <typename T>
-T  VectorLorentz<T>::phi() const ;   // throw (MathException)
-{
-  switch (storageType)
-    {
-      case 0: return std::atan2(v2,v1);
-      case 1: return v1;
-      case 2: return v1;
-      default: throw MathException("Internal error","VectorLorentz<T>::phi()");
-    }
-}
-
-template <typename T>
-T  VectorLorentz<T>::cosPhi() const  ;   // throw (MathException)
-{
-  switch (storageType)
-    {
-      case 0: return v1/std::sqrt(v1*v1+v2*v2);
-      case 1: return std::cos(v1);
-      case 2: return std::cos(v1);
-      default: throw MathException("Internal error","VectorLorentz<T>::cosPhi()");
-    }
-}
-
-template <typename T>
-T  VectorLorentz<T>::sinPhi() const ;   // throw (MathException)
-{
-  switch (storageType)
-    {
-      case 0: return v2/std::sqrt(v1*v1+v2*v2);
-      case 1: return std::sin(v1);
-      case 2: return std::sin(v1);
-      default: throw MathException("Internal error","VectorLorentz<T>::sinPhi()");
-    }
-}
-
-
-template <typename T>
-T  VectorLorentz<T>::theta() const ;   // throw (MathException)
-{
-  switch (storageType)
-    {
-      case 0: return std::atan2(std::sqrt(v1*v1+v2*v2),v3);
-      case 1: return v2;
-      case 2: return std::atan2(v2,v3);
-      default: throw MathException("Internal error","VectorLorentz<T>::theta()");
-    }
-}
-
-template <typename T>
-T  VectorLorentz<T>::cosTheta() const ;   // throw (MathException)
-{
-  switch (storageType)
-    {
-      case 0: return v3/std::sqrt(v1*v1+v2*v2+v3*v3);
-      case 1: return std::cos(v2);
-      case 2: return v3/std::sqrt(v2*v2+v3*v3);
-      default: throw MathException("Internal error","VectorLorentz<T>::cosTheta()");
-    }
-}
-
-template <typename T>
-T  VectorLorentz<T>::sinTheta() const ;   // throw (MathException)
-{
-  switch (storageType)
-    {
-      case 0: return v3/std::sqrt(v1*v1+v2*v2+v3*v3);
-      case 1: return std::cos(v2);
-      case 2: return v3/std::sqrt(v2*v2+v3*v3);
-      default: throw MathException("Internal error","VectorLorentz<T>::sinTheta()");
-    }
-}
-
-template <typename T>
-T  VectorLorentz<T>::modulus() const ;   // throw (MathException)
-{
-  switch (storageType)
-    {
-      case 0: return std::sqrt(v1*v1+v2*v2+v3*v3);
-      case 1: return v3;
-      case 2: return std::sqrt(v2*v2+v3*v3);
-      default: throw MathException("Internal error","VectorLorentz<T>::modulus()");
-    }
-}
-
-template <typename T>
-T  VectorLorentz<T>::modulusSquare() const ;   // throw (MathException)
-{
-  switch (storageType)
-    {
-      case 0: return v1*v1+v2*v2+v3*v3;
-      case 1: return v3*v3;
-      case 2: return v2*v2+v3*v3;
-      default: throw MathException("Internal error","VectorLorentz<T>::modulusSquare()");
-    }
-}
-
-template <typename T>
-T  VectorLorentz<T>::perp() const  ;   // throw (MathException)
-{
-  switch (storageType)
-    {
-      case 0: return std::sqrt(v1*v1+v2*v2);
-      case 1: return v3*std::sin(v2);
-      case 2: return v2;
-      default: throw MathException("Internal error","VectorLorentz<T>::perp()");
-    }
-}
-
-template <typename T>
-T  VectorLorentz<T>::perpSquare() const   ;   // throw (MathException)
-{
-  switch (storageType)
-    {
-      default:
-      throw MathException("Internal error","VectorLorentz<T>::perpSquare()");
-      break;
-
-      case 0:
-      return v1*v1+v2*v2;
-      break;
-
-      case 1:
-      {
-        T rho = v3*std::sin(v2);
-        return rho*rho;
-        break;
-      }
-      case 2: return v2*v2;
-    }
-}
-
-
-
-
-
-//! Unary minus.
-template <typename T>
-VectorLorentz<T> VectorLorentz<T>::operator- () const ;   // throw (MathException)
-{
   VectorLorentz v(0,0,0,storageType);
   switch (storageType)
     {
       default: throw MathException("Internal error","VectorLorentz<T>::operator- ()");
 
       case 0:
+      v.v0 =  v0;
       v.v1 = -v1;
       v.v2 = -v2;
       v.v3 = -v3;
@@ -554,15 +536,17 @@ VectorLorentz<T> VectorLorentz<T>::operator- () const ;   // throw (MathExceptio
 
       case 1:
       {
+      v.v0  =  v0;
       T phi = pi()+v1;
-      v.v1 = phi>twoPi() ?  phi -= twoPi() : phi;
-      v.v2 = pi()-v2;
-      v.v3 = v3;
+      v.v1  = phi>twoPi() ?  phi -= twoPi() : phi;
+      v.v2  = pi()-v2;
+      v.v3  = v3;
       break;
       }
 
       case 2:
       {
+      v.v0  =  v0;
       T phi = pi()+v1;
       v.v1 = phi>twoPi() ?  phi += twoPi() : phi;
       v.v2 = v2;
@@ -571,11 +555,25 @@ VectorLorentz<T> VectorLorentz<T>::operator- () const ;   // throw (MathExceptio
       }
     }
   return v;
-}
+  }
 
-template <typename T>
-VectorLorentz<T> & VectorLorentz<T>::operator *= (const T & scaleFactor)
-{
+
+  // 3D Scalar product.
+  template <typename Q>
+  T  scalarProduct3D(const VectorLorentz<Q> & otherVector) const
+  {
+  return (x()*otherVector.x() + y()*otherVector.y() + z()*otherVector.z());
+  }
+
+  // 4D Scalar product.
+  template <typename Q>
+  T  scalarProduct(const VectorLorentz<Q> & otherVector) const
+  {
+  return t()*otherVector.t() - (x()*otherVector.x() + y()*otherVector.y() + z()*otherVector.z());
+  }
+
+  VectorLorentz &  operator *= (const T & scaleFactor)
+  {
   switch (storageType)
     {
       case 0:
@@ -594,12 +592,11 @@ VectorLorentz<T> & VectorLorentz<T>::operator *= (const T & scaleFactor)
       break;
     }
   return *this;
-}
+  }
 
-//! Normalize this vector to be a unitvector
-template <typename T>
-VectorLorentz<T>& VectorLorentz<T>::normalize() ;   // throw (MathException)
-{
+  //! Normalize this vector to be a unitvector
+  VectorLorentz & normalize()
+  {
   switch (storageType)
     {
       case 0:
@@ -628,12 +625,11 @@ VectorLorentz<T>& VectorLorentz<T>::normalize() ;   // throw (MathException)
       throw MathException("Internal error","VectorLorentz<T>::normalize()");
     }
   return *this;
-}
+  }
 
-//! unit VectorLorentz parallel to this vecotr.
-template <typename T>
-VectorLorentz<T> VectorLorentz<T>::unit() const ;   // throw (MathException)
-{
+  //! unit VectorLorentz parallel to this vecotr.
+  VectorLorentz unit() const
+  {
   switch (storageType)
     {
       default:
@@ -664,14 +660,11 @@ VectorLorentz<T> VectorLorentz<T>::unit() const ;   // throw (MathException)
       return vrho;
       }
     }
-}
+  }
 
-
-
-//! Active rotation of this VectorLorentz by the given angle relative to the x-axis
-template <typename T>
-void VectorLorentz<T>::rotateX(const T & angle)
-{
+  //! Active rotation of this VectorLorentz by the given angle relative to the x-axis
+  void rotateX(const T & angle)
+  {
   T s  = std::sin(angle);
   T c  = std::cos(angle);
   T xx   = x();
@@ -680,12 +673,11 @@ void VectorLorentz<T>::rotateX(const T & angle)
   T yy   = c*yy1 - s*zz;
   zz     = s*yy1 + c*zz;
   setFromXYZ(xx,yy,zz);
-}
+  }
 
-//! Active rotation of this VectorLorentz by the given angle relative to the y-axis
-template <typename T>
-void VectorLorentz<T>::rotateY(const T & angle)
-{
+  //! Active rotation of this VectorLorentz by the given angle relative to the y-axis
+  void rotateY(const T & angle)
+  {
   T s  = std::sin(angle);
   T c  = std::cos(angle);
   T xx   = x();
@@ -694,12 +686,11 @@ void VectorLorentz<T>::rotateY(const T & angle)
   T zz   = c*zz1 - s*xx;
   xx     = s*zz1 + c*xx;
   setFromXYZ(xx,yy,zz);
-}
+  }
 
-//! Active rotation of this VectorLorentz by the given angle relative to the z-axis
-template <typename T>
-void VectorLorentz<T>::rotateZ(const T & angle)
-{
+  //! Active rotation of this VectorLorentz by the given angle relative to the z-axis
+  void rotateZ(const T & angle)
+  {
   T s  = std::sin(angle);
   T c  = std::cos(angle);
   T xx1  = x();
@@ -708,44 +699,125 @@ void VectorLorentz<T>::rotateZ(const T & angle)
   T xx   = c*xx1 - s*yy;
   yy     = s*xx1 + c*yy;
   setFromXYZ(xx,yy,zz);
-}
+  }
 
+  void boostX(const T & beta);
+  void boostY(const T & beta);
+  void boostZ(const T & beta);
 
-template <typename T>
-VectorLorentz<T> VectorLorentz<T>::projectOntoXY() const
-{
-  return VectorLorentz<T>(x(), y(), 0, 0);
-}
+  //!
+  //!Boost this Lorentz vector alnog the given velocity vector
+  //!
+  void boost(const T & betaX,const T & betaY,const T & betaZ)
+  {
+  T  betaSq = betaX*betaX + betaY*betaY + betaZ*betaZ;
+  T  gamma = 1.0 / std::sqrt(1.0 - betaSq);
+  T  bp = betaX*x() + betaY*y() + betaZ*z();
+  T  gamma2 = betaSq > 0 ? (gamma - 1.0)/betaSq : 0.0;
+  setFromTXYZ(gamma*(t()+bp),  x()+gamma2*bp*betaX+gamma*betaX*t(), y() + gamma2*bp*betaY + gamma*betaY*t(), z() + gamma2*bp*betaZ + gamma*betaZ*t());
+  }
 
-template <typename T>
-VectorLorentz<T> VectorLorentz<T>::projectOntoYZ() const
-{
-  return VectorLorentz<T>(0, y(), z(), 0);
-}
+  void boost(const Vector3<T> & v)
+  {
+  T  betaX = v[0];
+  T  betaY = v[1];
+  T  betaZ = v[2];
+  T  betaSq = betaX*betaX + betaY*betaY + betaZ*betaZ;
+  T  gamma = 1.0 / std::sqrt(1.0 - betaSq);
+  T  bp = betaX*x() + betaY*y() + betaZ*z();
+  T  gamma2 = betaSq > 0 ? (gamma - 1.0)/betaSq : 0.0;
+  setFromTXYZ(gamma*(t()+bp),  x()+gamma2*bp*betaX+gamma*betaX*t(), y() + gamma2*bp*betaY + gamma*betaY*t(), z() + gamma2*bp*betaZ + gamma*betaZ*t());
+  }
 
+  //!
+  //!Compute and return the rapidity of this vector
+  //!
+  T rapidity() const
+  {
+  return 0.5*std::log( (t()+z()) / (t()-z()) );
+  }
 
-template <typename T>
-VectorLorentz<T> VectorLorentz<T>::projectOntoXZ() const
-{
-  return VectorLorentz<T>(x(), 0, z(), 0);
-}
-
-
-template <typename T>
-void VectorLorentz<T>::print() const  ;   // throw (MathException)
-{
+  virtual void print() const
+  {
   switch (storageType)
     {
       case 0:
-      std::cout << "(x:" << v1 << ", y:" << v2 << ", z:" << v3 << ") " << std::endl; break;
+      std::cout << "(t:" << v0 << " x:" << v1 << ", y:" << v2 << ", z:" << v3 << ") " << std::endl; break;
       case 1:
-      std::cout << "(phi:" << v1 << ", theta:" << v2 << ", r:" << v3 << ") " << std::endl; break;
+      std::cout << "(t:" << v0 << " phi:" << v1 << ", theta:" << v2 << ", r:" << v3 << ") " << std::endl; break;
       case 2:
-      std::cout << "(phi:" << v1 << ", rho:" << v2 << ", z:" << v3 << ") " << std::endl; break;
+      std::cout << "(t:" << v0 << " phi:" << v1 << ", rho:" << v2 << ", z:" << v3 << ") " << std::endl; break;
       default: throw MathException("Internal error","VectorLorentz<T>::print()");
     }
+  }
+
+  ClassDef(VectorLorentz,1)
+
+ // friend class CAP::Math::LorentzVector;
+};
+
+
+//!
+//! Add the two vectors and return a new vector
+//!
+template <typename T, typename Q>
+VectorLorentz<T> operator+ (const VectorLorentz<T> & left, const VectorLorentz<Q> & right)
+{
+  T tt = left.t() + right.t();
+  T xx = left.x() + right.x();
+  T yy = left.y() + right.y();
+  T zz = left.z() + right.z();
+  return VectorLorentz<T>(tt,xx,yy,zz,left.storage());
 }
 
+//!
+//! Subtract  the two vectors and return a new vector
+//!
+template <typename T, typename Q>
+VectorLorentz<T> operator- (const VectorLorentz<T> & left, const VectorLorentz<Q> & right)
+{
+  T tt = left.t() + right.t();
+  T xx = left.x() - right.x();
+  T yy = left.y() - right.y();
+  T zz = left.z() - right.z();
+  return VectorLorentz<T>(tt,xx,yy,zz,left.storage());
+}
+
+//!
+//! SR (4D) scalar product of two left and right vectors
+//!
+template <typename T, typename Q>
+T operator * (const VectorLorentz<T> & left, const VectorLorentz<Q> & right)
+  {
+  return left.t()*right.t() + left.x()*right.x() + left.y()*right.y() + left.z()*right.z();
+  }
+
+
+//!
+//! Scaling of the left vector by a scalar value from the right
+//!
+template <typename T, typename Q>
+VectorLorentz<T> operator* (const VectorLorentz<T> & left, Q  a)
+  {
+  VectorLorentz<T> v(0,0,0,left.storage());
+  v.setFromTXYZ(a*left.t(), a*left.x(), a*left.y(), a*left.z());
+  return v;
+  }
+
+//!
+//! Scaling of the right vector by a scalar value from the left
+//!
+template <typename T, typename Q>
+VectorLorentz<T> operator* (const Q & a, const VectorLorentz<T> & right)
+  {
+  VectorLorentz<T> v(0,0,0,right.storageType);
+  v.setFromTXYZ(a*right.t(), a*right.x(), a*right.y(), a*right.z());
+  return v;
+  }
+
+//!
+//! Print out the given vector to the given ostream.
+//!
 template <typename T>
 std::ostream& operator<<(std::ostream& out, const CAP::Math::VectorLorentz<T>& v)
 {
@@ -753,11 +825,9 @@ std::ostream& operator<<(std::ostream& out, const CAP::Math::VectorLorentz<T>& v
   return out;
 }
 
-
-
-typedef  VectorLorentz<float>  Vector3F;
-typedef  VectorLorentz<double> Vector3D;
-typedef  VectorLorentz<long double> Vector3LD;
+typedef  VectorLorentz<float>  VectorLorentzF;
+typedef  VectorLorentz<double> VectorLorentzD;
+typedef  VectorLorentz<long double> VectorLorentzLD;
 
 } // namespace Math
 } // namespace CAP

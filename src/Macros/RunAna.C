@@ -33,7 +33,13 @@ void loadTherminator(const TString & includeBasePath);
 
 // seed provided by slurm or directly by user
 // config file must be provided
-int RunAna(TString configFile, TString histoOutput="test/", bool isGrid=0)
+int RunAna(TString configFile,
+           TString outputPath,
+           long seed=1121331,
+           bool isGrid=true,
+           long nEventsPerSubbunch=300,
+           int nSubbunchesPerBunch=1,
+           int nBunches=1)
 {
   TString includeBasePath = getenv("CAP_SRC");
   cout << " includeBasePath: " << includeBasePath << endl;
@@ -72,9 +78,21 @@ int RunAna(TString configFile, TString histoOutput="test/", bool isGrid=0)
     TString dbPath = getenv("CAP_DATABASE");
     dbPath  += "ParticleData/";
     cout << "DB path.................... : " << dbPath << endl;
-    configuration.addParameter("Run:Analysis:PartGen:HistogramsExportPath",histoOutput);
-    configuration.addParameter("Run:Analysis:PairGen:HistogramsExportPath",histoOutput);
+    configuration.addParameter("Run:Analysis:PartGen:HistogramsExportPath",histogramPath);
+    configuration.addParameter("Run:Analysis:PairGen:HistogramsExportPath",histogramPath);
     configuration.addParameter("Run:ParticleDb:ParticleDbImportPath",dbPath);
+
+    configuration.setParameter("Run:SetSeed",true);
+    configuration.setParameter("Run:SeedValue",seed);
+    configuration.setParameter("Run:Analysis:isGrid",                  isGrid);
+    configuration.setParameter("Run:Analysis:HistogramOutputPath",     outputPath);
+    configuration.setParameter("Run:Analysis:nEventsPerSubbunch",      nEventsPerSubbunch);
+    configuration.setParameter("Run:Analysis:nSubbunchesPerBunch",     nSubbunchesPerBunch);
+    configuration.setParameter("Run:Analysis:nBunches",                nBunches);
+    configuration.setParameter("Run:Analysis:BunchLabel",              TString("BUNCH"));
+    configuration.setParameter("Run:Analysis:SubbunchLabel",           TString(""));
+
+
     }
   cout << "------------------------------------------------------------------------------------------------------" << endl;
   cout << "------------------------------------------------------------------------------------------------------" << endl;
