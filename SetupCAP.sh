@@ -114,10 +114,10 @@ export CAP_SRC="$CAP_ROOT/src/"
 export CAP_BIN="$CAP_ROOT/bin/"
 export CAP_LIB="$CAP_ROOT/lib/"
 export CAP_INPUT_DATA="$DataInputPath"
-export CAP_OUTPUT_DATA="$DataInputPath"
-export CAP_INPUT_HISTOS="$DataInputPath"
-export CAP_OUTPUT_HISTOS="$DataInputPath"
-export CAP_CONFIG="$CAP_ROOT/projects/"
+export CAP_OUTPUT_DATA="$DataOutputPath"
+export CAP_INPUT_HISTOS="$HistosInputPath"
+export CAP_OUTPUT_HISTOS="$HistosOutputPath"
+export CAP_PROJECTS="$CAP_ROOT/projects/"
 export CAP_DATABASE="$CAP_ROOT/DB/"
 export CAP_GRID="$CAP_ROOT/Grid/"
 export CAP_GRID_WSU="$CAP_ROOT/Grid/WSU/"
@@ -127,15 +127,15 @@ export DYLD_LIBRARY_PATH="$CAP_LIB:$DYLD_LIBRARY_PATH"
 export LD_LIBRARY_PATH="$CAP_LIB:$LD_LIBRARY_PATH"
 
 echo " "
-echo " Source code                    : " $CAP_SRC
-echo " CAP Database                   : " $CAP_DATABASE
-echo " Job configuration files (.ini) : " $CAP_CONFIG
-echo " Scripts (.sh) grid files       : " $CAP_GRID
-echo " root Macros                    : " $CAP_MACROS
-echo " Default data input path        : " $CAP_INPUT_DATA
-echo " Default data output path       : " $CAP_OUTPUT_DATA
-echo " Default histogram input path   : " $CAP_INPUT_HISTOS
-echo " Default histogram output path  : " $CAP_OUTPUT_HISTOS
+echo " Source code  (CAP_SRC)................................: " $CAP_SRC
+echo " CAP Database   (CAP_DATABASE).........................: " $CAP_DATABASE
+echo " Job configuration files (.ini) (CAP_PROJECTS).........: " $CAP_PROJECTS
+echo " Scripts (.sh) grid files (CAP_GRID)...................: " $CAP_GRID
+echo " root Macros  (CAP_MACROS).............................: " $CAP_MACROS
+echo " Default data input path   (CAP_INPUT_DATA)............: " $CAP_INPUT_DATA
+echo " Default data output path   (CAP_OUTPUT_DATA)..........: " $CAP_OUTPUT_DATA
+echo " Default histogram input path  (CAP_INPUT_HISTOS)......: " $CAP_INPUT_HISTOS
+echo " Default histogram output path  (CAP_OUTPUT_HISTOS)....: " $CAP_OUTPUT_HISTOS
 echo " "
 echo " Build instructions"
 echo "========================================================================================"

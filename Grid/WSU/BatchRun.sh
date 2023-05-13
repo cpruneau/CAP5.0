@@ -24,18 +24,17 @@ if [ $4 -gt 100 ]; then
 fi
 
 
-# ===================================================================================
+# =============================================================================================================
 # Environment variables used in this and subsiduary shell scripts
 #
 # CAP_ROOT                               : Location of the CAP directory/folder
-# CAP_SRC="$CAP_ROOT/src/"               : Source code top folder
-# CAP_BIN="$CAP_ROOT/bin/"               : Binary code folder (as produced by make install)
-# CAP_LIB="$CAP_ROOT/lib/"               : CAP Libraries folder (as produced by make install)
-# CAP_PROJECTS="$CAP_ROOT/projects/"     : Location of job configurations files (usually subfolders)
-# CAP_DATA="$CAP_SRC/data/"              : Location of data used to run code e.g., PDG table
+# CAP_SRC                                : Source code top folder
+# CAP_BIN                                : Binary code folder (as produced by make install)
+# CAP_LIB                                : Libraries folder (as produced by make install)
+# CAP_CONFIG                             : Location of job configurations ini files
+# CAP_GRID                               : Location of grid scripts
+# CAP_GRID_WSU                           : Location of grid scripts for WSU slurm grid
 # CAP_MACROS="$CAP_SRC/Macros/"          : Location of main macros
-# CAP_Clusters="$CAP_ROOT/Clusters/"     : Location of shell scripts (in subfolders)
-# CAP_WSUGrid="$CAP_Clusters/WSUGrid/"   : Location of slurm shell scripts for Wayne State GRID
 # CAP_INPUT_PATH="$CAP_DATA/InputFiles/" : Location of large data files (not managed by Git)
 # CAP_OUTPUT_PATH="$CAP_WSUGrid"         : Location of Wayne State GrID outputs
 # CAP_OUTPUT_SUBPATH=$1                  : Subfolder Location of outputs
@@ -44,31 +43,31 @@ fi
 #
 # Note 1: The macros and configuration files used by script are copied in the production directory
 # Note 2: This and subsiduary scripts assumes root is provided within the conda environment CAP_CONDA.
+#
+# =============================================================================================================
 
 export CAP_CONDA="CProot"
-export CAP_ROOT="/wsu/home/aa/aa75/aa7526/CAP/"
+export CAP_ROOT="/wsu/home/aa/aa75/aa7526/CAP5.0/"
 export CAP_SRC="$CAP_ROOT/src/"
 export CAP_BIN="$CAP_ROOT/bin/"
 export CAP_LIB="$CAP_ROOT/lib/"
 export CAP_PROJECTS="$CAP_ROOT/projects/"
-export CAP_DATA="$CAP_SRC/data/"
 export CAP_MACROS="$CAP_SRC/Macros/"
-export CAP_Clusters="$CAP_ROOT/Clusters/"
-export CAP_WSUGrid="$CAP_Clusters/WSUGrid/"
+export CAP_DATABASE="$CAP_ROOT/DB/"
+export CAP_GRID="$CAP_ROOT/Grid/"
+export CAP_GRID_WSU="$CAP_ROOT/Grid/WSU/"
 export CAP_INPUT_PATH="$CAP_DATA/InputFiles/"
-export CAP_OUTPUT_PATH="$CAP_WSUGrid"
-export CAP_OUTPUT_SUBPATH=""
 export PATH="$CAP_BIN:$PATH"
 export DYLD_LIBRARY_PATH="$CAP_LIB:$DYLD_LIBRARY_PATH"
 export LD_LIBRARY_PATH="$CAP_LIB:$LD_LIBRARY_PATH"
-echo "Environment variables are now defined for CAP"
-
+export CAP_OUTPUT_PATH="$CAP_GRID_WSU"
 export CAP_OUTPUT_SUBPATH=$1
 export CAP_JOB_CONFIGURATION=$2
 NMAINJOBS=$3
 NSUBJOBS=$4
 export CAP_NEVENTS=$5
 CAP_PRODUCTION=OUT`date +%Y%m%d%H%M`
+echo "Environment variables are now defined for CAP"
 
 if [ -d $CAP_OUTPUT_PATH/$CAP_OUTPUT_SUBPATH/$CAP_PRODUCTION   ]
 then
@@ -101,6 +100,6 @@ do
   export CAP_WORKINGDIRECTORY_Output=$CAP_WORKINGDIRECTORY
   echo Preparing to launch job  $ijob w/  working directory $CAP_WORKINGDIRECTORY w/ output $CAP_WORKINGDIRECTORY_Output
   mkdir -p $CAP_WORKINGDIRECTORY_Output
-  sbatch -J batch__CAP -q primary --array=1-$NSUBJOBS --chdir=$CAP_WORKINGDIRECTORY --time=05:00:00 --mem=2G -o $CAP_WORKINGDIRECTORY/Job_%A_%a.out -e $CAP_WORKINGDIRECTORY/Job_%A_%a.err $CAP_WSUGrid/Run.sh
+  sbatch -J batch__CAP -q primary --array=1-$NSUBJOBS --chdir=$CAP_WORKINGDIRECTORY --time=05:00:00 --mem=2G -o $CAP_WORKINGDIRECTORY/Job_%A_%a.out -e $CAP_WORKINGDIRECTORY/Job_%A_%a.err $CAP_WSUGrid/RunAna.sh
   sleep 2s
 done
