@@ -104,15 +104,16 @@ int RunAna(TString configFile,
   if (isGrid)
     {
     // overide the ini file for selected parameters
-
     TString dbPath = getenv("CAP_DATABASE");
-    dbPath  += "ParticleData/";
+    TString dbPathParticleData   = dbPath + "ParticleData/";
+    TString dbPathTherminatorIni = dbPath + "Therminator/";
     cout << "DB path.................... : " << dbPath << endl;
+    cout << "DB path particleData....... : " << dbPathParticleData << endl;
+    cout << "DB path TherminatorIni..... : " << dbPathTherminatorIni << endl;
     configuration.addParameter("Run:Analysis:PartGen:HistogramsExportPath",histogramPath);
     configuration.addParameter("Run:Analysis:PairGen:HistogramsExportPath",histogramPath);
-    configuration.addParameter("Run:ParticleDb:ParticleDbImportPath",dbPath);
-//    configuration.setParameter("Run:SetSeed",true);
-//    configuration.setParameter("Run:SeedValue",seed);
+    configuration.addParameter("Run:ParticleDb:ParticleDbImportPath",dbPathParticleData);
+    configuration.addParameter("Run:Analysis:Therminator:MultiplicitiesInputPath",dbPathTherminatorIni);
     }
   cout << "------------------------------------------------------------------------------------------------------" << endl;
   cout << "------------------------------------------------------------------------------------------------------" << endl;
