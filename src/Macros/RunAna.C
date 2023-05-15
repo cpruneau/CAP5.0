@@ -70,11 +70,25 @@ int RunAna(TString configFile,
   cout << "------------------------------------------------------------------------------------------------------" << endl;
   cout << "  RunAna()"  << endl;
   CAP::Configuration configuration;
-  TString configurationPath = getenv("CAP_PROJECTS");
-  TString configurationFile = configFile;
-  cout << "Configuration path......... : " << configurationPath << endl;
-  cout << "Configuration file......... : " << configurationFile << endl;
-  configuration.readFromFile(configurationPath,configurationFile);
+
+  if (isGrid)
+    {
+    // For slurm jobs, one checks that ini file exists prior to calling the job
+    // so the path is included in the file name.
+    TString configurationPath = "";
+    TString configurationFile = configFile;
+    cout << "Configuration path......... : " << configurationPath << endl;
+    cout << "Configuration file......... : " << configurationFile << endl;
+    configuration.readFromFile(configurationPath,configurationFile);
+    }
+  else
+    {
+    TString configurationPath = getenv("CAP_PROJECTS");
+    TString configurationFile = configFile;
+    cout << "Configuration path......... : " << configurationPath << endl;
+    cout << "Configuration file......... : " << configurationFile << endl;
+    configuration.readFromFile(configurationPath,configurationFile);
+    }
 
   configuration.addParameter("Run:Analysis:isGrid",                  isGrid);
   configuration.addParameter("Run:Analysis:HistogramOutputPath",     histogramPath);
