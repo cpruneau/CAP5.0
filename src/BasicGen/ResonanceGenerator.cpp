@@ -170,7 +170,7 @@ void ResonanceGenerator::generate(Particle * parentInteraction)
   for (int iParticle = 0; iParticle < mult; iParticle++)
     {
     y   = yMinimum + yRange * gRandom->Rndm();
-    phi = TMath::TwoPi() * gRandom->Rndm();
+    phi = CAP::Math::twoPi() * gRandom->Rndm();
     pt  = 1.0+gRandom->Exp(pTslope);
     px  = pt*cos(phi);
     py  = pt*sin(phi);
@@ -221,7 +221,7 @@ void ResonanceGenerator::generate(Particle * parentInteraction)
   for (int iParticle = 0; iParticle < mult; iParticle++)
     {
     y   = yMinimum + yRange * g->Rndm();
-    phi = TMath::TwoPi() * g->Rndm();
+    phi = CAP::Math::twoPi() * g->Rndm();
     pt  = 0.2+g->Exp(pTslope);
     px  = pt*cos(phi);
     py  = pt*sin(phi);
@@ -238,7 +238,7 @@ void ResonanceGenerator::generate(Particle * parentInteraction)
   for (int iParticle = 0; iParticle < mult; iParticle++)
     {
     y   = yMinimum + yRange * g->Rndm();
-    phi = TMath::TwoPi() * g->Rndm();
+    phi = CAP::Math::twoPi() * g->Rndm();
     pt  = 0.2+g->Exp(pTslope);
     px  = pt*cos(phi);
     py  = pt*sin(phi);

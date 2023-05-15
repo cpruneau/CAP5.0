@@ -52,8 +52,6 @@ public:
   double  pairRapidity;
   double  saveRapidity;
   int     rank;
-  TRandom * r;
-  
   
   RapidityGenerator(int opt, int pair, double max, double s=10.0, double minSep=0.1);
 

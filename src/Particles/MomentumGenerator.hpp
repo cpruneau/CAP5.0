@@ -51,7 +51,6 @@ protected:
   double         stat;
   vector<double> parameters;
   vector<TH1*>   histograms;
-  TRandom *      random;
 
   ClassDef(MomentumGenerator,0)
 };

@@ -27,11 +27,11 @@
  ********************************************************************************/
 
 #include <sstream>
-#include <TMath.h>
-#include "THGlobal.hpp"
+//// #include <TMath.h>
+//#include "THGlobal.hpp"
 #include "Model_KrakowSFO.hpp"
 
-using namespace TMath;
+using namespace CAP::Math;
 using namespace std;
 ClassImp(Model_KrakowSFO);
 
@@ -59,7 +59,7 @@ double Model_KrakowSFO::getIntegrand(ParticleType& aPartType)
   chemPotential = thermodynamics->getChemicalPotential(aPartType);
   // Generate spacial components
   rho	       = rhoMax * gRandom->Rndm();
-  phiS	     = TMath::TwoPi() * gRandom->Rndm();
+  phiS	     = CAP::Math::twoPi() * gRandom->Rndm();
   rapidityS	 = spatialRapidityRange * (gRandom->Rndm() - 0.5);
   tau	       = tauC; // that is the KrakowSFO Model tau that equals $\tau_{KrakowSFO}^2 = t^2 - x^2 - y^2 - z^2 = \tau^2 - \rho^2 - z^2$
   // Generate momentum components
@@ -67,7 +67,7 @@ double Model_KrakowSFO::getIntegrand(ParticleType& aPartType)
   zetac      = (zeta>0.9999999) ? 0.00000001 : 1.00-zeta;
   pT         = zeta/zetac;
   dPt        = 1.0/(zetac*zetac);
-  phiP	     = TMath::TwoPi() * gRandom->Rndm();
+  phiP	     = CAP::Math::twoPi() * gRandom->Rndm();
   rapidityP	 = momentumRapidityRange * (gRandom->Rndm() - 0.5);;
   mT	       = sqrt(mass*mass+pT*pT);
   tauTrue    =  sqrt(tau*tau + rho*rho);  // that's the true $\tau^2 = t^2 - z^2$

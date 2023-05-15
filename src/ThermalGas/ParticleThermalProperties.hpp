@@ -57,7 +57,7 @@ private:
   static double hbarC4;    //! (h bar * c  GeV*fm)^4
   static int    trunOrder; //! truncated order in the summation of Bessel functions
 
-  static double pi;        //! value of pi (from TMath::Pi()) copied here for speed and convenience
+  static double pi;        //! value of pi (from CAP::Math::pi()) copied here for speed and convenience
   static double piSquare;  //!  pi*pi
   static double piCube;    //!  pi*pi*pi
 

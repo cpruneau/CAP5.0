@@ -64,7 +64,7 @@ void ParticleSingleAnalyzer::setDefaultConfiguration()
 
   addParameter( "nBins_phi",  36);
   addParameter( "Min_phi",    0.0);
-  addParameter( "Max_phi",    TMath::TwoPi());
+  addParameter( "Max_phi",    CAP::Math::twoPi());
 
   addParameter( "nBins_phiEta",    720);
   addParameter( "nBins_phiEtaPt",  7200);
@@ -235,7 +235,7 @@ void ParticleSingleAnalyzer::analyzeEvent()
             pt     = momentum.Pt();
             e      = momentum.E();
             phi    = momentum.Phi();
-            if (phi<0.0) phi += TMath::TwoPi();
+            if (phi<0.0) phi += CAP::Math::twoPi();
             iPt    = histos->getPtBinFor(pt);
             iPhi   = histos->getPhiBinFor(phi);
             iEta   = histos->getEtaBinFor(momentum.Eta());

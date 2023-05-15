@@ -18,8 +18,6 @@
 
 namespace CAP
 {
-
-
 class RunAnalysis : public EventTask
 {
 public:

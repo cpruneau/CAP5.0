@@ -259,7 +259,7 @@ protected:
   
   double getRandomEventPlaneAngle() const
   {
-  return  TMath::TwoPi() * gRandom->Rndm();
+  return  CAP::Math::twoPi() * gRandom->Rndm();
   }
    
   int getClonesMaxArraySize() const

@@ -39,7 +39,7 @@ void RadialBoostTask::setDefaultConfiguration()
   addParameter("param_b", 1.0);
   addParameter("betaMaximum", 0.999);
   addParameter("Min_phi", 0.0);
-  addParameter("Max_phi", TMath::TwoPi());
+  addParameter("Max_phi", CAP::Math::twoPi());
   addParameter("nBins_r", 100);
   addParameter("Min_r",   0.0);
   addParameter("Max_r",   10.0);
@@ -128,7 +128,7 @@ void RadialBoostTask::createEvent()
           cout << "       iParticle: " << iParticle <<  "  loop3" << endl;
 //        phi = 0.0;
         phi = TMath::ATan2(gy,gx);
-        if (phi<0) phi += TMath::TwoPi();
+        if (phi<0) phi += CAP::Math::twoPi();
         beta = param_a * TMath::Power(r, param_b);
         if (beta > betaMaximum) beta = betaMaximum;
         //cout << " gx:" << gx << "  gy:" << gy << "  phi:" << phi*180.0/3.1415927 << endl;

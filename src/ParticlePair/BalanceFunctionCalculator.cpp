@@ -63,7 +63,7 @@ void BalanceFunctionCalculator::setDefaultConfiguration()
   addParameter("Max_pt",       2.00);
   addParameter("nBins_phi",    72);
   addParameter("Min_phi",      0.0);
-  addParameter("Max_phi",      TMath::TwoPi());
+  addParameter("Max_phi",      CAP::Math::twoPi());
   addParameter("nBins_eta",    20);
   addParameter("Min_eta",      -1.0);
   addParameter("Max_eta",      1.0);
@@ -90,8 +90,8 @@ void BalanceFunctionCalculator::setDefaultConfiguration()
   addParameter("range_DeltaPout",   2.0);
   addParameter("nBins_Dphi",        36);
   addParameter("Min_Dphi",          0.0);
-  addParameter("Max_Dphi",          TMath::TwoPi());
-  addParameter("Width_Dphi",        TMath::TwoPi());
+  addParameter("Max_Dphi",          CAP::Math::twoPi());
+  addParameter("Width_Dphi",        CAP::Math::twoPi());
   addParameter("nBins_Dphi_shft",   36);
   addParameter("Min_Dphi_shft",     0.0);
   addParameter("Max_Dphi_shft",     0.0);
@@ -286,8 +286,8 @@ TH2* BalanceFunctionCalculator::calculate_BalFct2(const TString & histoBaseName,
 
 //  double low  = rho1_1->GetXaxis()->GetXmin();
 //  double high = rho1_1->GetXaxis()->GetXmax();
-//  double yieldA = yieldA/(high-low)/TMath::TwoPi();
-//  double yieldB = yieldB/(high-low)/TMath::TwoPi();
+//  double yieldA = yieldA/(high-low)/CAP::Math::twoPi();
+//  double yieldB = yieldB/(high-low)/CAP::Math::twoPi();
 
 
   obs = (TH2*) obs_US->Clone();

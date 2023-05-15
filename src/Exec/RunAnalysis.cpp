@@ -32,7 +32,7 @@
 #include "ParticleSingleAnalyzer.hpp"
 #include "ParticlePairAnalyzer.hpp"
 #include "NuDynAnalyzer.hpp"
-using CAP::RunAnalysis;
+using CAP::RunAnalysis;  
 
 ClassImp(RunAnalysis);
 

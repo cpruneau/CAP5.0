@@ -110,7 +110,7 @@ void ParticlePairHistos::createHistograms()
 
   nBins_Dphi       = nBins_phi;
   min_Dphi         = 0.0; //-width_Dphi/2.;
-  max_Dphi         = TMath::TwoPi(); // - width_Dphi/2.;
+  max_Dphi         = CAP::Math::twoPi(); // - width_Dphi/2.;
   nBins_Dphi_shft  = int(double(nBins_Dphi)/4.0);
   min_Dphi_shft    = min_Dphi - width_Dphi*double(nBins_Dphi_shft);
   max_Dphi_shft    = max_Dphi - width_Dphi*double(nBins_Dphi_shft);
@@ -504,11 +504,11 @@ void ParticlePairHistos::fill(Particle & particle1, Particle & particle2, double
   double phi2  = momentum2.Phi();
   double eta2  = momentum2.Eta();
   double y2    = momentum2.Rapidity();
-  if (phi1<0.0) phi1 += TMath::TwoPi();
-  if (phi2<0.0) phi2 += TMath::TwoPi();
+  if (phi1<0.0) phi1 += CAP::Math::twoPi();
+  if (phi2<0.0) phi2 += CAP::Math::twoPi();
   double dphi = phi1 - phi2;
-  if (dphi<0.0) dphi += TMath::TwoPi();
-  else if (dphi>TMath::TwoPi()) dphi -= TMath::TwoPi();
+  if (dphi<0.0) dphi += CAP::Math::twoPi();
+  else if (dphi>CAP::Math::twoPi()) dphi -= CAP::Math::twoPi();
 
   h_n2_ptpt->Fill(pt1,pt2);
   h_n2_phiPhi->Fill(phi1,phi2);

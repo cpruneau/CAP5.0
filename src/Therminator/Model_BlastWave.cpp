@@ -52,7 +52,7 @@ double Model_BlastWave::getIntegrand(ParticleType& aPartType)
   //temperature   = thermodynamics->getTemperature();
   // Generate spacial components
   rho	  = rhoMax * gRandom->Rndm();
-  phiS	= TMath::TwoPi() * gRandom->Rndm();
+  phiS	= CAP::Math::twoPi() * gRandom->Rndm();
   rapidityS  = spatialRapidityRange * (gRandom->Rndm() - 0.5);
   Tau	= tauI;
 // Generate momentum components
@@ -61,7 +61,7 @@ double Model_BlastWave::getIntegrand(ParticleType& aPartType)
   pT	  = zeta/zetac;
   dPt	  = 1.0/(zetac*zetac);
 
-  phiP	= TMath::TwoPi() * gRandom->Rndm();
+  phiP	= CAP::Math::twoPi() * gRandom->Rndm();
   mT    = sqrt(mass*mass+pT*pT);
   rapidityP	= momentumRapidityRange * (gRandom->Rndm() - 0.5);
 // Invariants

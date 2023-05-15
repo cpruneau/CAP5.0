@@ -11,7 +11,7 @@
 #define CAP__BidimGaussFitResult
 #include <iostream>
 #include <ostream>
-#include <TMath.h>
+// #include <TMath.h>
 #include <TROOT.h>
 #include <TH2.h>
 #include <TF2.h>
@@ -23,8 +23,7 @@
 #include <TGaxis.h>
 #include <TPad.h>
 #include <TLatex.h>
-#include <TRandom2.h>
-#include <TRandom3.h>
+#include <TRandom.h>
 #include "TFile.h"
 #include "TDirectory.h"
 #include "TList.h"

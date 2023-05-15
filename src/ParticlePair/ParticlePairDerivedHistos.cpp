@@ -157,7 +157,7 @@ void ParticlePairDerivedHistos::createHistograms()
 
   nBins_Dphi       = nBins_phi;
   min_Dphi         = 0.0; //-width_Dphi/2.;
-  max_Dphi         = TMath::TwoPi(); // - width_Dphi/2.;
+  max_Dphi         = CAP::Math::twoPi(); // - width_Dphi/2.;
   nBins_Dphi_shft  = int(double(nBins_Dphi)/4.0);
   min_Dphi_shft    = min_Dphi - width_Dphi*double(nBins_Dphi_shft);
   max_Dphi_shft    = max_Dphi - width_Dphi*double(nBins_Dphi_shft);

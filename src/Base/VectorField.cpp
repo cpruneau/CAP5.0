@@ -26,7 +26,7 @@
  *                                                                              *
  ********************************************************************************/
 
-#include "THGlobal.hpp"
+//#include "THGlobal.hpp"
 #include "VectorField.hpp"
 using CAP::VectorField;
 using CAP::Factory;

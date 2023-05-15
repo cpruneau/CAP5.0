@@ -372,7 +372,7 @@ void ParticleSingleHistos::fill(Particle & particle, double weight)
   float eta  = momentum.Eta();
   float phi  = momentum.Phi();
   float rapidity = momentum.Rapidity();
-  if (phi<0) phi += TMath::TwoPi();
+  if (phi<0) phi += CAP::Math::twoPi();
 
   if (useEffCorrection)
     {

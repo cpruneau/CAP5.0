@@ -9,8 +9,10 @@
  * Author: Victor Gonzalez
  *
  * *********************************************************************/
+#include "MathConstants.hpp"
 #include "MomentumGenerator.hpp"
 using CAP::MomentumGenerator;
+using namespace CAP::Math;
 
 ClassImp(MomentumGenerator);
 
@@ -32,8 +34,7 @@ particleType(_particleType),
 mass(0),
 stat(0),
 parameters(_parameters),
-histograms(),
-random(_selectedRandom)
+histograms()
 {
   mass = particleType->getMass();
   stat = 0; //particleType->getStat();
@@ -145,9 +146,9 @@ void  MomentumGenerator::generate(LorentzVector & momentum)
       case IsotropicGaussP:
       // generate isotropic distribution
       // p is Gaussian distributed
-      phi   = TMath::TwoPi()*random->Rndm( );
-      cosTh = -1.0 + 2.0*random->Rndm( );
-      p     = fabs(random->Gaus(0.0,parameters[0]));
+      phi   = twoPi()*gRandom->Rndm( );
+      cosTh = -1.0 + 2.0*gRandom->Rndm( );
+      p     = fabs(gRandom->Gaus(0.0,parameters[0]));
       e     = sqrt(mass*mass + p*p);
       pt    = p*sqrt(1.0-cosTh*cosTh);
       px    = pt*cos(phi);
@@ -160,9 +161,9 @@ void  MomentumGenerator::generate(LorentzVector & momentum)
       // generate isotropic distribution
       // p is exponential distributed
       // exp( -t/tau )
-      phi   = TMath::TwoPi()*random->Rndm( );
-      cosTh = -1.0 + 2.0*random->Rndm( );
-      p     = random->Exp(parameters[0]);
+      phi   = twoPi()*gRandom->Rndm( );
+      cosTh = -1.0 + 2.0*gRandom->Rndm( );
+      p     = gRandom->Exp(parameters[0]);
       e     = sqrt(mass*mass + p*p);
       pt    = p*sqrt(1.0-cosTh*cosTh);
       px    = pt*cos(phi);
@@ -174,9 +175,9 @@ void  MomentumGenerator::generate(LorentzVector & momentum)
       case IsotropicUniformP:
       // generate isotropic distribution
       // p is uniform distributed
-      phi   = TMath::TwoPi()*random->Rndm( );
-      cosTh = -1.0 + 2.0*random->Rndm( );
-      p     = parameters[0] + random->Rndm()*parameters[1];
+      phi   = twoPi()*gRandom->Rndm( );
+      cosTh = -1.0 + 2.0*gRandom->Rndm( );
+      p     = parameters[0] + gRandom->Rndm()*parameters[1];
       e     = sqrt(mass*mass + p*p);
       pt    = p*sqrt(1.0-cosTh*cosTh);
       px    = pt*cos(phi);
@@ -188,9 +189,9 @@ void  MomentumGenerator::generate(LorentzVector & momentum)
       case IsotropicUniformDensity:
       // generate isotropic distribution
       // uniform density
-      phi   = TMath::TwoPi()*random->Rndm( );
-      cosTh = -1.0 + 2.0*random->Rndm( );
-      p     = parameters[0] + random->Rndm()*parameters[1];
+      phi   = twoPi()*gRandom->Rndm( );
+      cosTh = -1.0 + 2.0*gRandom->Rndm( );
+      p     = parameters[0] + gRandom->Rndm()*parameters[1];
       e     = sqrt(mass*mass + p*p);
       pt    = p*sqrt(1.0-cosTh*cosTh);
       px    = pt*cos(phi);
@@ -202,9 +203,9 @@ void  MomentumGenerator::generate(LorentzVector & momentum)
       case IsotropicMaxwellP:
       // generate isotropic distribution
       // Maxwell Boltzmann
-      px = random->Gaus(0.0,parameters[0] );
-      py = random->Gaus(0.0,parameters[0] );
-      pz = random->Gaus(0.0,parameters[0] );
+      px = gRandom->Gaus(0.0,parameters[0] );
+      py = gRandom->Gaus(0.0,parameters[0] );
+      pz = gRandom->Gaus(0.0,parameters[0] );
       e  = sqrt(mass*mass + px*px + py*py + pz*pz);
       momentum.SetPxPyPzE (px,py,pz,e);
       break;
@@ -212,8 +213,8 @@ void  MomentumGenerator::generate(LorentzVector & momentum)
 //      case IsotropicHistoP:
 //      // generate isotropic distribution
 //      // p determined by histogram
-//      phi   = TMath::TwoPi()*random->Rndm( );
-//      cosTh = -1.0 + 2.0*random->Rndm( );
+//      phi   = twoPi()*gRandom->Rndm( );
+//      cosTh = -1.0 + 2.0*gRandom->Rndm( );
 //      p     = histogramP->GetRandom();
 //      e     = sqrt(mass*mass + p*p);
 //      pt    = p*sqrt(1.0-cosTh*cosTh);
@@ -228,13 +229,13 @@ void  MomentumGenerator::generate(LorentzVector & momentum)
       // parameters[0] : minimum rapidity
       // parameters[1] : width of rapidity window
       // parameters[2] : width of Gauss pt
-      phi   = TMath::TwoPi()*random->Rndm( );
-      px    = random->Gaus(0.0,parameters[2] );
-      py    = random->Gaus(0.0,parameters[2] );
+      phi   = twoPi()*gRandom->Rndm( );
+      px    = gRandom->Gaus(0.0,parameters[2] );
+      py    = gRandom->Gaus(0.0,parameters[2] );
       ptSq  = px*px + py*py;
       pt    = sqrt(ptSq);
       mt    = sqrt(mass*mass + ptSq);
-      y     = parameters[1]+parameters[2]*random->Rndm( );
+      y     = parameters[1]+parameters[2]*gRandom->Rndm( );
       e     = mt*cosh(y);
       pz    = mt*sinh(y);
       px    = pt*cos(phi);
@@ -247,10 +248,10 @@ void  MomentumGenerator::generate(LorentzVector & momentum)
       // parameters[0] : minimum rapidity
       // parameters[1] : width of rapidity window
       // parameters[2] : exponential slope
-      phi   = TMath::TwoPi()*random->Rndm( );
-      pt    = random->Exp(parameters[2]);
+      phi   = twoPi()*gRandom->Rndm( );
+      pt    = gRandom->Exp(parameters[2]);
       mt    = sqrt(mass*mass + pt*pt);
-      y     = parameters[0]+parameters[1]*random->Rndm( );
+      y     = parameters[0]+parameters[1]*gRandom->Rndm( );
       e     = mt*cosh(y);
       pz    = mt*sinh(y);
       px    = pt*cos(phi);
@@ -264,11 +265,11 @@ void  MomentumGenerator::generate(LorentzVector & momentum)
       // parameters[1] : width of rapidity window
       // parameters[2] : Gauss Width
       pt    = histograms[0]->GetRandom();
-      phi   = TMath::TwoPi()*random->Rndm( );
+      phi   = twoPi()*gRandom->Rndm( );
       px    = pt*cos(phi);
       py    = pt*sin(phi);
       mt    = sqrt(mass*mass+pt*pt);
-      y     = parameters[0]+parameters[1]*random->Rndm( );
+      y     = parameters[0]+parameters[1]*gRandom->Rndm( );
       e     = mt*cosh(y);
       pz    = mt*sinh(y);
       momentum.SetPxPyPzE (px,py,pz,e);

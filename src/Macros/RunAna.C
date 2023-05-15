@@ -31,26 +31,30 @@ void loadSubSample(const TString & includeBasePath);
 void loadExec(const TString & includeBasePath);
 void loadTherminator(const TString & includeBasePath);
 
-// seed provided by slurm or directly by user
-// config file must be provided
+//!
+//! Run generic data analysis based on the configuration listed in 'configFile'
+//!
+//! configFile     :  configuration file (.ini) describing the task(s) to be done
+//! outputPath   :  output path used for all files created
+//! seed            :  provided by slurm (grid job engine) or directly by user
+//! isGrid          :   must be true for jobs running on grid
+//! nEventsPerSubbunch : number of events to run per bunch  (actual on grid or simulated on a single node)
+//! nSubbunchesPerBunch : number of sub-bunches  (must be 1 on grid)
+//! nBunches :  number of bunches  (must be 1 on grid)
+//!
 int RunAna(TString configFile,
-           TString outputPath,
+           TString histogramPath,
            long seed=1121331,
            bool isGrid=true,
            long nEventsPerSubbunch=300,
-           int nSubbunchesPerBunch=1,
-           int nBunches=1)
+           int  nSubbunchesPerBunch=1,
+           int  nBunches=1)
 {
   TString includeBasePath = getenv("CAP_SRC");
   cout << " includeBasePath: " << includeBasePath << endl;
   loadBase(includeBasePath);
-  //loadPythia(includeBasePath);
+  loadPythia(includeBasePath);
   loadPerformance(includeBasePath);
-  //loadAmpt(includeBasePath);
-  //loadEpos(includeBasePath);
-  //loadHijing(includeBasePath);
-  //loadHerwig(includeBasePath);
-  //loadUrqmd(includeBasePath);
   loadBasicGen(includeBasePath);
   loadGlobal(includeBasePath);
   loadParticle(includeBasePath);
@@ -60,39 +64,41 @@ int RunAna(TString configFile,
   loadTherminator(includeBasePath);
   loadExec(includeBasePath);
 
-
   try
   {
   cout << "------------------------------------------------------------------------------------------------------" << endl;
   cout << "------------------------------------------------------------------------------------------------------" << endl;
-  cout << "RunAna()"  << endl;
+  cout << "  RunAna()"  << endl;
   CAP::Configuration configuration;
-  TString configurationPath = getenv("CAP_CONFIG");
+  TString configurationPath = getenv("CAP_PROJECTS");
   TString configurationFile = configFile;
   cout << "Configuration path......... : " << configurationPath << endl;
   cout << "Configuration file......... : " << configurationFile << endl;
   configuration.readFromFile(configurationPath,configurationFile);
+
+  configuration.addParameter("Run:Analysis:isGrid",                  isGrid);
+  configuration.addParameter("Run:Analysis:HistogramOutputPath",     histogramPath);
+  configuration.addParameter("Run:Analysis:nEventsPerSubbunch",      nEventsPerSubbunch);
+  configuration.addParameter("Run:Analysis:nSubbunchesPerBunch",     nSubbunchesPerBunch);
+  configuration.addParameter("Run:Analysis:nBunches",                nBunches);
+  configuration.addParameter("Run:Analysis:BunchLabel",              TString("BUNCH"));
+  configuration.addParameter("Run:Analysis:SubbunchLabel",           TString(""));
+
+  if (isGrid || seed!=0)
+    gRandom->SetSeed(seed);
+
   if (isGrid)
     {
-    // overide the ini file
+    // overide the ini file for selected parameters
+
     TString dbPath = getenv("CAP_DATABASE");
     dbPath  += "ParticleData/";
     cout << "DB path.................... : " << dbPath << endl;
     configuration.addParameter("Run:Analysis:PartGen:HistogramsExportPath",histogramPath);
     configuration.addParameter("Run:Analysis:PairGen:HistogramsExportPath",histogramPath);
     configuration.addParameter("Run:ParticleDb:ParticleDbImportPath",dbPath);
-
-    configuration.setParameter("Run:SetSeed",true);
-    configuration.setParameter("Run:SeedValue",seed);
-    configuration.setParameter("Run:Analysis:isGrid",                  isGrid);
-    configuration.setParameter("Run:Analysis:HistogramOutputPath",     outputPath);
-    configuration.setParameter("Run:Analysis:nEventsPerSubbunch",      nEventsPerSubbunch);
-    configuration.setParameter("Run:Analysis:nSubbunchesPerBunch",     nSubbunchesPerBunch);
-    configuration.setParameter("Run:Analysis:nBunches",                nBunches);
-    configuration.setParameter("Run:Analysis:BunchLabel",              TString("BUNCH"));
-    configuration.setParameter("Run:Analysis:SubbunchLabel",           TString(""));
-
-
+//    configuration.setParameter("Run:SetSeed",true);
+//    configuration.setParameter("Run:SeedValue",seed);
     }
   cout << "------------------------------------------------------------------------------------------------------" << endl;
   cout << "------------------------------------------------------------------------------------------------------" << endl;
@@ -100,7 +106,17 @@ int RunAna(TString configFile,
   analysis->configure();
   analysis->execute();
   }
+  catch (CAP::TaskException exception)
+  {
+  exception.print();
+  exit(1);
+  }
   catch (CAP::FileException exception)
+  {
+  exception.print();
+  exit(1);
+  }
+  catch (CAP::MathException exception)
   {
   exception.print();
   exit(1);
@@ -111,7 +127,7 @@ int RunAna(TString configFile,
   exit(1);
   }
 
-  return 0;
+return 0;
 }
 
 void loadBase(const TString & includeBasePath)

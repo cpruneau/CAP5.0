@@ -18,10 +18,10 @@
 //!exception of type MathException.
 //!
 //!
-//!storageType for 3D
-//!0  : x, y, z (cartesian coordinates)
-//!1  : phi, theta, r (spherical coordinates)
-//!2  : phi, rho, z (cylindrical coordinates)
+//! storageType for 3D
+//! 0  : x, y, z (cartesian coordinates)
+//! 1  : phi, theta, r (spherical coordinates)
+//! 2  : phi, rho, z (cylindrical coordinates)
 //!
 namespace CAP
 {
@@ -39,15 +39,48 @@ protected:
 
 public:
 
-  Vector3();
+  Vector3()
+  :
+  v1(0),
+  v2(0),
+  v3(0),
+  storageType(0)
+  { }
 
-  Vector3(const T & v1, const T & v2, const T & v3, int storageType=0);
+  Vector3(const T & _v1, const T & _v2, const T & _v3, int _storageType)
+  :
+  v1(_v1),
+  v2(_v2),
+  v3(_v3),
+  storageType(_storageType)
+  {  }
 
-  Vector3(T * values, int storageType=0);
 
-  Vector3(const std::vector<T> values, int storageType=0);
+  Vector3(T * _values, int _storageType)
+  :
+  v1(_values[0]),
+  v2(_values[1]),
+  v3(_values[2]),
+  storageType(_storageType)
+  { }
 
-  Vector3(const Vector3<T> & source);
+  Vector3(std::vector<T> _values, int _storageType)
+  :
+  v1(_values[0]),
+  v2(_values[1]),
+  v3(_values[2]),
+  storageType(_storageType)
+  { }
+
+  Vector3(const Vector3<T> & source)
+  :
+  v1(source.v1),
+  v2(source.v1),
+  v3(source.v2),
+  storageType(source.storageType)
+  { }
+
+  virtual ~Vector3() {};
 
   int storage() const
   {
@@ -55,12 +88,75 @@ public:
   }
 
 
-  virtual ~Vector3() {};
   virtual T  operator() (unsigned int index) const ;
   virtual T  operator[] (unsigned int index) const ;
-  virtual T  x()  const ;
-  virtual T  y()  const ;
-  virtual T  z()  const ;
+
+  T  x()  const
+  {
+  switch (storageType)
+    {
+      case 0: return v1; //!> x
+      case 1: return v3*std::sin(v2)*std::cos(v1); //!> x
+      case 2: return v2*std::cos(v1); //!> x
+      default: throw MathException("Internal error","Vector3<T>::x()");
+    }
+  }
+
+  T  y()  const
+  {
+  switch (storageType)
+    {
+      case 0: return v2; //!> y
+      case 1: return v3*std::sin(v2)*std::sin(v1); //!> x
+      case 2: return v2*std::sin(v1); //!> y
+      default: throw MathException("Internal error","Vector3<T>::y()");
+    }
+  }
+
+
+  T  z()  const
+  {
+  switch (storageType)
+    {
+      case 0: return v3;              //!> z
+      case 1: return v3*std::cos(v2); //!> x
+      case 2: return v3;              //!> z
+      default: throw MathException("Internal error","Vector3<T>::z()");
+    }
+  }
+
+  void set(const T & _v1, const T & _v2, const T & _v3, int _storageType)
+  {
+  v1 = _v1;
+  v2 = _v2;
+  v3 = _v3;
+  storageType = _storageType;
+  }
+
+
+  void set(T * _values, int _storageType)
+  {
+  v1 = _values[0];
+  v2 = _values[1];
+  v3 = _values[2];
+  storageType = _storageType;
+  }
+
+  void set(std::vector<T> _values, int _storageType)
+  {
+  v1 = _values[0];
+  v2 = _values[1];
+  v3 = _values[2];
+  storageType = _storageType;
+  }
+
+  void set(const Vector3<T> & source)
+  {
+  v1 = source.v1;
+  v2 = source.v1;
+  v3 = source.v2;
+  storageType = source.storageType;
+  }
 
   void setXYZ(const T * values)  ;
 
@@ -247,51 +343,7 @@ Vector3<T> operator* (const Q & a, const Vector3<T> & right)
 
 // ====
 
-template <typename T>
-Vector3<T>::Vector3()
-:
-v1(0),
-v2(0),
-v3(0),
-storageType(0)
-{ }
 
-template <typename T>
-Vector3<T>::Vector3(const T & _v1, const T & _v2, const T & _v3, int _storageType)
-:
-v1(_v1),
-v2(_v2),
-v3(_v3),
-storageType(_storageType)
-{  }
-
-
-template <typename T>
-Vector3<T>::Vector3(T * _values, int _storageType)
-:
-v1(_values[0]),
-v2(_values[1]),
-v3(_values[2]),
-storageType(_storageType)
-{ }
-
-template <typename T>
-Vector3<T>::Vector3(std::vector<T> _values, int _storageType)
-:
-v1(_values[0]),
-v2(_values[1]),
-v3(_values[2]),
-storageType(_storageType)
-{ }
-
-template <typename T>
-Vector3<T>::Vector3(const Vector3<T> & source)
-:
-v1(source.v1),
-v2(source.v1),
-v3(source.v2),
-storageType(source.storageType)
-{ }
 
 //!
 //! Returns the value stored at the give index.
@@ -347,42 +399,7 @@ T Vector3<T>::operator[] (unsigned int index) const
 }
 
 
-template <typename T>
-T   Vector3<T>::x()  const
-{
-  switch (storageType)
-    {
-      case 0: return v1; //!> x
-      case 1: return v3*std::sin(v2)*std::cos(v1); //!> x
-      case 2: return v2*std::cos(v1); //!> x
-      default: throw MathException("Internal error","Vector3<T>::x()");
-    }
-}
 
-template <typename T>
-T   Vector3<T>::y()  const
-{
-  switch (storageType)
-    {
-      case 0: return v2; //!> y
-      case 1: return v3*std::sin(v2)*std::sin(v1); //!> x
-      case 2: return v2*std::sin(v1); //!> y
-      default: throw MathException("Internal error","Vector3<T>::y()");
-    }
-}
-
-
-template <typename T>
-T   Vector3<T>::z()  const
-{
-  switch (storageType)
-    {
-      case 0: return v3;              //!> z
-      case 1: return v3*std::cos(v2); //!> x
-      case 2: return v3;              //!> z
-      default: throw MathException("Internal error","Vector3<T>::z()");
-    }
-}
 
 template <typename T>
 void Vector3<T>::setXYZ(const T * values)

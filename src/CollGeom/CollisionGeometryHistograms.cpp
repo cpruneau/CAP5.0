@@ -192,7 +192,7 @@ void CollisionGeometryHistograms::createHistograms()
 //  h_epsilonXYVsB_Prof  = createProfile(bn+"epsilonXYVsB_Prof",  nBins_b,  min_b,  max_b,  "b",  "|#epsilon|", 1);
 //  h_epsilonXYVsB       = createHistogram(createName(bn,"epsilonXYVsB"), nBins_b,  min_b,  max_b,  40, -1.0, 1.0,  40, -1.0, 1.0, "b", "#epsilon_{x}", "#epsilon_{y}", counts,0,1);;
 //  h_psi2VsB_Prof       = createProfile(bn+"psi2VsB_Prof",       nBins_b,  min_b,  max_b,  "b",  "#psi_{2}", 1);
-//  h_psi2VsB            = createHistogram(createName(bn,"psi2VsB"), nBins_b,  min_b,  max_b,  40, -TMath::Pi(), TMath::Pi(), "b", "#psi_2", counts,0,1);
+//  h_psi2VsB            = createHistogram(createName(bn,"psi2VsB"), nBins_b,  min_b,  max_b,  40, -CAP::Math::pi(), CAP::Math::pi(), "b", "#psi_2", counts,0,1);
 
   if (reportEnd(__FUNCTION__))
     ;

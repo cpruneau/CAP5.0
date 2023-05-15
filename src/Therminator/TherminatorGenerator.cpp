@@ -566,6 +566,9 @@ void TherminatorGenerator::importMultiplicities()
 
 void TherminatorGenerator::exportMultiplicities()
 {
+  // create the outputpath if it does not exist...
+  gSystem->mkdir(multiplicitiesOutputPath,1);
+
   ofstream & outputFile = openOutputAsciiFile(multiplicitiesOutputPath,multiplicitiesOutputFile,".txt");
   unsigned int nTypes = averageMultiplicities.size();
   for (unsigned int iType=0; iType<nTypes; iType++)

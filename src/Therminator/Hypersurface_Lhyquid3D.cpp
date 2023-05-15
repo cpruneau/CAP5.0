@@ -29,9 +29,9 @@
 #include "XmlParser.hpp"
 #include "XmlVectorField.hpp"
 #include "Hypersurface_Lhyquid3D.hpp"
-#include "THGlobal.hpp"
+//#include "THGlobal.hpp"
 using namespace std;
-using namespace TMath;
+using namespace CAP::Math;
 using CAP::Configuration;
 using CAP::XmlParser;
 using CAP::XmlVectorField;

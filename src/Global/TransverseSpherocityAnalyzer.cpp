@@ -25,7 +25,7 @@ setEvent(true),
 fillS0(true),
 fillS1(false),
 nSteps(360),
-stepSize(TMath::TwoPi()/360.0)
+stepSize(CAP::Math::twoPi()/360.0)
 {
   appendClassName("TransverseSpherocityAnalyzer");
 }
@@ -156,7 +156,7 @@ void TransverseSpherocityAnalyzer::analyzeEvent()
 //  if (reportStart(__FUNCTION__))
 //    ;
   incrementTaskExecuted();
-  static double factor = TMath::Pi()*TMath::Pi()/4.0;
+  static double factor = CAP::Math::pi()*CAP::Math::pi()/4.0;
   incrementTaskExecuted();
   Event & event = * getEventStream(0);
    // count eventStreams used to fill histograms and for scaling at the end..
@@ -182,7 +182,7 @@ void TransverseSpherocityAnalyzer::analyzeEvent()
       double  refPhi  = 0.0;
       for(int k = 0; k < nSteps; k++)
         {
-        //double  phiparam = ((TMath::Pi()) * i * stepSize) / 180;
+        //double  phiparam = ((CAP::Math::pi()) * i * stepSize) / 180;
         nx = cos(refPhi); // x component of a unitary vector n
         ny = sin(refPhi); // y component of a unitary vector n
         num0 = 0;

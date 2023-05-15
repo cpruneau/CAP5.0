@@ -45,7 +45,7 @@ void ParticlePair3DDerivedHistogramCalculator::setDefaultConfiguration()
   addParameter("max_pt",   2.00);
   addParameter("nBins_phi",  72);
   addParameter("min_phi",   0.0);
-  addParameter("max_phi", TMath::TwoPi());
+  addParameter("max_phi", CAP::Math::twoPi());
   addParameter("nBins_eta",   20);
   addParameter("min_eta",   -1.0);
   addParameter("max_eta",    1.0);
@@ -72,8 +72,8 @@ void ParticlePair3DDerivedHistogramCalculator::setDefaultConfiguration()
   addParameter("range_DeltaPout",   2.0);
   addParameter("nBins_Dphi",         36);
   addParameter("min_Dphi",          0.0);
-  addParameter("max_Dphi",TMath::TwoPi());
-  addParameter("width_Dphi",TMath::TwoPi());
+  addParameter("max_Dphi",CAP::Math::twoPi());
+  addParameter("width_Dphi",CAP::Math::twoPi());
   addParameter("nBins_Dphi_shft",    36);
   addParameter("min_Dphi_shft",     0.0);
   addParameter("max_Dphi_shft",     0.0);

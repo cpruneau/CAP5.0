@@ -26,7 +26,7 @@
  *                                                                              *
  ********************************************************************************/
 #include <sstream>
-//#include <TMath.h>
+//// #include <TMath.h>
 #include "Model_BWA.hpp"
 
 using namespace std;
@@ -59,7 +59,7 @@ double Model_BWA::getIntegrand(ParticleType& aPartType)
   chemPotential = thermodynamics->getChemicalPotential(aPartType);
   // Generate spacial components
   rho	      = rhoMax * gRandom->Rndm();
-  phiS    	= TMath::TwoPi() * gRandom->Rndm();
+  phiS    	= CAP::Math::twoPi() * gRandom->Rndm();
   rapidityS	= spatialRapidityRange * (gRandom->Rndm() - 0.5);;
   tau       = tauI + amp * rho;
 // Generate momentum components
@@ -67,7 +67,7 @@ double Model_BWA::getIntegrand(ParticleType& aPartType)
   zetac     = (zeta>0.9999999) ? 0.00000001 : 1.00-zeta;
   pT        = zeta/zetac;
   dPt       = 1.0/(zetac*zetac);
-  phiP	    = TMath::TwoPi() * gRandom->Rndm();
+  phiP	    = CAP::Math::twoPi() * gRandom->Rndm();
   rapidityP	= momentumRapidityRange * (gRandom->Rndm() - 0.5);// * momentumRapidityRange;
   mT	      = sqrt(mass*mass+pT*pT);
 // Transverse velocity

@@ -28,7 +28,7 @@
 
 #ifndef _TH2_HYPERSURFACE_H_
 #define _TH2_HYPERSURFACE_H_
-#include <TMath.h>
+// #include <TMath.h>
 #include "Thermodynamics.hpp"
 #include "VectorField.hpp"
 #include "ConfigurationManager.hpp"

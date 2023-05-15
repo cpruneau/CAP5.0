@@ -19,7 +19,6 @@
 #include <fstream>
 #include <cmath>
 #include <iomanip>
-#include "TObject.h"
 #include "TString.h"
 #include "Aliases.hpp"
 #include "MessageLogger.hpp"

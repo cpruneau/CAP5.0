@@ -9,8 +9,24 @@ namespace Math
 
 //class Rotation<Q>;
 
+//!
+//! Class encapsulates Lorentz vectors
+//!
+//!  Note 1: Uses the convention that c==1 (speed of light equals unity) so that t,x,y,z  have  units of distance (t is ct) and E, px, py, pz have units of energy (MeV or GeV in most cases)
+//!  Note 2: The (+,-,-,-) metric is used throughout.
+//!  Note 3: t or e are considered the 0th component as in most modern texts.
+//!
+//! StorageType for lorentz vectors
+//! 0  : t,  x, y, z (cartesian coordinates)
+//! 1  : t, phi, theta, r (spherical coordinates)
+//! 2  : t, phi, rho, z (cylindrical coordinates)
+//! 3  : t, phi, rho, rapidity
+//! 4 : mass, phi, pT,  rapidity
+//! 5 : mass, phi, pT, pseudorapidity
+//!
+
 template <typename T>
-class VectorLorentz : public Vector<T>
+class VectorLorentz : public Vector3<T>
 {
 protected:
   T v0;
@@ -20,31 +36,31 @@ public:
   VectorLorentz()
   :
   v0(0),
-  Vector<T>(0,0,0,0)
+  Vector3<T>(0,0,0,0)
   { }
 
   VectorLorentz(const T & _v0, const T & _v1, const T & _v2, const T & _v3, int _storageType)
   :
   v0(_v0),
-  Vector<T>(_v1,_v2,_v3,_storageType)
+  Vector3<T>(_v1,_v2,_v3,_storageType)
   {  }
 
   VectorLorentz(T * _values, int _storageType)
   :
   v0(_values[0]),
-  Vector<T>(_values[1],_values[2],_values[3],_storageType)
+  Vector3<T>(_values[1],_values[2],_values[3],_storageType)
   {  }
 
   VectorLorentz(std::vector<T> _values, int _storageType)
   :
   v0(_values[0]),
-  Vector<T>(_values[1],_values[2],_values[3],_storageType)
+  Vector3<T>(_values[1],_values[2],_values[3],_storageType)
   {  }
 
   VectorLorentz(const VectorLorentz<T> & source)
   :
   v0(source.v0),
-  Vector<T>(source.v1,source.v2,source.v3,v.storageType)
+  Vector3<T>(source.v1,source.v2,source.v3,v.storageType)
   {   }
 
   virtual ~VectorLorentz() {};
@@ -367,7 +383,7 @@ public:
 
   Vector3<T> xyz() const
   {
-  return  Vector<T> v(x(), y(), z(),0);
+  return  Vector3<T>( x(), y(), z(),0);
   }
 
   T massSquare() const

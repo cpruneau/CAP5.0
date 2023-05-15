@@ -135,7 +135,7 @@ void ParticlePair3DDerivedHistos::HistogramsCreate()
 
   nBins_Dphi       = nBins_phi;
   min_Dphi         = 0.0; //-width_Dphi/2.;
-  max_Dphi         = TMath::TwoPi(); // - width_Dphi/2.;
+  max_Dphi         = CAP::Math::twoPi(); // - width_Dphi/2.;
   nBins_Dphi_shft  = int(double(nBins_Dphi)/4.0);
   min_Dphi_shft    = min_Dphi - width_Dphi*double(nBins_Dphi_shft);
   max_Dphi_shft    = max_Dphi - width_Dphi*double(nBins_Dphi_shft);
@@ -445,8 +445,8 @@ void ParticlePair3DDerivedHistos::calculatePairDerivedHistograms(ParticleHistos 
 
     double low  = part1DerivedHistos.h_n1_eta->GetXaxis()->GetXmin();
     double high = part1DerivedHistos.h_n1_eta->GetXaxis()->GetXmax();
-    yieldA = yieldA/(high-low)/TMath::TwoPi();
-    yieldB = yieldB/(high-low)/TMath::TwoPi();
+    yieldA = yieldA/(high-low)/CAP::Math::twoPi();
+    yieldB = yieldB/(high-low)/CAP::Math::twoPi();
 
 //    cout << "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-" << endl;
 //    cout << "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-" << endl;

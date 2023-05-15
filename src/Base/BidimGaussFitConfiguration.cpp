@@ -55,8 +55,8 @@ nBinsExcludedPhi(-1),
 deltaEtaExclusionRegion(0.13),
 deltaEtaLimit(0.95),
 deltaEtaOuterLimit(1.55),
-deltaPhiLowLimit(- TMath::Pi()*0.5),
-deltaPhiHighLimit(TMath::Pi()*0.5),
+deltaPhiLowLimit(- CAP::Math::pi()*0.5),
+deltaPhiHighLimit(CAP::Math::pi()*0.5),
 
 
 valueInPatchBorder(-1.0E6),

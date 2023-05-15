@@ -381,7 +381,7 @@ void ThermalGasModel::createEvent()
 //    interaction->reset();
 //    interaction->setType( ParticleType::getInteractionType());
 //    interaction->setXYZT(0.0, 0.0, 0.0, 0.0);
-//    //interaction->setRThetaPhiT(3.0, TMath::PiOver2(), TMath::TwoPi()*taskRandomGenerator->Rndm(),0.0);
+//    //interaction->setRThetaPhiT(3.0, TMath::PiOver2(), CAP::Math::twoPi()*taskRandomGenerator->Rndm(),0.0);
 //    event.add(interaction);
 //    event.setNucleusA(1.0,1.0);
 //    event.setNucleusB(1.0,1.0);

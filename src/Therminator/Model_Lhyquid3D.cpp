@@ -60,7 +60,7 @@ double Model_Lhyquid3D::getIntegrand(ParticleType& aPartType)
   zetac = (zeta>0.9999999) ? 0.00000001 : 1.00-zeta;
   pT    = zeta/zetac;
   dPt    = 1.0/(zetac*zetac);
-  phiP	= TMath::TwoPi() * gRandom->Rndm();
+  phiP	= CAP::Math::twoPi() * gRandom->Rndm();
   //rapidityP  = momentumRapidityRange * gRandom->Rndm() - 0.5 * momentumRapidityRange;
   rapidityP  = momentumRapidityRange * (gRandom->Rndm() - 0.5);
   mT	= sqrt(mass*mass+pT*pT);

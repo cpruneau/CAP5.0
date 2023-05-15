@@ -25,9 +25,7 @@ nStored(0),
 pairRapidity(0),
 saveRapidity(0),
 rank(0)
-{
-  r = new TRandom();
-}
+{   }
 
 
 void RapidityGenerator::reset()
@@ -51,7 +49,7 @@ double RapidityGenerator::generate()
         {
           case 0:  // uniform
 
-          v = maxRapidity * (2.0*r->Rndm() - 1.0);
+          v = maxRapidity * (2.0*gRandom->Rndm() - 1.0);
           break;
 
           case 1:  // exponential
@@ -59,8 +57,8 @@ double RapidityGenerator::generate()
           v = -99999;
           while (fabs(v)>maxRapidity)
             {
-            v = 0.5*minimumSeparation + r->Exp(scale);
-            v = (r->Rndm()>0.50) ? v : -v;
+            v = 0.5*minimumSeparation + gRandom->Exp(scale);
+            v = (gRandom->Rndm()>0.50) ? v : -v;
             }
           break;
 
@@ -69,7 +67,7 @@ double RapidityGenerator::generate()
           v = -99999;
           while (fabs(v)>maxRapidity)
             {
-            v = 0.5*minimumSeparation + r->Gaus(0.0, scale);
+            v = 0.5*minimumSeparation + gRandom->Gaus(0.0, scale);
             }
           break;
         }
@@ -95,7 +93,7 @@ double RapidityGenerator::generate()
       while (!OK)
         {
         // generate a new pair average rapidity
-        pairRapidity = maxRapidity * (2.0*r->Rndm() - 1.0);
+        pairRapidity = maxRapidity * (2.0*gRandom->Rndm() - 1.0);
         switch (option)
           {
             case 0:  // uniform
@@ -106,14 +104,14 @@ double RapidityGenerator::generate()
             localRap = -99999;
             while (fabs(localRap)>2*maxRapidity)
               {
-              localRap = r->Exp(scale);
+              localRap = gRandom->Exp(scale);
               }
             break;
             case 2:  // Gaussian
             localRap = -99999;
             while (fabs(localRap)>2*maxRapidity)
               {
-              localRap = r->Gaus(0.0, scale);
+              localRap = gRandom->Gaus(0.0, scale);
               }
             break;
           }

@@ -22,18 +22,15 @@ ClassImp(HistogramCollection);
 HistogramCollection::HistogramCollection(const String & _name,
                                          Severity  _debugLevel)
 :
-Collection(_name, true, _debugLevel),
-randomGenerator(new TRandom())
+Collection(_name, true, _debugLevel)
 {
-
   setClassName("HistogramCollection");
   setInstanceName(_name);
 }
 
 HistogramCollection::HistogramCollection(const HistogramCollection & source)
 :
-Collection<TH1>(source),
-randomGenerator(source.randomGenerator)
+Collection<TH1>(source)
 {
   for (unsigned int iObject=0; iObject<source.size(); iObject++)
     {
@@ -52,7 +49,6 @@ randomGenerator(source.randomGenerator)
 //!
 HistogramCollection & HistogramCollection::operator=(const HistogramCollection & source)
 {
-
   if (reportStart(__FUNCTION__))
     ;
   if (this!=&source)
@@ -2367,8 +2363,8 @@ void HistogramCollection::calculateN1N1H2H2_Q3D_MCY(TH2 * n1_1, TH2 * n1_2, TH3 
     {
     n1_1->GetRandom2 (y1, pt1);
     n1_2->GetRandom2 (y2, pt2);
-    phi1 = 2.0*TMath::Pi() * randomGenerator->Rndm();
-    phi2 = 2.0*TMath::Pi() * randomGenerator->Rndm();
+    phi1 = 2.0*CAP::Math::pi() * gRandom->Rndm();
+    phi2 = 2.0*CAP::Math::pi() * gRandom->Rndm();
     bool status = calculateQ3DwPtPhiY(pt1, phi1, y1, pt2, phi2, y2, Qlong, Qout, Qside);
     if (status==0)
       {
@@ -2405,8 +2401,8 @@ void HistogramCollection::calculateN1N1H2H2_Q3D_MCEta(TH2 * n1_1, TH2 * n1_2, TH
     {
     n1_1->GetRandom2 (eta1, pt1);
     n1_2->GetRandom2 (eta2, pt2);
-    phi1 = 2.0*TMath::Pi() * randomGenerator->Rndm();
-    phi2 = 2.0*TMath::Pi() * randomGenerator->Rndm();
+    phi1 = 2.0*CAP::Math::pi() * gRandom->Rndm();
+    phi2 = 2.0*CAP::Math::pi() * gRandom->Rndm();
     bool status = calculateQ3DwPtPhiEta(pt1, phi1, eta1, pt2, phi2, eta2, Qlong, Qout, Qside);
     if (status==0)
       {
@@ -2448,8 +2444,8 @@ void HistogramCollection::calculateN1N1H2H2_Q3D(const TH2 * n1_1, const TH2 * n1
             v3  = v1*v2;
             for (int k=0;k<100000;k++)
               {
-              phi1 = 2.0*TMath::Pi() * randomGenerator->Rndm();
-              phi2 = 2.0*TMath::Pi() * randomGenerator->Rndm();
+              phi1 = 2.0*CAP::Math::pi() * gRandom->Rndm();
+              phi2 = 2.0*CAP::Math::pi() * gRandom->Rndm();
               eta1 = n1_1->GetXaxis()->GetBinCenter(i1x);
               pt1  = n1_1->GetZaxis()->GetBinCenter(i1y);
               eta2 = n1_2->GetXaxis()->GetBinCenter(i2x);

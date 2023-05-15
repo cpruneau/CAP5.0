@@ -56,7 +56,7 @@ void ParticlePairAnalyzer::setDefaultConfiguration()
   addParameter("Max_pt",            2.00);
   addParameter("nBins_phi",          72);
   addParameter("Min_phi",           0.0);
-  addParameter("Max_phi",           TMath::TwoPi());
+  addParameter("Max_phi",           CAP::Math::twoPi());
   addParameter("nBins_eta",           20);
   addParameter("Min_eta",           -1.0);
   addParameter("Max_eta",            1.0);
@@ -72,8 +72,8 @@ void ParticlePairAnalyzer::setDefaultConfiguration()
   addParameter("Max_n2",                 1000.0);
   addParameter("nBins_Dphi",                 36);
   addParameter("Min_Dphi",                  0.0);
-  addParameter("Max_Dphi",TMath::TwoPi());
-  addParameter("Width_Dphi",TMath::TwoPi());
+  addParameter("Max_Dphi",CAP::Math::twoPi());
+  addParameter("Width_Dphi",CAP::Math::twoPi());
   addParameter("nBins_Dphi_shft",    36);
   addParameter("Min_Dphi_shft",     0.0);
   addParameter("Max_Dphi_shft",     0.0);
@@ -318,7 +318,7 @@ void ParticlePairAnalyzer::analyzeEvent()
             pt        = momentum.Pt();
             e         = momentum.E();
             phi       = momentum.Phi();
-            if (phi<0.0) phi += TMath::TwoPi();
+            if (phi<0.0) phi += CAP::Math::twoPi();
             iPt       = histos->getPtBinFor(pt);
             if (iPt==0) continue;
             iPhi      = histos->getPhiBinFor(phi);

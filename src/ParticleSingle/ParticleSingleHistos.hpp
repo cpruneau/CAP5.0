@@ -44,7 +44,7 @@ public:
 
   inline int getPhiBinFor(float v) const
   {
-  if (v<0.0) v += TMath::TwoPi();
+  if (v<0.0) v += CAP::Math::twoPi();
   int index = 1+ double(nBins_phi)*(v-min_phi)/scale_phi;
   if (index>int(nBins_phi)) index = -1;
   return index;

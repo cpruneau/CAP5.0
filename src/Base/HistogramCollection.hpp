@@ -29,13 +29,7 @@
 //#include "TStyle.h"
 #include "TString.h"
 #include "TMath.h"
-//#include "TPad.h"
-//#include "TF1.h"
-//#include "TF2.h"
 #include "TRandom.h"
-//#include "TLatex.h"
-//#include "TLine.h"
-//#include "TArrow.h"
 #include "Collection.hpp"
 #include "MessageLogger.hpp"
 #include "MathConstants.hpp"
@@ -43,7 +37,6 @@
 
 namespace CAP
 {
-
 
 class HistogramCollection : public Collection<TH1>
 {
@@ -342,13 +335,6 @@ public:
   bool ptrExist(const TH1 * h1, const TH1 * h2, const TH1 * h3, const TH1 * h4, const TH1 * h5, const TH1 * h6, const TH1 * h7, const TH1 * h8, const TH1 * h9, const TH1 * h10) const;
   bool ptrExist(const TH1 * h1, const TH1 * h2, const TH1 * h3, const TH1 * h4, const TH1 * h5, const TH1 * h6, const TH1 * h7, const TH1 * h8, const TH1 * h9, const TH1 * h10, const TH1 * h11) const;
   bool ptrExist(const TH1 * h1, const TH1 * h2, const TH1 * h3, const TH1 * h4, const TH1 * h5, const TH1 * h6, const TH1 * h7, const TH1 * h8, const TH1 * h9, const TH1 * h10, const TH1 * h11, const TH1 * h12) const;
-
-
-
-  ////////////////////////////////////////////////////////////////////////////
-  // Data Members - Inputs
-  ////////////////////////////////////////////////////////////////////////////
-  TRandom   * randomGenerator;
 
   ClassDef(HistogramCollection,1);
 

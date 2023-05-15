@@ -18,7 +18,7 @@
 #include <fstream>
 #include <cmath>
 #include <iomanip>
-#include <TMath.h>
+// #include <TMath.h>
 #include "ThermalGas.hpp"
 #include "ThermalGasHistograms.hpp"
 #include "Math/SpecFunc.h"

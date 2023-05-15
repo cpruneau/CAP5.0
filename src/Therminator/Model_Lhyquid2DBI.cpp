@@ -58,7 +58,7 @@ double Model_Lhyquid2DBI::getIntegrand(ParticleType& aPartType)
   zetac     = (zeta>0.9999999) ? 0.00000001 : 1.00-zeta;
   pT        = zeta/zetac;
   dPt       = 1.0/(zetac*zetac);
-  phiP	    = TMath::TwoPi() * gRandom->Rndm();
+  phiP	    = CAP::Math::twoPi() * gRandom->Rndm();
   rapidityP = momentumRapidityRange * (gRandom->Rndm() - 0.5); // * momentumRapidityRange;
   mT        = sqrt(mass*mass+pT*pT);
   // d Sigmap_\mu p^\mu
