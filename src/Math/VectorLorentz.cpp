@@ -1,9 +1,9 @@
 #include "Vector3.hpp"
 
-using CAP::Math::Vector3F;
-using CAP::Math::Vector3D;
-using CAP::Math::Vector3LD;
+using CAP::Math::VectorLorentzF;
+using CAP::Math::VectorLorentzD;
+using CAP::Math::VectorLorentzLD;
 
-ClassImp(Vector3F);
-ClassImp(Vector3D);
-ClassImp(Vector3LD);
+ClassImp(VectorLorentzF);
+ClassImp(VectorLorentzD);
+ClassImp(VectorLorentzLD);

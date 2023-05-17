@@ -26,42 +26,63 @@ namespace Math
 //!
 
 template <typename T>
-class VectorLorentz : public Vector3<T>
+class VectorLorentz
 {
 protected:
   T v0;
+  T v1;
+  T v2;
+  T v3;
+  int storageType
 
 public:
+
+  enum StorageType { TXYZ=0, TPhiThetaR,  TPhiRhoZ, MXYZ, MPhiRhoY, MPhiRhoEta};
 
   VectorLorentz()
   :
   v0(0),
-  Vector3<T>(0,0,0,0)
+  v1(0),
+  v2(0),
+  v3(0)
   { }
 
   VectorLorentz(const T & _v0, const T & _v1, const T & _v2, const T & _v3, int _storageType)
   :
   v0(_v0),
-  Vector3<T>(_v1,_v2,_v3,_storageType)
+  v1(_v1),
+  v2(_v2),
+  v3(_v3),
+  storage(_storageType)
   {  }
 
   VectorLorentz(T * _values, int _storageType)
   :
   v0(_values[0]),
-  Vector3<T>(_values[1],_values[2],_values[3],_storageType)
+  v1(_values[1]),
+  v2(_values[2]),
+  v3(_values[3]),
+  storageType(_storageType)
   {  }
 
   VectorLorentz(std::vector<T> _values, int _storageType)
   :
   v0(_values[0]),
-  Vector3<T>(_values[1],_values[2],_values[3],_storageType)
+  v1(_values[1]),
+  v2(_values[2]),
+  v3(_values[3]),
+  storageType(_storageType)
   {  }
 
   VectorLorentz(const VectorLorentz<T> & source)
   :
   v0(source.v0),
-  Vector3<T>(source.v1,source.v2,source.v3,v.storageType)
-  {   }
+  v1(source.v1),
+  v2(source.v2),
+  v3(source.v3),
+  storageType(_storageType)
+  {  }
+
 
   virtual ~VectorLorentz() {};
 
@@ -80,12 +101,16 @@ public:
     }
   }
 
+  //!
+  //! Returns the components  t, x, y, z of this vector. t corresponds to index==0
+  //!
   T operator[] (unsigned int index) const
   {
   switch (storageType)
     {
       case 0: // cartesian coordinates storage and output
-      switch (index)
+      {
+      switch (index) // TXYZ
         {
           case 0: return v0; //!> t
           case 1: return v1; //!> x
@@ -93,8 +118,12 @@ public:
           case 3: return v3; //!> z
           default: throw MathException("index>3","VectorLorentz<T>::operator []");
         }
+      break;
+      }
 
-      case 1: // spherical coordinates storage and cartesian output
+
+      case 1: // TPhiThetaR
+      {
       switch (index)
         {
           case 0: return v0;                           //!> t
@@ -103,8 +132,11 @@ public:
           case 3: return v3*std::cos(v2);              //!> z
           default: throw MathException("index>3","VectorLorentz<T>::operator []");
         }
+      break;
+      }
 
-      case 2: // cylindrical coordinates storage and cartesian output
+      case 2: // TPhiRhoZ
+      {
       switch (index)
         {
           case 0: return v0;              //!> t
@@ -113,6 +145,48 @@ public:
           case 3: return v3;              //!> z
           default: throw MathException("index>3","VectorLorentz<T>::operator []");
         }
+      break;
+      }
+
+      case 3: // MXYZ
+      {
+      switch (index)
+        {
+          case 0: return std::sqrt(v0*v0+v1*v1+v2*v2+v3*v3); //!> t
+          case 1: return v1; //!> x
+          case 2: return v2; //!> y
+          case 3: return v3; //!> z
+          default: throw MathException("index>3","VectorLorentz<T>::operator []");
+        }
+      break;
+      }
+
+      case 4: // MPhiRhoY
+      {
+      T mt = sqrt(v0*v0+v2*v2);
+      switch (index)
+        {
+          case 0: return mt * std::cosh(v3); //!> t
+          case 1: return v2*cos(v1); //!> x
+          case 2: return v2*sin(v1);; //!> y
+          case 3: return mt * std::sinh(v3); //!> z
+          default: throw MathException("index>3","VectorLorentz<T>::operator []");
+        }
+      break;
+      }
+
+      case 5: // tPhiRhoEta
+      {
+      switch (index)
+        {
+          case 0: return v0; //!> t
+          case 1: return v2*cos(v1); //!> x
+          case 2: return v2*sin(v1);; //!> y
+          case 3: return mt * std::sinh(v3); //!> z   fix this!!!!!
+          default: throw MathException("index>3","VectorLorentz<T>::operator []");
+        }
+      break;
+      }
 
       default: throw MathException("Internal error","VectorLorentz<T>::operator[]");
     }
@@ -126,7 +200,9 @@ public:
       case 0: return v0; //!> x
       case 1: return v0;
       case 2: return v0;
-      case 3: xxxxxx
+      case 3: return std::sqrt(v0*v0+v1*v1+v2*v2+v3*v3);
+      case 4: return std::sqrt(v0*v0+v2*v2) * std::sinh(v3);
+      case 5: return v0;
       default: throw MathException("Internal error","VectorLorentz<T>::x()");
     }
   }
@@ -138,10 +214,9 @@ public:
       case 0: return v1;
       case 1: return v3*std::sin(v2)*std::cos(v1);
       case 2: return v2*std::cos(v1);
-
-      case 10: return v1;
-      case 11: return v3*std::sin(v2)*std::cos(v1);
-      case 12: return v2*std::cos(v1);
+      case 3: return v1;
+      case 4: return v2*std::cos(v1);
+      case 4: return v2*std::cos(v1);
 
       default: throw MathException("Internal error","VectorLorentz<T>::x()");
     }
@@ -154,6 +229,9 @@ public:
       case 0: return v2;
       case 1: return v3*std::sin(v2)*std::sin(v1);
       case 2: return v2*std::sin(v1);
+      case 3: return v2;
+      case 4: return v2*std::sin(v1);
+      case 4: return v2*std::sin(v1);
       default: throw MathException("Internal error","VectorLorentz<T>::y()");
     }
   }
@@ -166,6 +244,9 @@ public:
       case 0: return v3;
       case 1: return v3*std::cos(v2);
       case 2: return v3;
+      case 3: return v3;
+      case 4: return std::sqrt(v0*v0+v2*v2)*std::cosh(v3);
+      case 5: return xxxxx;
       default: throw MathException("Internal error","VectorLorentz<T>::z()");
     }
   }
@@ -236,6 +317,32 @@ public:
       v2 = std::sqrt(x*x + y*y);
       v3 = z;
       break;
+
+      case 3:
+      v0 = std::sqrt(t*t-x*x-y*y-z*z);
+      v1 = x;
+      v2 = y;
+      v3 = z;
+      break;
+
+      case 4:
+      v0 = std::sqrt(t*t-x*x-y*y-z*z);
+      v1 = std::atan2(y,x);
+      v2 = std::sqrt(x*x + y*y);
+      v3 = 0.5*std::log((t+z)/(t-z));
+      break;
+
+      case 5:
+      v0 = t;
+      v1 = std::atan2(y,x);
+      v2 = std::sqrt(x*x + y*y);
+      T theta = atan2(std::sqrt(v2), z);
+      T ct = cosTheta(theta);
+      if (ct*ct < 1)
+        v3 = -0.5* std::log( (1.0-ct)/(1.0+ct) );
+      else
+        v3 = (z == 0) ? 0 : ((z>0) ? 1E10 : -1E10);
+      break;
     }
   }
 
@@ -259,6 +366,34 @@ public:
   storageType = 2;
   }
 
+  void setMXYZ(const T & m, const T & x, const T & y, const T & z)
+  {
+  v0 = m;
+  v1 = x;
+  v2 = y;
+  v3 = z;
+  storageType = 3;
+  }
+
+  void setMPhiRhoY(const T & m, const T & phi, const T & rho, const T & y)
+  {
+  v0 = m;
+  v1 = phi;
+  v2 = rho;
+  v3 = y;
+  storageType = 4;
+  }
+
+  void setTPhiRhoEta(const T & t, const T & phi, const T & rho, const T & eta)
+  {
+  v0 = m;
+  v1 = phi;
+  v2 = rho;
+  v3 = eta;
+  storageType = 5;
+  }
+
+
   T  phi() const
   {
   switch (storageType)
@@ -266,6 +401,9 @@ public:
       case 0: return std::atan2(v2,v1);
       case 1: return v1;
       case 2: return v1;
+      case 3: return std::atan2(v2,v1);
+      case 4: return v1;
+      case 5: return v1;
       default: throw MathException("Internal error","VectorLorentz<T>::phi()");
     }
   }
@@ -277,6 +415,9 @@ public:
       case 0: return v1/std::sqrt(v1*v1+v2*v2);
       case 1: return std::cos(v1);
       case 2: return std::cos(v1);
+      case 3: return v1/std::sqrt(v1*v1+v2*v2);
+      case 4: return std::cos(v1);
+      case 5: return std::cos(v1);
       default: throw MathException("Internal error","VectorLorentz<T>::cosPhi()");
     }
   }
@@ -288,10 +429,12 @@ public:
       case 0: return v2/std::sqrt(v1*v1+v2*v2);
       case 1: return std::sin(v1);
       case 2: return std::sin(v1);
+      case 3: return v2/std::sqrt(v1*v1+v2*v2);
+      case 4: return std::sin(v1);
+      case 5: return std::sin(v1);
       default: throw MathException("Internal error","VectorLorentz<T>::sinPhi()");
     }
   }
-
 
   T theta() const
   {
@@ -300,6 +443,9 @@ public:
       case 0: return std::atan2(std::sqrt(v1*v1+v2*v2),v3);
       case 1: return v2;
       case 2: return std::atan2(v2,v3);
+      case 3: return std::atan2(std::sqrt(v1*v1+v2*v2),v3);
+      case 4: return std::atan2(v2,v3);  // broken
+      case 5: return std::atan2(v2,v3);  // broken
       default: throw MathException("Internal error","VectorLorentz<T>::theta()");
     }
   }
@@ -311,6 +457,9 @@ public:
       case 0: return v3/std::sqrt(v1*v1+v2*v2+v3*v3);
       case 1: return std::cos(v2);
       case 2: return v3/std::sqrt(v2*v2+v3*v3);
+      case 3: return v3/std::sqrt(v1*v1+v2*v2+v3*v3);
+      case 4: return v3/std::sqrt(v2*v2+v3*v3);  // broken
+      case 5: return v3/std::sqrt(v2*v2+v3*v3); // broken
       default: throw MathException("Internal error","VectorLorentz<T>::cosTheta()");
     }
   }
@@ -322,7 +471,35 @@ public:
       case 0: return v3/std::sqrt(v1*v1+v2*v2+v3*v3);
       case 1: return std::cos(v2);
       case 2: return v3/std::sqrt(v2*v2+v3*v3);
+      case 3: return v3/std::sqrt(v1*v1+v2*v2+v3*v3);
+      case 4: return v3/std::sqrt(v2*v2+v3*v3);  // broken
+      case 5: return v3/std::sqrt(v2*v2+v3*v3);  // broken
       default: throw MathException("Internal error","VectorLorentz<T>::sinTheta()");
+    }
+  }
+
+  T modulus3() const
+  {
+  switch (storageType)
+    {
+      case 0: return std::sqrt(v1*v1+v2*v2+v3*v3);
+      case 1: return v3;
+      case 2: return std::sqrt(v2*v2+v3*v3);
+      case 3: return std::sqrt(v2*v2+v3*v3);
+      case 4: return std::sqrt(v2*v2+v3*v3);
+      case 5: return std::sqrt(v2*v2+v3*v3);
+      default: throw MathException("Internal error","VectorLorentz<T>::modulus()");
+    }
+  }
+
+  T  modulus3Square() const
+  {
+  switch (storageType)
+    {
+      case 0: return v1*v1+v2*v2+v3*v3;
+      case 1: return v3*v3;
+      case 2: return v2*v2+v3*v3;
+      default: throw MathException("Internal error","VectorLorentz<T>::modulusSquare()");
     }
   }
 
@@ -330,9 +507,12 @@ public:
   {
   switch (storageType)
     {
-      case 0: return std::sqrt(v1*v1+v2*v2+v3*v3);
+      case 0: return std::sqrt(v0*v0 - v1*v1+v2*v2+v3*v3);
       case 1: return v3;
       case 2: return std::sqrt(v2*v2+v3*v3);
+      case 3: return std::sqrt(v2*v2+v3*v3);
+      case 4: return std::sqrt(v2*v2+v3*v3);
+      case 5: return std::sqrt(v2*v2+v3*v3);
       default: throw MathException("Internal error","VectorLorentz<T>::modulus()");
     }
   }
@@ -344,6 +524,9 @@ public:
       case 0: return v1*v1+v2*v2+v3*v3;
       case 1: return v3*v3;
       case 2: return v2*v2+v3*v3;
+      case 3: return std::sqrt(v2*v2+v3*v3);
+      case 4: return std::sqrt(v2*v2+v3*v3);
+      case 5: return std::sqrt(v2*v2+v3*v3);
       default: throw MathException("Internal error","VectorLorentz<T>::modulusSquare()");
     }
   }
@@ -355,6 +538,9 @@ public:
       case 0: return std::sqrt(v1*v1+v2*v2);
       case 1: return v3*std::sin(v2);
       case 2: return v2;
+      case 3: return std::sqrt(v2*v2+v3*v3);
+      case 4: return std::sqrt(v2*v2+v3*v3);
+      case 5: return std::sqrt(v2*v2+v3*v3);
       default: throw MathException("Internal error","VectorLorentz<T>::perp()");
     }
   }
@@ -378,6 +564,9 @@ public:
       break;
       }
       case 2: return v2*v2;
+      case 3: return std::sqrt(v2*v2+v3*v3);
+      case 4: return std::sqrt(v2*v2+v3*v3);
+      case 5: return std::sqrt(v2*v2+v3*v3);
     }
   }
 
