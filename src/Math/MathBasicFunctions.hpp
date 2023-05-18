@@ -464,7 +464,62 @@ Iterator locateMaximum(Iterator first, Iterator last)
   return std::max_element(first, last);
 }
 
+template <typename T>
+T polynomial(T x, const T * coeffs, unsigned int n)
+{
+  T result = coeffs[n-1];
+  for (unsigned int i=n-1; i>0; i--) result = coeffs[i-1] + x*result;
+  return result;
+}
 
+template <typename T>
+T polynomial(T x, const vector<T> & coeffs)
+{
+  unsigned int n = coeffs.size();
+  T result = coeffs[n-1];
+  for (unsigned int i=n-1; i>0; i--) result = coeffs[i-1] + x*result;
+  return result;
+}
+
+//template <typename T>
+//vector<T> polynomialDerivK(T x, const T * coeffs, unsigned int lenc, unsigned int lenres)
+//{
+//  unsigned int i, n, nmax, k, l, lmax;
+//  vector<T> results;
+//  for (i = 0, n = 0, nmax = 0; i < lenres; i++)
+//    {
+//    if (n < lenc)
+//      {
+//      results.push_back( coeffs[lenc - 1] );
+//      nmax = n;
+//      n++;
+//      }
+//    else
+//      results.push_back( 0.0 );;
+//    }
+//
+//  for (i = 0; i < lenc - 1; i++)
+//    {
+//    k = (lenc - 1) - i;
+//    results[0] = ((x * results[0]) + coeffs[k - 1]);
+//    lmax = (nmax < k) ? nmax : k - 1;
+//    for (l = 1; l <= lmax; l++)
+//      {
+//      results[l] = ((x * results[l]) + results[l - 1]);
+//      }
+//    }
+//
+//  {
+//  double f = 1.0;
+//  for (i = 2; i <= nmax; i++)
+//    {
+//    f *= i;
+//    results[i] *= f;
+//    }
+//  }
+//
+//  return results;
+//}
 
 } // namespace Math
 

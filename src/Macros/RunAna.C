@@ -45,7 +45,7 @@ void loadTherminator(const TString & includeBasePath);
 int RunAna(TString configFile,
            TString histogramPath,
            long seed=1121331,
-           bool isGrid=true,
+           bool isGrid=false,
            long nEventsPerSubbunch=300,
            int  nSubbunchesPerBunch=1,
            int  nBunches=1)
