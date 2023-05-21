@@ -482,15 +482,15 @@ T polynomial(T x, const vector<T> & coeffs)
 }
 
 //template <typename T>
-//vector<T> polynomialDerivK(T x, const T * coeffs, unsigned int lenc, unsigned int lenres)
+//vector<T> polynomialDerivK(T x, const T * coeffs, unsigned int nCoeffs, unsigned int nResult)
 //{
 //  unsigned int i, n, nmax, k, l, lmax;
 //  vector<T> results;
-//  for (i = 0, n = 0, nmax = 0; i < lenres; i++)
+//  for (i = 0, n = 0, nmax = 0; i < nResult; i++)
 //    {
-//    if (n < lenc)
+//    if (n < nCoeffs)
 //      {
-//      results.push_back( coeffs[lenc - 1] );
+//      results.push_back( coeffs[nCoeffs - 1] );
 //      nmax = n;
 //      n++;
 //      }
@@ -498,9 +498,9 @@ T polynomial(T x, const vector<T> & coeffs)
 //      results.push_back( 0.0 );;
 //    }
 //
-//  for (i = 0; i < lenc - 1; i++)
+//  for (i = 0; i < nCoeffs - 1; i++)
 //    {
-//    k = (lenc - 1) - i;
+//    k = (nCoeffs - 1) - i;
 //    results[0] = ((x * results[0]) + coeffs[k - 1]);
 //    lmax = (nmax < k) ? nmax : k - 1;
 //    for (l = 1; l <= lmax; l++)

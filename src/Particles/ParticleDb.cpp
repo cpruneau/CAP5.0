@@ -212,7 +212,12 @@ void ParticleDb::setupDecayGenerator()
   // setup the decay montecarlo probabilities...
   for (unsigned int k=0; k<size(); k++)
     {
-    getParticleType(k)->setupDecayGenerator();
+    ParticleType & particleType = *getParticleType(k);
+    int nDecayModes = particleType.getNDecayModes();
+    if (nDecayModes>0)
+      {
+        particleType.setupDecayGenerator();
+      }
     }
 }
 
@@ -252,7 +257,7 @@ ParticleDb *  ParticleDb::extractCollection(int option)
   return collection;
 }
 
-unsigned int ParticleDb::findIndexForType(ParticleType * type)
+int ParticleDb::findIndexForType(ParticleType * type)
 {
   for (unsigned int iPart = 0; iPart < size(); iPart++)
     {
@@ -261,7 +266,7 @@ unsigned int ParticleDb::findIndexForType(ParticleType * type)
   return -1;
 }
 
-unsigned int ParticleDb::findIndexForName(const CAP::String & name)
+int ParticleDb::findIndexForName(const CAP::String & name)
 {
   for (unsigned int iPart = 0; iPart < size(); iPart++)
     {
@@ -271,7 +276,7 @@ unsigned int ParticleDb::findIndexForName(const CAP::String & name)
 }
 
 
-unsigned int ParticleDb::findIndexForPdgCode(int pdgCode)
+int ParticleDb::findIndexForPdgCode(int pdgCode)
 {
   for (unsigned int iPart = 0; iPart < size(); iPart++)
   {
@@ -280,7 +285,7 @@ unsigned int ParticleDb::findIndexForPdgCode(int pdgCode)
   return -1;
 }
 
-unsigned int ParticleDb::findIndexForPrivateCode(int privateCode)
+int ParticleDb::findIndexForPrivateCode(int privateCode)
 {
   for (unsigned int iPart = 0; iPart < size(); iPart++)
   {
@@ -312,7 +317,8 @@ ParticleType * ParticleDb::findPdgCode(int pdgCode)
   newType->setTitle("unknown");
   newType->setPdgCode(pdgCode);
   push_back(newType);
-  cout << " ------------------------------------------------ Added new type with pdgCode=" << pdgCode << endl;
+  cout << endl
+  <<" ------------------------------------------------ Added new type with pdgCode=" << pdgCode << endl;
   return newType;
 }
 
@@ -333,7 +339,7 @@ void ParticleDb::addParticleType(ParticleType * particleType)
 
 ParticleType * ParticleDb::getParticleType(String name)
 {
-  unsigned int index = findIndexForName(name);
+  int index = findIndexForName(name);
   if (index>=0)
     return objects[index];
   else

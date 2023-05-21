@@ -45,6 +45,7 @@ ParticleDecayMode & ParticleDecayMode::operator=(const ParticleDecayMode & sourc
   if (this!=&source)
     {
     branchingRatio    = source.branchingRatio;
+    childrenPdgCodes  = source.childrenPdgCodes;
     childrenTypes     = source.childrenTypes;
     }
   return *this;

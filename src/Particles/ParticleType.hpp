@@ -19,8 +19,10 @@
 #include "Aliases.hpp"
 #include "SelectionGenerator.hpp"
 #include "ParticleDecayMode.hpp"
+#include "PhysicsConstants.hpp"
 
 using namespace std;
+using namespace CAP::Physics;
 
 namespace CAP
 {
@@ -47,6 +49,10 @@ protected:
   double spin;           //!<spin
   double isospin;        //!<isospin
   double isospin3;       //!<isospin 3rd component
+  int    netStrangess;   //!<net strangeness
+  int    netCharm;       //!<net charm
+  int    netBottom;      //!<net beauty/bottomness
+  int    netBaryon;      //!<net baryon
   int    nq;             //!<number of light quarks (u,d)
   int    naq;            //!<number of anti-light quarks (u-bar, d-bar)
   int    ns;             //!<number of strange quarks (s)
@@ -68,6 +74,7 @@ protected:
   double spinFactor;
   double isospinFactor;
   double statistics;
+  bool   setupDone;
 
 
 public:
@@ -78,12 +85,57 @@ public:
   ParticleType & operator=(const ParticleType & source);
   void setupDecayGenerator();
   void generateDecay(int &n, int * pid);
-  int getIndex() const;
-  String getName() const;
-  String getTitle() const;
-  int    getAntiParticlePdgCode() const;
-  int    getPdgCode() const;
-  int    getPrivateCode() const;
+
+  int getIndex() const
+  {
+  return index;
+  }
+
+  //!
+  //! Get the name of the particle
+  //!
+  String getName() const
+  {
+  return name;
+  }
+
+  //!
+  //! Get the title  of the particle
+  //!
+  String getTitle() const
+  {
+  return title;
+  }
+
+
+  //!
+  //! Get the PDG code of the antiparticle of this particle.
+  //!
+  int getAntiParticlePdgCode() const
+  {
+  return (netBaryon==0 &&
+          charge==0 &&
+          netStrangess==0 &&
+          netCharm==0)?pdgCode :-pdgCode;
+  }
+
+  //!
+  //! Get the PDG code of this particle.
+  //!
+  int getPdgCode() const
+  {
+  return pdgCode;
+  }
+
+  //!
+  //! Get the private  code of this particle (user defined).
+  //!
+  int getPrivateCode() const
+  {
+  return privateCode;
+  }
+
+
 
   //!
   //! Get the mass of this particle in GeV/c^2.
@@ -118,8 +170,32 @@ public:
   return spin; // hbar units
   }
 
-  double getLifeTime() const;
-  double getBaryonNumber()   const;
+  //!
+  //! Get the mean life time of this particle in seconds.
+  //! hBar is in GeV.s;  width is GeV.
+  //! life time is in seconds.
+  //! 
+  inline double getLifeTime() const
+  {
+  return (width>0.0) ? (hBar()/width) : protonLifetime_SI();
+  }
+
+
+  //!
+  //! Get the baryon number of this particle.
+  //!
+  inline double getBaryonNumber() const
+  {
+  return netBaryon;
+  }
+
+  //!
+  //! Set the net baryon of this particle.
+  //!
+  inline void setBaryonNumber(int _netBaryon)
+  {
+  netBaryon = _netBaryon;
+  }
 
   //!
   //! Get the electric charge of this particle.
@@ -129,14 +205,97 @@ public:
   return charge;
   }
 
+  //!
+  //! Set the electric charge of this particle.
+  //!
+  void setCharge(int value)
+  { charge  = value;}
 
-  double getNetStrangeness() const;
-  double getNetCharm()    const;
-  double getNetBottom()   const;
-  double getNetTop()      const;
-  double getLeptonElectron() const;
-  double getLeptonMuon() const;
-  double getLeptonTau()  const;
+
+  //!
+  //! Get the net strangeness of this particle.
+  //!
+  inline double getStrangessNumber() const
+  {
+  return netStrangess;
+  }
+
+  //!
+  //! Set the net strangeness of this particle.
+  //!
+  inline void setStrangessNumber(int _netStrangess)
+  {
+    netStrangess = _netStrangess;
+  }
+
+
+  //!
+  //! Get the net charm of this particle.
+  //!
+  inline double getCharmNumber() const
+  {
+  return netCharm;
+  }
+
+  //!
+  //! Set the net charm of this particle.
+  //!
+  inline void setCharmNumber(int _netCharm)
+  {
+  netCharm = _netCharm;
+  }
+
+
+  //!
+  //! Get the net bottomness  of this particle.
+  //!
+  inline double getBottomNumber() const
+  {
+  return netBottom;
+  }
+
+  //!
+  //! Set the net Bottom of this particle.
+  //!
+  inline void setBottomNumber(int _netBottom)
+  {
+  netBottom = _netBottom;
+  }
+
+
+
+  //!
+  //! Get the net topness  of this particle.
+  //!
+  inline double getNetTop() const
+  {
+  return (nt-nat);
+  }
+
+
+  //!
+  //! Get the lepton number (electron)  of this particle.
+  //!
+  inline double getLeptonElectron() const
+  {
+  return leptonElectron;
+  }
+
+  //!
+  //! Get the lepton number (muon)  of this particle.
+  //!
+  inline double getLeptonMuon() const
+  {
+  return leptonMuon;
+  }
+
+  //!
+  //! Get the lepton number (tau)  of this particle.
+  //!
+  inline double getLeptonTau() const
+  {
+  return leptonTau;
+  }
 
   //!
   //! Get the number of light quarks (u,d) composing this particle
@@ -240,19 +399,23 @@ public:
   return statistics;
   }
 
+  //!
+  //! Return the number of distinct decay modes of this particle
+  //!
+  int getNDecayModes() const;
+
   void setIndex(int _index);
   void setName(const String & _name);
   void setTitle(const String & _title);
   void setSpin(double _spin);
   void setIsospin(double _isospin);
-  void setIsospin3(double _isospin3);
+  void setIsospin3(double _isospdecaymodein3);
   void setStatistics(double _spin);
   void setPdgCode(int value);
   void setPrivateCode(int value);
   void setMass(double value);
   void setWidth(double value);
   void setLifeTime(double value);
-  void setCharge(int value);
   void setLeptonElectron(int value);
   void setLeptonMuon(int value);
   void setLeptonTau(int value);
@@ -339,7 +502,6 @@ public:
   bool isAntiXiM() const;
   bool isOmegaM() const;
   bool isAntiOmegaM() const;
-  int  getNDecayModes() const;
 
   //!
   //! Return true if this particle is 'stable'

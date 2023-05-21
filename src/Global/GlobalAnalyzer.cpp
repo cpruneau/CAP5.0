@@ -242,7 +242,7 @@ void GlobalAnalyzer::analyzeEvent()
           n[iParticleFilter]++;
           e[iParticleFilter] += momentum.E();
           q[iParticleFilter] += type.getCharge();
-          s[iParticleFilter] += type.getNetStrangeness();
+          s[iParticleFilter] += type.getStrangessNumber();
           b[iParticleFilter] += type.getBaryonNumber();
           ptSum[iParticleFilter] += momentum.Pt();
           }

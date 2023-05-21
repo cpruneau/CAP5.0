@@ -33,24 +33,31 @@ ClassImp(ParticleType);
 //!
 ParticleType::ParticleType()
 :
+index(),
 name(),
 title(),
-privateCode(-1),
-pdgCode(-1),
-mass(-1),
+privateCode(0),
+pdgCode(0),
+mass(0.0),
 charge(0.0),
-width(-1),
-spin(-1.0E100),
-isospin(-1.0E100),
-isospin3(-1.0E100),
-nq(-1),
-naq(-1),
-ns(-1),
-nas(-1),
-nc(-1),
-nac(-1),
-nb(-1),
-nab(-1),
+width(0.0),
+spin(0.0),
+isospin(0.0),
+isospin3(0.0),
+netStrangess(0),
+netCharm(0),
+netBottom(0),
+netBaryon(0),
+nq(0),
+naq(0),
+ns(0),
+nas(0),
+nc(0),
+nac(0),
+nb(0),
+nab(0),
+nt(0),
+nat(0),
 leptonElectron(0),
 leptonMuon(0),
 leptonTau(0),
@@ -60,7 +67,8 @@ decayModes(),
 decayRndmSelector(),
 spinFactor(1.0),
 isospinFactor(1.0),
-statistics(-1.0)
+statistics(-1.0),
+setupDone(0)
 {}
 
 //!
@@ -74,6 +82,7 @@ ParticleType::~ParticleType()
 //!
 ParticleType::ParticleType(const ParticleType & source)
 :
+index(source.index),
 name(source.name),
 title(source.title),
 privateCode(source.privateCode),
@@ -84,6 +93,10 @@ width(source.width),
 spin(source.spin),
 isospin(source.isospin),
 isospin3(source.isospin3),
+netStrangess(source.netStrangess),
+netCharm(source.netCharm),
+netBottom(source.netBottom),
+netBaryon(source.netBaryon),
 nq(source.nq),
 naq(source.naq),
 ns(source.ns),
@@ -92,13 +105,19 @@ nc(source.nc),
 nac(source.nac),
 nb(source.nb),
 nab(source.nab),
+nt(source.nt),
+nat(source.nat),
 leptonElectron(source.leptonElectron),
 leptonMuon(source.leptonMuon),
 leptonTau(source.leptonTau),
 stable(source.stable),
 weakStable(source.weakStable),
 decayModes(source.decayModes),
-decayRndmSelector(source.decayRndmSelector)
+decayRndmSelector(source.decayRndmSelector),
+spinFactor(source.spinFactor),
+isospinFactor(source.isospinFactor),
+statistics(source.statistics),
+setupDone(source.setupDone)
 {
 // no ops
 }
@@ -110,30 +129,42 @@ ParticleType & ParticleType::operator=(const ParticleType & source)
 {
   if (this!=&source)
     {
-    pdgCode        =  source.pdgCode;
-    name           =  source.name;
-    title          =  source.title;
-    mass           =  source.mass;
-    width          =  source.width;
-    spin           =  source.spin;
-    isospin        =  source.isospin;
-    isospin3       =  source.isospin3;
-    nq             =  source.nq;
-    naq            =  source.naq;
-    ns             =  source.ns;
-    nas            =  source.nas;
-    nc             =  source.nc;
-    nac            =  source.nac;
-    nb             =  source.nb;
-    nab            =  source.nab;
-    leptonElectron =  source.leptonElectron;
-    leptonMuon     =  source.leptonMuon;
-    leptonTau      =  source.leptonTau;
-    charge         =  source.charge;
-    stable         =  source.stable;
-    weakStable     =  source.weakStable;
-    decayModes     =  source.decayModes;
-    decayRndmSelector = source.decayRndmSelector;
+    index              =  source.index;
+    name               =  source.name;
+    title              =  source.title;
+    privateCode        =  source.privateCode;
+    pdgCode            =  source.pdgCode;
+    mass               =  source.mass;
+    charge             =  source.charge;
+    width              =  source.width;
+    spin               =  source.spin;
+    isospin            =  source.isospin;
+    isospin3           =  source.isospin3;
+    netStrangess       =  source.netStrangess;
+    netCharm           =  source.netCharm;
+    netBottom          =  source.netBottom;
+    netBaryon          =  source.netBaryon;
+    nq                 =  source.nq;
+    naq                =  source.naq;
+    ns                 =  source.ns;
+    nas                =  source.nas;
+    nc                 =  source.nc;
+    nac                =  source.nac;
+    nb                 =  source.nb;
+    nab                =  source.nab;
+    nt                 =  source.nt;
+    nat                =  source.nat;
+    leptonElectron     =  source.leptonElectron;
+    leptonMuon         =  source.leptonMuon;
+    leptonTau          =  source.leptonTau;
+    stable             =  source.stable;
+    weakStable         =  source.weakStable;
+    decayModes         =  source.decayModes;
+    decayRndmSelector  =  source.decayRndmSelector;
+    spinFactor         =  source.spinFactor;
+    isospinFactor      =  source.isospinFactor;
+    statistics         =  source.statistics;
+    setupDone          =  source.setupDone;
     }
   return *this;
 }
@@ -176,27 +207,24 @@ void ParticleType::addDecayMode(ParticleDecayMode &decayMode)
     }
 }
 
-
-//!
-//! Get the PDG code of the antiparticle of this particle.
-//!
-int ParticleType::getAntiParticlePdgCode() const
+int ParticleType::getNDecayModes() const
 {
-  if (getBaryonNumber() == 0 && charge == 0 && getNetStrangeness() == 0)
-    return(pdgCode);
-  else
-    return(-pdgCode);
+  return decayModes.size();
 }
 
 void ParticleType::setupDecayGenerator()
 {
   int nDecayModes = decayModes.size();
   vector<double> decayBranchingRatios;
+  //cout << " ParticleType::setupDecayGenerator() nDecayModes : " << nDecayModes << endl;
   for (int k=0; k<nDecayModes; k++)
   {
   decayBranchingRatios.push_back(decayModes[k].getBranchingRatio());
   }
+  //cout << " ParticleType::setupDecayGenerator() decayBranchingRatios.size() : " << decayBranchingRatios.size() << endl;
+
   decayRndmSelector.initializeWith(decayBranchingRatios);
+  setupDone =  true;
 }
 
 //!
@@ -207,6 +235,11 @@ ParticleDecayMode & ParticleType::generateDecayMode()
   int index = decayRndmSelector.generate();
   if (index<0)
     {
+    cout << "<F> ParticleType::generateDecayMode() index<0 " << endl;
+    cout << "<F> ParticleType::generateDecayMode() particle name: " << name << endl;
+    cout << "<F> ParticleType::generateDecayMode()        stable: " << stable << endl;
+    cout << "<F> ParticleType::generateDecayMode()         width: " << width << endl;
+    cout << "<F> ParticleType::generateDecayMode()       n modes: " << decayModes.size()  << endl;
     exit(0);
     }
   else if (index>= int(decayModes.size()))
@@ -216,126 +249,10 @@ ParticleDecayMode & ParticleType::generateDecayMode()
   return decayModes[index];
 }
 
-int ParticleType::getIndex() const
-{
-  return index;
-}
-
-//!
-//! Get the name of the particle
-//!
-String ParticleType::getName() const
-{
-  return name;
-}
-
-//!
-//! Get the title  of the particle
-//!
-String ParticleType::getTitle() const
-{
-  return title;
-}
-
-//!
-//! Get the PDG code of this particle.
-//!
-int ParticleType::getPdgCode() const
-{
-  return pdgCode;
-}
-
-//!
-//! Get the private  code of this particle (user defined).
-//!
-int ParticleType::getPrivateCode() const
-{
-  return privateCode;
-}
-
-
-
-
-//!
-//! Get the mean life time of this particle in seconds.
-//!
-double ParticleType::getLifeTime() const
-{
-  return (width>0.0) ? (6.582E-25/width) : 1.0E37;
-}
-
-//!
-//! Get the baryon number of this particle.
-//!
-double ParticleType::getBaryonNumber() const
-{
-  return (nq+ns+nc+nb+nt - (naq+nas+nac+nab+nat) )/3.0;
-}
-
-
-//!
-//! Get the net strangeness of this particle.
-//!
-double ParticleType::getNetStrangeness() const
-{
-  return (ns-nas);
-}
-
-//!
-//! Get the net charm of this particle.
-//!
-double ParticleType::getNetCharm() const
-{
-  return (nc-nac);
-}
-
-//!
-//! Get the net bottomness  of this particle.
-//!
-double ParticleType::getNetBottom() const
-{
-  return (nb-nab);
-}
-
-//!
-//! Get the net topness  of this particle.
-//!
-double ParticleType::getNetTop() const
-{
-  return (nt-nat);
-}
-
-
-//!
-//! Get the lepton number (electron)  of this particle.
-//!
-double ParticleType::getLeptonElectron() const
-{
-  return leptonElectron;
-}
-
-//!
-//! Get the lepton number (muon)  of this particle.
-//!
-double ParticleType::getLeptonMuon() const
-{
-  return leptonMuon;
-}
-
-//!
-//! Get the lepton number (tau)  of this particle.
-//!
-double ParticleType::getLeptonTau() const
-{
-  return leptonTau;
-}
-
-
 void ParticleType::setStatistics(double _spin)
 {
   statistics = (_spin - static_cast<int>(_spin) ) < 0.01 ? -1.0 : +1.0;
 }
-
 
 void ParticleType::setIndex(int _index)
 {
@@ -408,11 +325,6 @@ void ParticleType::setLifeTime(double _lifeTime)
   width = (_lifeTime<1.0E37) ? (6.582E-25/_lifeTime) : 0.0;
 }
 
-//!
-//! Set the electric charge of this particle.
-//!
-void ParticleType::setCharge(int value)
-{ charge  = value;}
 
 //!
 //! Set the electron lepton value of this particle
@@ -924,11 +836,6 @@ bool ParticleType::isOmegaM() const
 bool ParticleType::isAntiOmegaM() const
 { return pdgCode== -3334;    }
 
-//!
-//! Return the number of distinct decay modes of this particle
-//!
-int ParticleType::getNDecayModes() const
-{ return decayModes.size();   }
 
 //!
 //! Print the properties of this particle on the given stream and return a reference to that stream.

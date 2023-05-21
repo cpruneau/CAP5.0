@@ -76,6 +76,7 @@ disablePhotons(true),
 nSamplesIntegration(10000),
 modelOnlyBackFlow(0),
 decayRescaleChannels(0),
+decayDisabled(false),
 decayDisable2Prong(false),
 decayDisable3Prong(false),
 particleDecayer(),
@@ -112,6 +113,7 @@ void TherminatorGenerator::setDefaultConfiguration()
   addParameter( "nSamplesIntegration",          nSamplesIntegration);
   addParameter( "ModelOnlyBackFlow",            modelOnlyBackFlow);
   addParameter( "DecayRescaleChannels",         decayRescaleChannels);
+  addParameter( "DecayDisabled",                decayDisabled);
   addParameter( "DecayDisable3Prong",           decayDisable3Prong);
   addParameter( "DecayDisable2Prong",           decayDisable2Prong);
   addParameter( "DecayNoWeakDecay",             decayNoWeakDecay);
@@ -143,6 +145,7 @@ void TherminatorGenerator::configure()
   nSamplesIntegration      = getValueInt(    "nSamplesIntegration");
   modelOnlyBackFlow        = getValueBool(   "ModelOnlyBackFlow");
   decayRescaleChannels     = getValueBool(   "DecayRescaleChannels");
+  decayDisabled            = getValueBool(   "DecayDisabled");
   decayDisable3Prong       = getValueBool(   "DecayDisable3Prong");
   decayDisable2Prong       = getValueBool(   "DecayDisable2Prong");
   decayNoWeakDecay         = getValueBool(   "DecayNoWeakDecay");
@@ -173,6 +176,7 @@ void TherminatorGenerator::configure()
     printItem( "nSamplesIntegration");
     printItem( "ModelOnlyBackFlow");
     printItem( "DecayRescaleChannels");
+    printItem( "DecayDisabled");
     printItem( "DecayDisable3Prong");
     printItem( "DecayDisable2Prong");
     printItem( "DecayNoWeakDecay");
@@ -275,7 +279,7 @@ void TherminatorGenerator::createEvent()
         }
     }
 
-   // generate "m" particles of each specicies
+  // generate "m" particles of each specicies
 
   int      multiplicity;
   double   maxIntegrand;
@@ -284,20 +288,18 @@ void TherminatorGenerator::createEvent()
   CAP::Factory<Particle> * factory = Particle::getFactory();
   for (unsigned int iType=0; iType<nTypes; iType++)
     {
-
     ParticleType * particleType = particleDb->getParticleType(iType);
     if (particleType->isPhoton() && disablePhotons) continue;
     maxIntegrand = averageMultiplicities[iType].integral;
     multiplicity = eventMultiplicities[iType];
-//    if (reportInfo(__FUNCTION__))
-//      cout << " iType: " << iType << " Name:" << particleType->getName() << "  multiplicity:" << multiplicity << endl;
+    //    if (reportInfo(__FUNCTION__))
+    //      cout << " iType: " << iType << " Name:" << particleType->getName() << "  multiplicity:" << multiplicity << endl;
     int iParticle = 0;
     while (iParticle < multiplicity)
       {
       value     = model->getIntegrand(*particleType);
       valueTest = gRandom->Rndm() * maxIntegrand;
       //cout << "valueTest:" << valueTest << " value:" << value << " valueTest<value:" << (valueTest < value) << endl;
-
       if (valueTest<value)
         {
         Particle * particle = factory->getNextObject();
@@ -305,128 +307,186 @@ void TherminatorGenerator::createEvent()
         particle->setLive(true);
         model->setParticlePX(*particle);
         iParticle++;
-        //cout << " iParticle:" << iParticle << endl;
-        event.add(particle);
-        // particle->printProperties();
-        //continue;
-
-
-
-        if (particleType->isStable()) continue;
-        //if (particleType->isWeakStable() || decayNoWeakDecay) continue;
-
-        Particle          & parent     = *particle;
-        ParticleType      & parentType = *particleType;
-        ParticleDecayMode & decayMode  = parentType.generateDecayMode();
-        int nChildren = decayMode.getNChildren();
-        if (nChildren<2  && decayDisable2Prong)  continue;
-        if (nChildren==2 && decayDisable2Prong)  continue;
-        if (nChildren==3 && decayDisable3Prong)  continue;
-
-        // decay this particle
-        // ===================
-        if (decayStoreDecayedParts) event.add(particle);
-
-        LorentzVector & parentMomentum  = parent.getMomentum();
-        LorentzVector & parentPosition  = parent.getPosition();
-        switch (nChildren)
+        if (particleType->isStable() || decayDisabled)
           {
-            case 1:
-            if (reportInfo(__FUNCTION__)) cout << "case 1  parentType==" << parent.getName() << endl;
-            break;
-
-            case 2:
-            {
-            //cout << "2-body decay" << endl;
-            Particle * child1 = particleFactory->getNextObject();
-            Particle * child2 = particleFactory->getNextObject();
-            ParticleType  & childType1 = decayMode.getChildType(0); child1->setType(&childType1); child1->setLive(true);
-            ParticleType  & childType2 = decayMode.getChildType(1); child2->setType(&childType2); child2->setLive(true);
-            LorentzVector & p1 = child1->getMomentum();
-            LorentzVector & r1 = child1->getPosition();
-            LorentzVector & p2 = child2->getMomentum();
-            LorentzVector & r2 = child2->getPosition();
-            particleDecayer.decay2(parentType,
-                                   parentMomentum,
-                                   parentPosition,
-                                   childType1,p1,r1,
-                                   childType2,p2,r2);
-            event.add(child1);
-            event.add(child2);
-            parent.setDecayed(true);
-            }
-            break;
-
-            case 3:
-            {
-            //cout << "3-body decay" << endl;
-
-            Particle * child1 = particleFactory->getNextObject();
-            Particle * child2 = particleFactory->getNextObject();
-            Particle * child3 = particleFactory->getNextObject();
-            ParticleType  & childType1 = decayMode.getChildType(0); child1->setType(&childType1); child1->setLive(true);
-            ParticleType  & childType2 = decayMode.getChildType(1); child2->setType(&childType2); child2->setLive(true);
-            ParticleType  & childType3 = decayMode.getChildType(2); child3->setType(&childType3); child3->setLive(true);
-            LorentzVector & p1 = child1->getMomentum();
-            LorentzVector & r1 = child1->getPosition();
-            LorentzVector & p2 = child2->getMomentum();
-            LorentzVector & r2 = child2->getPosition();
-            LorentzVector & p3 = child3->getMomentum();
-            LorentzVector & r3 = child3->getPosition();
-            particleDecayer.decay3(parentType,
-                                   parentMomentum,
-                                   parentPosition,
-                                   childType1,p1,r1,
-                                   childType2,p2,r2,
-                                   childType3,p3,r3);
-            event.add(child1);
-            event.add(child2);
-            event.add(child3);
-            parent.setDecayed(true);
-            }
-            break;
-            case 4:
-            cout << "4-body decay should not happen " << endl;
-            exit(1);
-            //          {
-            //  //        Particle * child1 = particleFactory->getNextObject();
-            //  //        Particle * child2 = particleFactory->getNextObject();
-            //  //        Particle * child3 = particleFactory->getNextObject();
-            //  //        Particle * child4 = particleFactory->getNextObject();
-            //  //        ParticleType   & childType1 = decayMode.getChildType(0); child1->setType(&childType1); child1->setLive(true);
-            //  //        ParticleType   & childType2 = decayMode.getChildType(1); child2->setType(&childType2); child2->setLive(true);
-            //  //        ParticleType   & childType3 = decayMode.getChildType(2); child3->setType(&childType3); child3->setLive(true);
-            //  //        ParticleType   & childType4 = decayMode.getChildType(3); child4->setType(&childType4); child4->setLive(true);
-            //  //        LorentzVector & p1 = child1->getMomentum();
-            //  //        LorentzVector & r1 = child1->getPosition();
-            //  //        LorentzVector & p2 = child2->getMomentum();
-            //  //        LorentzVector & r2 = child2->getPosition();
-            //  //        LorentzVector & p3 = child3->getMomentum();
-            //  //        LorentzVector & r3 = child3->getPosition();
-            //  //        LorentzVector & p4 = child4->getMomentum();
-            //  //        LorentzVector & r4 = child4->getPosition();
-            //  //        decayer.decay4(parentType,
-            //  //                       parentMomentum,
-            //  //                       parentPosition,
-            //  //                       childType1,p1,r1,
-            //  //                       childType2,p2,r2,
-            //  //                       childType3,p3,r3,
-            //  //                       childType4,p4,r4);
-            //  //        event.add(child1); child1->setLive(true);
-            //  //        event.add(child2); child2->setLive(true);
-            //  //        event.add(child3); child3->setLive(true);
-            //  //        event.add(child4); child4->setLive(true);
-            //  //        parent.setDecayed(true);
-            //  //        nParticles += 4;
-            //          }
-            break;
-            case 5:
-            break;
+          if (accept(*particle)) event.add(particle);
           }
+        else
+          decayParticle(event, *particle);
         }
       }
     }
 }
+
+//!
+//!Accept the particle if any of the filter accepts it or if not filters were provided.
+//!
+bool TherminatorGenerator::accept(Particle & particle)
+{
+  if (particleFilters.size()<1) return true;
+  for (int iParticleFilter=0; iParticleFilter<nParticleFilters; iParticleFilter++ )
+    {
+    if (particleFilters[iParticleFilter]->accept(particle)) return true;
+    }
+  return false;
+}
+
+void TherminatorGenerator::decayParticle(Event & event, Particle & parent)
+{
+  ParticleType      & parentType = parent.getType();
+
+//  cout << " parent type name: " <<  parentType.getName() << endl;
+//  cout << " parent mass     : " <<  parentType.getMass() << endl;
+//  cout << " parent width    : " <<  parentType.getWidth() << endl;
+//  cout << " parent stable   : " <<  parentType.isStable() << endl;
+//  cout << " parent n modes  : " <<  parentType.getNDecayModes() << endl;
+
+  ParticleDecayMode & decayMode  = parentType.generateDecayMode();
+  int nChildren = decayMode.getNChildren();
+  if (nChildren<2)  return;
+  if ((nChildren==2 && decayDisable2Prong) ||
+      (nChildren==3 && decayDisable3Prong))
+    {
+    event.add(&parent);
+    return;
+    }
+  LorentzVector & parentMomentum  = parent.getMomentum();
+  LorentzVector & parentPosition  = parent.getPosition();
+  switch (nChildren)
+    {
+      case 1:
+      if (reportInfo(__FUNCTION__)) cout << "case 1  parentType==" << parent.getName() << endl;
+      break;
+
+      case 2:
+      {
+      //cout << "2-body decay" << endl;
+      Particle * child1 = particleFactory->getNextObject();
+      Particle * child2 = particleFactory->getNextObject();
+      ParticleType  & childType1 = decayMode.getChildType(0); child1->setType(&childType1); child1->setLive(true);
+      ParticleType  & childType2 = decayMode.getChildType(1); child2->setType(&childType2); child2->setLive(true);
+      LorentzVector & p1 = child1->getMomentum();
+      LorentzVector & r1 = child1->getPosition();
+      LorentzVector & p2 = child2->getMomentum();
+      LorentzVector & r2 = child2->getPosition();
+      particleDecayer.decay2(parentType,
+                             parentMomentum,
+                             parentPosition,
+                             childType1,p1,r1,
+                             childType2,p2,r2);
+      parent.setDecayed(true);
+      if (decayStoreDecayedParts) event.add(&parent);
+      if (child1->isStable() || decayDisabled)
+        {
+        if (accept(*child1)) event.add(child1);
+        }
+      else
+        decayParticle(event, *child1);
+      if (child2->isStable() || decayDisabled)
+        {
+        if (accept(*child2)) event.add(child2);
+        }
+      else
+        decayParticle(event, *child2);
+      break;
+      }
+
+      case 3:
+      {
+      //cout << "3-body decay" << endl;
+      Particle * child1 = particleFactory->getNextObject();
+      Particle * child2 = particleFactory->getNextObject();
+      Particle * child3 = particleFactory->getNextObject();
+      ParticleType  & childType1 = decayMode.getChildType(0); child1->setType(&childType1); child1->setLive(true);
+      ParticleType  & childType2 = decayMode.getChildType(1); child2->setType(&childType2); child2->setLive(true);
+      ParticleType  & childType3 = decayMode.getChildType(2); child3->setType(&childType3); child3->setLive(true);
+      LorentzVector & p1 = child1->getMomentum();
+      LorentzVector & r1 = child1->getPosition();
+      LorentzVector & p2 = child2->getMomentum();
+      LorentzVector & r2 = child2->getPosition();
+      LorentzVector & p3 = child3->getMomentum();
+      LorentzVector & r3 = child3->getPosition();
+      particleDecayer.decay3(parentType,
+                             parentMomentum,
+                             parentPosition,
+                             childType1,p1,r1,
+                             childType2,p2,r2,
+                             childType3,p3,r3);
+      parent.setDecayed(true);
+      if (decayStoreDecayedParts) event.add(&parent);
+      if (child1->isStable() || decayDisabled)
+        {
+        if (accept(*child1)) event.add(child1);
+        }
+      else
+        decayParticle(event, *child1);
+      if (child2->isStable() || decayDisabled)
+        {
+        if (accept(*child2)) event.add(child2);
+        }
+      else
+        decayParticle(event, *child2);
+      if (child3->isStable() || decayDisabled)
+        {
+        if (accept(*child3)) event.add(child3);
+        }
+      else
+        decayParticle(event, *child3);
+      break;
+      }
+
+      default:
+      case 4:
+      {
+      cout << "4- or more body decay should not happen " << endl;
+      exit(1);
+      //        Particle * child1 = particleFactory->getNextObject();
+      //        Particle * child2 = particleFactory->getNextObject();
+      //        Particle * child3 = particleFactory->getNextObject();
+      //        Particle * child4 = particleFactory->getNextObject();
+      //        ParticleType   & childType1 = decayMode.getChildType(0); child1->setType(&childType1); child1->setLive(true);
+      //        ParticleType   & childType2 = decayMode.getChildType(1); child2->setType(&childType2); child2->setLive(true);
+      //        ParticleType   & childType3 = decayMode.getChildType(2); child3->setType(&childType3); child3->setLive(true);
+      //        ParticleType   & childType4 = decayMode.getChildType(3); child4->setType(&childType4); child4->setLive(true);
+      //        LorentzVector & p1 = child1->getMomentum();
+      //        LorentzVector & r1 = child1->getPosition();
+      //        LorentzVector & p2 = child2->getMomentum();
+      //        LorentzVector & r2 = child2->getPosition();
+      //        LorentzVector & p3 = child3->getMomentum();
+      //        LorentzVector & r3 = child3->getPosition();
+      //        LorentzVector & p4 = child4->getMomentum();
+      //        LorentzVector & r4 = child4->getPosition();
+      //        decayer.decay4(parentType,
+      //                       parentMomentum,
+      //                       parentPosition,
+      //                       childType1,p1,r1,
+      //                       childType2,p2,r2,
+      //                       childType3,p3,r3,
+      //                       childType4,p4,r4);
+      //      parent.setDecayed(true);
+      //      if (decayStoreDecayedParts) event.add(&parent);
+      //      if (child1->isStable() && accept(*child1))
+      //        event.add(child1);
+      //      else
+      //        decayParticle(event, *child1);
+      //      if (child2->isStable() && accept(*child2))
+      //        event.add(child2);
+      //      else
+      //        decayParticle(event, *child2);
+      //      if (child3->isStable() && accept(*child3))
+      //        event.add(child3);
+      //      else
+      //        decayParticle(event, *child3);
+      //      if (child4->isStable() && accept(*child4))
+      //        event.add(child4);
+      //      else
+      //        decayParticle(event, *child4);
+      //      break;
+      break;
+      }
+    }
+}
+
 
 void TherminatorGenerator::printIntroMessage(const TString & option __attribute__ (( unused)) )  const
 {
@@ -471,12 +531,12 @@ void TherminatorGenerator::initializeEventGenerator()
   particleDb = ParticleDb::getDefaultParticleDb();
   if (particleDb->getNumberOfTypes()<1)
     {
-      if (reportFatal(__FUNCTION__))
-        {
-        cout << endl;
-        cout << "Particle Database is not initialized. Waky Waky!!!!!" << endl;
-        cout << "ABORT/EXIT." << endl;
-        }
+    if (reportFatal(__FUNCTION__))
+      {
+      cout << endl;
+      cout << "Particle Database is not initialized. Waky Waky!!!!!" << endl;
+      cout << "ABORT/EXIT." << endl;
+      }
     exit(1);
     }
   switch (modelType)
@@ -533,21 +593,43 @@ void TherminatorGenerator::importMultiplicities()
     printItem("multiplicitiesInputPath",multiplicitiesInputPath);
     printItem("multiplicitiesInputFile",multiplicitiesInputFile);
     }
+  // initialize the multiplicity array
+  averageMultiplicities.clear();
+  int nPartTypes = particleDb->getParticleTypeCount();
+  if (reportDebug(__FUNCTION__)) cout << " nPartTypes: " << nPartTypes << endl;
+  for (int iPartType=0; iPartType<nPartTypes; iPartType++)
+    {
+    ParticleMultiplicity pm;
+    ParticleType * particleType = particleDb->getParticleType(iPartType);
+    pm.name         = particleType->getName();
+    pm.integral     = 0.0;
+    pm.multiplicity = 0.0;
+    averageMultiplicities.push_back(pm);
+    }
+  if (reportDebug(__FUNCTION__)) cout <<" averageMultiplicities initialized -- now open and read the file" << endl;
   ifstream & inputFile = openInputAsciiFile(multiplicitiesInputPath,multiplicitiesInputFile,".txt");
   try {
     {
     int count = 0;
-    ParticleMultiplicity pm;
     String name;
+    double integral;
+    double multiplicity;
     while (!inputFile.eof())
       {
-      inputFile >> name >> pm.integral >> pm.multiplicity;
+      inputFile >> name >> integral >> multiplicity;
       if (reportDebug(__FUNCTION__))
         {
         cout << endl;
-        cout << "i:" << count <<  " name: " << name << " integral: " << pm.integral << " multiplicity: " << pm.multiplicity << endl;
+        cout << "i:" << count <<  " name: " << name << " integral: " << integral << " multiplicity: " << multiplicity << endl;
         }
-      averageMultiplicities.push_back(pm);
+      int index = particleDb->findIndexForName(name);
+      if (index<0)
+        {
+        if (reportWarning(__FUNCTION__)) cout << "Name not found (skipping):" << name << endl;
+        continue;
+        }
+      averageMultiplicities[index].integral     = integral;
+      averageMultiplicities[index].multiplicity = multiplicity;
       count++;
       }
     if (reportDebug(__FUNCTION__))
@@ -568,15 +650,12 @@ void TherminatorGenerator::exportMultiplicities()
 {
   // create the outputpath if it does not exist...
   gSystem->mkdir(multiplicitiesOutputPath,1);
-
   ofstream & outputFile = openOutputAsciiFile(multiplicitiesOutputPath,multiplicitiesOutputFile,".txt");
   unsigned int nTypes = averageMultiplicities.size();
   for (unsigned int iType=0; iType<nTypes; iType++)
     {
-    ParticleType & type = *particleDb->getParticleType(iType);
-
     ParticleMultiplicity & pm = averageMultiplicities[iType];
-    outputFile << type.getName() << "    " << pm.integral << "    " << pm.multiplicity << endl;
+    outputFile << pm.name << "    " << pm.integral << "    " << pm.multiplicity << endl;
     }
   outputFile.close();
 }
@@ -600,6 +679,7 @@ void TherminatorGenerator::calculateMultiplicities()
     ParticleMultiplicity particleMultiplicity;
     if (particleType.isPhoton() && disablePhotons)
       {
+      particleMultiplicity.name         = particleType.getName();
       particleMultiplicity.integral     = 0.0;
       particleMultiplicity.multiplicity = 0.0;
       }
@@ -621,7 +701,7 @@ void TherminatorGenerator::calculateMultiplicities()
       particleMultiplicity.multiplicity = multiplicity;
       //if (iPartType > 10) exit(1);
       }
-     averageMultiplicities.push_back(particleMultiplicity);
+    averageMultiplicities.push_back(particleMultiplicity);
     }
   if (reportDebug(__FUNCTION__)) printMultiplicities();
 }

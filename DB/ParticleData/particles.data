@@ -1,4 +1,5 @@
-# Name	       Mass	   Gamma	    Spin      Isospin  I3      Nq      Ns    Naq     Nas	Nc	Nac	  MC
+# Name	      Mass         Gamma       Spin      Isospin   I3      Nq     Ns    Naq     Nas	       Nc	      Nac	         MC
+# mass and width(gamma) are in GeV.
 # penthaquarks
 #pentaq0th    1.5300000    0.0500000         0.5      0.       0.      4.      0.     0.      1.        0.       0.       1331
 #pentqa0th    1.5300000    0.0500000         0.5      0.       0.      0.      1.     4.      0.        0.       0.      -1331
@@ -389,4 +390,4 @@ pi0139plu    0.1395699    0.0000000         0.0      1.       1.      1.      0.
 pi0139min    0.1395699    0.0000000         0.0      1.      -1.      1.      0.     1.      0.        0.       0.       -211
 pi0135zer    0.1349764    0.0000000         0.0      1.       0.      1.      0.     1.      0.        0.       0.        111
 gam000zer    0.0000001    0.0000000         1.0      0.       0.      0.      0.     0.      0.        0.       0.         22
-
+#

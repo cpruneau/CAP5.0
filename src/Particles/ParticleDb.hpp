@@ -41,10 +41,10 @@ public:
 //  void writeToFile(const String &  outputFileName, bool printDecayProperties=true);
   void sortByMass();
   ParticleDb * extractCollection(int option);
-  unsigned int findIndexForType(ParticleType * type);
-  unsigned int findIndexForName(const String & name);
-  unsigned int findIndexForPdgCode(int pdgCode);
-  unsigned int findIndexForPrivateCode(int privateCode);
+  int findIndexForType(ParticleType * type);
+  int findIndexForName(const String & name);
+  int findIndexForPdgCode(int pdgCode);
+  int findIndexForPrivateCode(int privateCode);
   bool containsTypeNamed(String aName);
 
   int getNumberOfTypes() const { return size();}

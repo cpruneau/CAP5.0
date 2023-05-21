@@ -230,6 +230,10 @@ void ParticleDbManager::importParticleDbCAP()
   particleDb->sortByMass();
 }
 
+//!
+//!Import particle data from Therminator files.
+//!mass, width are in GeV
+//!
 void ParticleDbManager::importParticleDbNative()
 {
   ifstream & inputFile = openInputAsciiFile(particleDbImportPath,particleDbImportFile,".data");
@@ -276,7 +280,16 @@ void ParticleDbManager::importParticleDbNative()
     particleType->setNumberAC(static_cast<int> (Nac));
     particleType->setNumberB(static_cast<int>  (0));
     particleType->setNumberAB(static_cast<int> (0));
-    particleType->setPdgCode(static_cast<int>  (pdgCode));
+    double netS   = Nas - Ns;
+    double netC   = Nc  - Nac;
+    double baryon = (Nq + Ns + Nc)/3.0 - (Naq + Nas + Nac)/3.0;
+    double charge = isospin3 +(baryon +netS)/2.0;
+    particleType->setCharge( static_cast<int> ( charge ));
+    particleType->setBaryonNumber( static_cast<int> ( baryon ));
+    particleType->setStrangessNumber(static_cast<int> ( netS   ));
+    particleType->setCharmNumber(  static_cast<int> ( netC   ));
+    particleType->setBottomNumber( 0 );
+    particleType->setPdgCode(static_cast<int> ( pdgCode));
     particleDb->addParticleType(particleType);
     delete iss;
     }
@@ -291,6 +304,8 @@ void ParticleDbManager::importParticleDbNative()
   int    CGcoeff; // complete branching ratio by Clebsch-Gordan coefficient: 0-no 1-yes
   while (!inputFileDecays.eof())
     {
+    //cout << " BUG 0" << endl;
+
     inputFileDecays.getline(buff,300);
     if (!(*buff) || (*buff == '#'))
       {
@@ -298,10 +313,12 @@ void ParticleDbManager::importParticleDbNative()
 //      cout << "Skip comment" << endl;
       continue;
       }
+    //cout << " BUG 0a" << endl;
+
     char   parentName[20], childName1[20], childName2[20], childName3[20], childName4[20];
     istringstream * isss = new istringstream(buff);
     *isss >> parentName >> childName1 >> childName2 >> childName3 >> childName4 >> tBRatio >> CGcoeff;;
-    //cout << parentName << "  " << childName1 << "  " << childName2 << "  " << childName3 << "  " <<  childName4 <<"  " << tBRatio << "  " <<CGcoeff <<  endl;;
+    cout << parentName << "  " << childName1 << "  " << childName2 << "  " << childName3 << "  " <<  childName4 <<"  " << tBRatio << "  " <<CGcoeff <<  endl;;
     delete isss;
 
     ParticleType * parentType = nullptr;
@@ -404,8 +421,8 @@ void ParticleDbManager::importParticleDbNative()
         if (  (TMath::Abs(childType1->getSpin()  - childType2->getSpin()) < 0.01)
             && (TMath::Abs(childType1->getMass() - childType2->getMass()) < 0.01)
             && (TMath::Abs(childType1->getIsospin3()-childType2->getIsospin3())   > 0.01)
-            && (childType1->getNetStrangeness()-childType2->getNetStrangeness() == 0)
-            && (childType1->getNetCharm()- childType2->getNetCharm() == 0)        )
+            && (childType1->getStrangessNumber()-childType2->getStrangessNumber() == 0)
+            && (childType1->getCharmNumber()- childType2->getCharmNumber() == 0)        )
           {
           tRatio *= 2.0;
           }
@@ -414,6 +431,7 @@ void ParticleDbManager::importParticleDbNative()
       {
       tRatio = tBRatio;
       }
+
     ParticleDecayMode decayMode;
     decayMode.setBranchingRatio(tRatio);
     decayMode.addChild(childType1);

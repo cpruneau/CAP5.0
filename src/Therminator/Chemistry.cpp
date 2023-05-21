@@ -80,16 +80,16 @@ double Chemistry::getChemicalPotential(ParticleType & aPartType) const
 {
   return (aPartType.getBaryonNumber()  * muBConst +
           aPartType.getIsospin3()      * muIConst +
-          aPartType.getNetStrangeness() * muSConst +
-          aPartType.getNetCharm()   * muCConst );
+          aPartType.getStrangessNumber() * muSConst +
+          aPartType.getCharmNumber()   * muCConst );
 }
 
 double Chemistry::getChemicalPotential(ParticleType & aPartType, double aX, double aY, double aZ) const
 {
   return (aPartType.getBaryonNumber()  * muBVar->interpolate(aX, aY, aZ) +
           aPartType.getIsospin3()      * muIVar->interpolate(aX, aY, aZ) +
-          aPartType.getNetStrangeness() * muSVar->interpolate(aX, aY, aZ) +
-          aPartType.getNetCharm()   * muCVar->interpolate(aX, aY, aZ) );
+          aPartType.getStrangessNumber() * muSVar->interpolate(aX, aY, aZ) +
+          aPartType.getCharmNumber()   * muCVar->interpolate(aX, aY, aZ) );
 }
 
 double Chemistry::getFugacity(ParticleType & aPartType) const

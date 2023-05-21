@@ -152,7 +152,7 @@ void ParticleThermalProperties::calculateAllProperties(double _temp, double _muB
   double massBeta    = mass*beta;
   double massBeta2   = massBeta*massBeta;
   double massBeta3   = massBeta2*massBeta;
-  double mu          = muB*type->getBaryonNumber() + muS*type->getNetStrangeness();
+  double mu          = muB*type->getBaryonNumber() + muS*type->getStrangessNumber();
   double muBeta      = mu*beta;
   double lambda      = exp(muBeta); //!<   fugacity factor
   double besselKn1   = 0.0;

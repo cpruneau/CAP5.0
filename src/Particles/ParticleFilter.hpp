@@ -75,6 +75,25 @@ public:
                                               bool filteringOnY,   double minY,   double maxY);
 
   //!
+  //!  Create a filter accepting only the given index code with the given kinematical parameters
+  //!
+  static ParticleFilter * createIndexFilter(int index, const String & name, const String  & title,
+                                            bool filteringOnPt,  double minPt,  double maxPt,
+                                            bool filteringOnEta, double minEta, double maxEta,
+                                            bool filteringOnY,   double minY,   double maxY);
+
+
+  //!
+  //!  Create filters accepting only the given index code range with the given kinematical parameters
+  //!
+  static vector<ParticleFilter*> createIndexFilters(int minIndex,
+                                             int maxIndex,
+                                             bool filteringOnPt,  double minPt,  double maxPt,
+                                             bool filteringOnEta, double minEta, double maxEta,
+                                             bool filteringOnY,   double minY,   double maxY);
+
+
+  //!
   //!  Create pos and neg hadron  filters with the given kinematical parameters
   //!
   static vector<ParticleFilter*> createChargedHadronFilters(bool filteringOnPt,  double minPt,  double maxPt,

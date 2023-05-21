@@ -4110,12 +4110,12 @@ void HistogramCollection::reduce_n1EtaPhiN1EtaPhiOntoN1N1DetaDphi(const TH2 * h_
           index = iDphi*nDeta + iDeta;
           if (index<0)
             {
-            cout << "index<0" << endl;
+            cout << "<F> HistogramCollection::reduce_n1EtaPhiN1EtaPhiOntoN1N1DetaDphi() index<0" << endl;
             exit(1);
             }
           if (index>=nDeta*nDphi)
             {
-            cout << "index>nDeta*nDphi" << endl;
+            cout << "<F> HistogramCollection::reduce_n1EtaPhiN1EtaPhiOntoN1N1DetaDphi() index>nDeta*nDphi" << endl;
             exit(1);
             }
           numerator[index]    += v;
@@ -4197,7 +4197,7 @@ void HistogramCollection::reduce_n2xEtaPhi_n2EtaEta(const TH1 * source, TH2 * ta
       if (v2<=0)
         if (reportFatal(__FUNCTION__))
           {
-          cout << endl;
+          cout << "<F> HistogramCollection::reduce_n2xEtaPhi_n2EtaEta() v2<=0" << endl;
           exit(1);
           }
       target->SetBinContent(iEta+1,jEta+1,v1/v2);

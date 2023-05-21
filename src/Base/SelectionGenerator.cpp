@@ -9,8 +9,11 @@
  * Author: Claude Pruneau,   04/01/2022
  *
  * *********************************************************************/
+#include <iostream>
 #include <vector>
 #include "SelectionGenerator.hpp"
+using std::cout;
+using std::endl;
 using CAP::SelectionGenerator;
 
 ClassImp(SelectionGenerator);
@@ -27,8 +30,18 @@ cumulativeProbability()
   initializeWith(probabilities);
 }
 
+SelectionGenerator & SelectionGenerator::operator=(const SelectionGenerator & source)
+{
+  if (this!=&source)
+    {
+    cumulativeProbability = source.cumulativeProbability;
+    }
+  return *this;
+}
+
 void SelectionGenerator::initializeWith(std::vector<double> & probabilities)
 {
+  cumulativeProbability.clear();
   int n = probabilities.size();
   double sum = 0.0;
   for (int k=0; k<n; k++)
@@ -36,11 +49,13 @@ void SelectionGenerator::initializeWith(std::vector<double> & probabilities)
     sum += probabilities[k];
     }
   double prob = 0.0;
-  for (int k=0; k<n; k++)
+  for (int kk=0; kk<n; kk++)
     {
-    prob += probabilities[k]/sum;
+    prob += probabilities[kk]/sum;
     cumulativeProbability.push_back(prob);
     }
+//  cout << "SelectionGenerator::initializeWith(std::vector<double> & probabilities) cumulativeProbability.size() : " << cumulativeProbability.size() << endl;
+
 }
 
 

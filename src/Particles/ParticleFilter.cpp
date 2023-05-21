@@ -281,6 +281,47 @@ ParticleFilter *  ParticleFilter::createHadronFilter(int pdg, const String & nam
   return filter;
 }
 
+ParticleFilter *  ParticleFilter::createIndexFilter(int index, const String & name, const String  & title,
+                                                     bool filteringOnPt,  double minPt,  double maxPt,
+                                                     bool filteringOnEta, double minEta, double maxEta,
+                                                     bool filteringOnY,   double minY,   double maxY)
+{
+  ParticleFilter * filter = new ParticleFilter();
+  filter->setName(name);
+  filter->setLongName(name);
+  filter->setTitle(title);
+  filter->setLongTitle(title);
+  filter->addCondition(0, 1,  0.0, 0.0);  // live particles only
+  filter->addCondition(3, 0,  double(index), double(index));   // accept particles w/ given index
+  if (filteringOnPt)   filter->addCondition(5, 1, minPt,  maxPt);
+  if (filteringOnEta)  filter->addCondition(5, 7, minEta, maxEta);
+  if (filteringOnY)    filter->addCondition(5, 8, minY,   maxY);
+  return filter;
+}
+
+vector<ParticleFilter*> ParticleFilter::createIndexFilters(int minIndex,
+                                                           int maxIndex,
+                                                           bool filteringOnPt,  double minPt,  double maxPt,
+                                                           bool filteringOnEta, double minEta, double maxEta,
+                                                           bool filteringOnY,   double minY,   double maxY)
+{
+  vector<ParticleFilter*> filters;
+  String name;
+  for (int index=minIndex; index<=maxIndex; index++)
+    {
+    name = "Part ";
+    name += index;
+    filters.push_back(createIndexFilter(index,name,name,
+                                        filteringOnPt,minPt,maxPt,
+                                        filteringOnEta,minEta,maxEta,
+                                        filteringOnY,minY,maxY));
+    }
+  return filters;
+}
+
+
+
+
 vector<ParticleFilter*> ParticleFilter::createBaryonFilters(bool filteringOnPt,  double minPt,  double maxPt,
                                                             bool filteringOnEta, double minEta, double maxEta,
                                                             bool filteringOnY,   double minY,   double maxY)
@@ -406,9 +447,9 @@ bool ParticleFilter::accept(const Particle & particle)
         accepting = condition.accept(double(type.getPdgCode()));
         break;
 
-        //case 3: // User Code
-        //accepting = condition.accept(double(type.getUserPid()));
-        //break;
+        case 3: // Particle index
+        accepting = condition.accept(double(type.getIndex()));
+        break;
 
         case 4: // Type selection
         switch (filterSubType)

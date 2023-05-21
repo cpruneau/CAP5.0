@@ -26,8 +26,9 @@ double probDensity(double p, double mass, double temperature, double mu, double 
 }
 
 
-MomentumGenerator::MomentumGenerator(int  _generatorType, ParticleType * _particleType,
-                                     vector<double> _parameters, TRandom * _selectedRandom)
+MomentumGenerator::MomentumGenerator(int  _generatorType,
+                                     ParticleType * _particleType,
+                                     vector<double> _parameters)
 :
 generatorType(_generatorType),
 particleType(_particleType),

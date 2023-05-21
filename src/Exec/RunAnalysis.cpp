@@ -122,59 +122,59 @@ void RunAnalysis::setDefaultConfiguration()
   addParameter("SetSeed",                 true);
   addParameter("SeedValue",               long(121212121));
 
-  addParameter("EventFilterModelOption",     TString("All"));
-  addParameter("EventFilterModelNValues",    0);
-  addParameter("EventFilterModelValue0",     0.0);
-  addParameter("EventFilterModelValue1",     0.0);
-  addParameter("EventFilterModelValue2",     0.0);
-  addParameter("EventFilterModelValue3",     0.0);
-  addParameter("EventFilterModelValue4",     0.0);
-  addParameter("EventFilterModelValue5",     0.0);
-  addParameter("EventFilterModelValue6",     0.0);
-  addParameter("EventFilterModelValue7",     0.0);
-  addParameter("EventFilterModelValue8",     0.0);
-  addParameter("EventFilterModelValue9",     0.0);
-  addParameter("EventFilterModelValue10",     0.0);
-  addParameter("EventFilterModelValue11",     0.0);
-  addParameter("EventFilterModelValue12",     0.0);
+  addParameter("Analysis:EventFilterModelOption",     TString("All"));
+  addParameter("Analysis:EventFilterModelNValues",    0);
+  addParameter("Analysis:EventFilterModelValue0",     0.0);
+  addParameter("Analysis:EventFilterModelValue1",     0.0);
+  addParameter("Analysis:EventFilterModelValue2",     0.0);
+  addParameter("Analysis:EventFilterModelValue3",     0.0);
+  addParameter("Analysis:EventFilterModelValue4",     0.0);
+  addParameter("Analysis:EventFilterModelValue5",     0.0);
+  addParameter("Analysis:EventFilterModelValue6",     0.0);
+  addParameter("Analysis:EventFilterModelValue7",     0.0);
+  addParameter("Analysis:EventFilterModelValue8",     0.0);
+  addParameter("Analysis:EventFilterModelValue9",     0.0);
+  addParameter("Analysis:EventFilterModelValue10",    0.0);
+  addParameter("Analysis:EventFilterModelValue11",    0.0);
+  addParameter("Analysis:EventFilterModelValue12",    0.0);
 
-  addParameter("EventFilterAnaOption",     TString("All"));
-  addParameter("EventFilterAnaNValues",    0);
-  addParameter("EventFilterAnaValue0",     0.0);
-  addParameter("EventFilterAnaValue1",     0.0);
-  addParameter("EventFilterAnaValue2",     0.0);
-  addParameter("EventFilterAnaValue3",     0.0);
-  addParameter("EventFilterAnaValue4",     0.0);
-  addParameter("EventFilterAnaValue5",     0.0);
-  addParameter("EventFilterAnaValue6",     0.0);
-  addParameter("EventFilterAnaValue7",     0.0);
-  addParameter("EventFilterAnaValue8",     0.0);
-  addParameter("EventFilterAnaValue9",     0.0);
-  addParameter("EventFilterAnaValue10",     0.0);
-  addParameter("EventFilterAnaValue11",     0.0);
-  addParameter("EventFilterAnaValue12",     0.0);
+  addParameter("Analysis:EventFilterAnaOption",      TString("All"));
+  addParameter("Analysis:EventFilterAnaNValues",     0);
+  addParameter("Analysis:EventFilterAnaValue0",      0.0);
+  addParameter("Analysis:EventFilterAnaValue1",      0.0);
+  addParameter("Analysis:EventFilterAnaValue2",      0.0);
+  addParameter("Analysis:EventFilterAnaValue3",      0.0);
+  addParameter("Analysis:EventFilterAnaValue4",      0.0);
+  addParameter("Analysis:EventFilterAnaValue5",      0.0);
+  addParameter("Analysis:EventFilterAnaValue6",      0.0);
+  addParameter("Analysis:EventFilterAnaValue7",      0.0);
+  addParameter("Analysis:EventFilterAnaValue8",      0.0);
+  addParameter("Analysis:EventFilterAnaValue9",      0.0);
+  addParameter("Analysis:EventFilterAnaValue10",     0.0);
+  addParameter("Analysis:EventFilterAnaValue11",     0.0);
+  addParameter("Analysis:EventFilterAnaValue12",     0.0);
 
-  addParameter("PartFilterModelOption",     TString("All"));
-  addParameter("PartFilterModelPt",         true);
-  addParameter("PartFilterModelMinPt",            0.2);
-  addParameter("PartFilterModelMaxPt",            2.0);
-  addParameter("PartFilterModelEta",        false);
-  addParameter("PartFilterModelMinEta",           -4.0);
-  addParameter("PartFilterModelMaxEta",            4.0);
-  addParameter("PartFilterModelY",          true);
-  addParameter("PartFilterModelMinY",             -4.0);
-  addParameter("PartFilterModelMaxY",              4.0);
+  addParameter("Analysis:PartFilterModelOption",     TString("All"));
+  addParameter("Analysis:PartFilterModelPt",         false);
+  addParameter("Analysis:PartFilterModelMinPt",      0.2);
+  addParameter("Analysis:PartFilterModelMaxPt",      2.0);
+  addParameter("Analysis:PartFilterModelEta",        false);
+  addParameter("Analysis:PartFilterModelMinEta",     -4.0);
+  addParameter("Analysis:PartFilterModelMaxEta",     4.0);
+  addParameter("Analysis:PartFilterModelY",          false);
+  addParameter("Analysis:PartFilterModelMinY",       -4.0);
+  addParameter("Analysis:PartFilterModelMaxY",       4.0);
 
-  addParameter("PartFilterAnaOption",       TString("All"));
-  addParameter("PartFilterAnaFilterPt",           true);
-  addParameter("PartFilterAnaMinPt",              0.2);
-  addParameter("PartFilterAnaMaxPt",              2.0);
-  addParameter("PartFilterAnaEta",          false);
-  addParameter("PartFilterAnaMinEta",             -4.0);
-  addParameter("PartFilterAnaMaxEta",             4.0);
-  addParameter("PartFilterAnaY",            true);
-  addParameter("PartFilterAnaMinY",               -4.0);
-  addParameter("PartFilterAnaMaxY",               4.0);
+  addParameter("Analysis:PartFilterAnaOption",       TString("All"));
+  addParameter("Analysis:PartFilterAnaFilterPt",     false);
+  addParameter("Analysis:PartFilterAnaMinPt",        0.0);
+  addParameter("Analysis:PartFilterAnaMaxPt",        2.0);
+  addParameter("Analysis:PartFilterAnaEta",          false);
+  addParameter("Analysis:PartFilterAnaMinEta",       -4.0);
+  addParameter("Analysis:PartFilterAnaMaxEta",       4.0);
+  addParameter("Analysis:PartFilterAnaY",            false);
+  addParameter("Analysis:PartFilterAnaMinY",         -4.0);
+  addParameter("Analysis:PartFilterAnaMaxY",         4.0);
 }
 
 
@@ -252,26 +252,30 @@ void RunAnalysis::configure()
   bool    runFillY                        = getValueBool("RunFillY");
   String inputPathName                    = getValueString("HistogramsImportPath");
   String outputPathName                   = getValueString("HistogramsExportPath");
-  String partFilterModelOption            = getValueString("PartFilterModelOption");
-  double partFilterModelPt                = getValueBool(  "PartFilterModelPt");
-  double partFilterModelMinPt             = getValueDouble("PartFilterModelMinPt");
-  double partFilterModelMaxPt             = getValueDouble("PartFilterModelMaxPt");
-  bool   partFilterModelEta               = getValueBool(  "PartFilterModelEta");
-  double partFilterModelMinEta            = getValueDouble("PartFilterModelMinEta");
-  double partFilterModelMaxEta            = getValueDouble("PartFilterModelMaxEta");
-  bool   partFilterModelY                 = getValueBool(  "PartFilterModelY");
-  double partFilterModelMinY              = getValueDouble("PartFilterModelMinY");
-  double partFilterModelMaxY              = getValueDouble("PartFilterModelMaxY");
-  String partFilterAnaOption              = getValueString("PartFilterAnaOption");
-  double partFilterAnaFilterPt            = getValueBool(  "PartFilterAnaFilterPt");
-  double partFilterAnaMinPt               = getValueDouble("PartFilterAnaMinPt");
-  double partFilterAnaMaxPt               = getValueDouble("PartFilterAnaMaxPt");
-  bool   partFilterAnaEta                 = getValueBool(  "PartFilterAnaEta");
-  double partFilterAnaMinEta              = getValueDouble("PartFilterAnaMinEta");
-  double partFilterAnaMaxEta              = getValueDouble("PartFilterAnaMaxEta");
-  bool   partFilterAnaY                   = getValueBool(  "PartFilterAnaY");
-  double partFilterAnaMinY                = getValueDouble("PartFilterAnaMinY");
-  double partFilterAnaMaxY                = getValueDouble("PartFilterAnaMaxY");
+
+  String eventFilterModelOption           = getValueString("Analysis:EventFilterModelOption");
+  String eventFilterAnaOption             = getValueString("Analysis:EventFilterAnaOption");
+
+  String partFilterModelOption            = getValueString("Analysis:PartFilterModelOption");
+  double partFilterModelPt                = getValueBool(  "Analysis:PartFilterModelPt");
+  double partFilterModelMinPt             = getValueDouble("Analysis:PartFilterModelMinPt");
+  double partFilterModelMaxPt             = getValueDouble("Analysis:PartFilterModelMaxPt");
+  bool   partFilterModelEta               = getValueBool(  "Analysis:PartFilterModelEta");
+  double partFilterModelMinEta            = getValueDouble("Analysis:PartFilterModelMinEta");
+  double partFilterModelMaxEta            = getValueDouble("Analysis:PartFilterModelMaxEta");
+  bool   partFilterModelY                 = getValueBool(  "Analysis:PartFilterModelY");
+  double partFilterModelMinY              = getValueDouble("Analysis:PartFilterModelMinY");
+  double partFilterModelMaxY              = getValueDouble("Analysis:PartFilterModelMaxY");
+  String partFilterAnaOption              = getValueString("Analysis:PartFilterAnaOption");
+  double partFilterAnaFilterPt            = getValueBool(  "Analysis:PartFilterAnaFilterPt");
+  double partFilterAnaMinPt               = getValueDouble("Analysis:PartFilterAnaMinPt");
+  double partFilterAnaMaxPt               = getValueDouble("Analysis:PartFilterAnaMaxPt");
+  bool   partFilterAnaEta                 = getValueBool(  "Analysis:PartFilterAnaEta");
+  double partFilterAnaMinEta              = getValueDouble("Analysis:PartFilterAnaMinEta");
+  double partFilterAnaMaxEta              = getValueDouble("Analysis:PartFilterAnaMaxEta");
+  bool   partFilterAnaY                   = getValueBool(  "Analysis:PartFilterAnaY");
+  double partFilterAnaMinY                = getValueDouble("Analysis:PartFilterAnaMinY");
+  double partFilterAnaMaxY                = getValueDouble("Analysis:PartFilterAnaMaxY");
   bool   setSeed                          = getValueBool(  "SetSeed");
   long   seedValue                        = getValueLong(  "SeedValue");
 
@@ -340,6 +344,10 @@ void RunAnalysis::configure()
     printItem("RunFillY",runFillY);
     printItem("HistogramsImportPath",inputPathName);
     printItem("HistogramsExportPath",outputPathName);
+
+    printItem("EventFilterModelOption",eventFilterModelOption);
+    printItem("EventFilterAnaOption",eventFilterAnaOption);
+
     printItem("PartFilterModelOption",partFilterModelOption);
     printItem("PartFilterModelPt",partFilterModelPt);
     printItem("PartFilterModelMinPt",partFilterModelMinPt);
@@ -374,11 +382,10 @@ void RunAnalysis::configure()
   // Setup all event filters
   // =========================================
   vector<double> modelBounds;
-  String eventFilterModelOption = getValueString("EventFilterModelOption");
-  int n = getValueInt("EventFilterModelNValues");
+  int n = getValueInt("Analysis:EventFilterModelNValues");
   for (int k=0; k<n; k++)
     {
-    String key = "EventFilterModelValue";
+    String key = "Analysis:EventFilterModelValue";
     key += k;
     modelBounds.push_back( getValueBool(key));
     }
@@ -389,11 +396,10 @@ void RunAnalysis::configure()
   else if (eventFilterModelOption.EqualTo("TpcMult"))          eventFilterModels = EventFilter::createTpcMultiplicityFilters(modelBounds);
 
   vector<double> anaBounds;
-  String eventFilterAnaOption = getValueString("EventFilterAnaOption");
-  n = getValueInt("EventFilterAnaNValues");
+  n = getValueInt("Analysis:EventFilterAnaNValues");
   for (int k=0; k<n; k++)
     {
-    String key = "EventFilterAnaValue";
+    String key = "Analysis:EventFilterAnaValue";
     key += k;
     anaBounds.push_back( getValueBool(key));
     }
@@ -403,7 +409,7 @@ void RunAnalysis::configure()
   else if (eventFilterAnaOption.EqualTo("V0Mult"))           eventFilterAnalysis = EventFilter::createV0MultiplicityFilters(anaBounds);
   else if (eventFilterAnaOption.EqualTo("TpcMult"))          eventFilterAnalysis = EventFilter::createTpcMultiplicityFilters(anaBounds);
 
-  if (eventFilterAnalysis.size()<1)
+   if (eventFilterAnalysis.size()<1)
     {
     if (reportFatal(__FUNCTION__))
       {
@@ -414,7 +420,6 @@ void RunAnalysis::configure()
       }
     exit(1);
     }
-
 
   // =========================================
   // Setup all particle filter
@@ -429,6 +434,7 @@ void RunAnalysis::configure()
   else if (partFilterModelOption.EqualTo("PlusMinusHadrons")) particleFiltersModels = ParticleFilter::createPlusMinusHadronFilters(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY);
   else if (partFilterModelOption.EqualTo("StrangeHadrons"))   particleFiltersModels = ParticleFilter::createStrangeHadronFilters(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY);
   else if (partFilterModelOption.EqualTo("Baryons"))          particleFiltersModels = ParticleFilter::createBaryonFilters(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY);
+  else if (partFilterModelOption.EqualTo("Index"))            particleFiltersModels = ParticleFilter::createIndexFilters(0,381,partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY);
 
   if (partFilterAnaOption.EqualTo("All"))                   particleFiltersAnalysis = ParticleFilter::createOpenParticleFilter();
   else if (partFilterAnaOption.EqualTo("AliceV0"))          particleFiltersAnalysis = ParticleFilter::createAliceV0Filter();
@@ -440,6 +446,7 @@ void RunAnalysis::configure()
   else if (partFilterAnaOption.EqualTo("PlusMinusHadrons")) particleFiltersAnalysis = ParticleFilter::createPlusMinusHadronFilters(partFilterAnaFilterPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY);
   else if (partFilterAnaOption.EqualTo("StrangeHadrons"))   particleFiltersAnalysis = ParticleFilter::createStrangeHadronFilters(partFilterAnaFilterPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY);
   else if (partFilterAnaOption.EqualTo("Baryons"))          particleFiltersAnalysis = ParticleFilter::createBaryonFilters(partFilterAnaFilterPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY);
+  else if (partFilterAnaOption.EqualTo("Index"))            particleFiltersAnalysis = ParticleFilter::createIndexFilters(0,381,partFilterAnaFilterPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY);
 
   if (particleFiltersAnalysis.size()<1)
     {

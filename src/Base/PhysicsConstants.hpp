@@ -465,6 +465,28 @@ constexpr double electronVoltToJoule()
   return 1.6021773e-19;
 }
 
+//!
+//!Proton lifetime limit
+//!
+//!Bajc, Borut; Hisano, Junji; Kuwahara, Takumi; Omura, Yuji (2016).
+//!"Threshold corrections to dimension-six proton decay operators in non-minimal SUSY SU(5) GUTs".
+//!Nuclear Physics B. 910: 1. arXiv:1603.03568
+//!
+constexpr double protonLifetime_years()
+{
+  return 1.67E34;
+}
+
+//!
+//!Proton lifetime in seconds
+//!
+constexpr double protonLifetime_SI()
+{
+  return protonLifetime_years() * yearToSecond();
+}
+
+
+
 }
 
 }

@@ -40,7 +40,9 @@ public:
 
   //! stat : 1 Fermi Dirac
   //!     -1 : bose einstein
-  MomentumGenerator(int _generatorType, ParticleType * _particleType, vector<double> _parameters, TRandom * _selectedRandom=gRandom);
+  MomentumGenerator(int _generatorType,
+                    ParticleType * _particleType,
+                    vector<double> _parameters);
   virtual ~MomentumGenerator() {}
   virtual void   generate(LorentzVector & momentum);
 

@@ -54,6 +54,7 @@ using CAP::FileException;
 
 struct ParticleMultiplicity
 {
+  String name;
   double integral;
   double multiplicity;
 };
@@ -88,6 +89,10 @@ public:
   virtual void createEvent();
   virtual void exportEvent();
   virtual void printEvent();
+
+  bool accept(Particle & parent);
+
+  virtual void decayParticle(Event & event, Particle & parent);
 
 //  virtual void createHistograms();
 //  virtual void importHistograms(TFile & inputFile);
@@ -125,6 +130,7 @@ protected:
   int    nSamplesIntegration;
   bool   modelOnlyBackFlow;
   bool   decayRescaleChannels;
+  bool   decayDisabled;
   bool   decayDisable2Prong;
   bool   decayDisable3Prong;
   bool   decayNoWeakDecay;

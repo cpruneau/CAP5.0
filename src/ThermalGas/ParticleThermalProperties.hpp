@@ -217,7 +217,7 @@ public:
   //!
   double getStrangeDensity() const
   {
-  return numberDensity * type->getNetStrangeness();
+  return numberDensity * type->getStrangessNumber();
   }
 
   //!

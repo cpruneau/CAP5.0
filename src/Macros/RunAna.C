@@ -71,6 +71,8 @@ int RunAna(TString configFile,
   cout << "  RunAna()"  << endl;
   CAP::Configuration configuration;
 
+  if (isGrid || seed!=0)  gRandom->SetSeed(seed);
+
   if (isGrid)
     {
     // For slurm jobs, one checks that ini file exists prior to calling the job
@@ -80,29 +82,13 @@ int RunAna(TString configFile,
     cout << "Configuration path......... : " << configurationPath << endl;
     cout << "Configuration file......... : " << configurationFile << endl;
     configuration.readFromFile(configurationPath,configurationFile);
-    }
-  else
-    {
-    TString configurationPath = getenv("CAP_PROJECTS");
-    TString configurationFile = configFile;
-    cout << "Configuration path......... : " << configurationPath << endl;
-    cout << "Configuration file......... : " << configurationFile << endl;
-    configuration.readFromFile(configurationPath,configurationFile);
-    }
-
-  configuration.addParameter("Run:Analysis:isGrid",                  isGrid);
-  configuration.addParameter("Run:Analysis:HistogramOutputPath",     histogramPath);
-  configuration.addParameter("Run:Analysis:nEventsPerSubbunch",      nEventsPerSubbunch);
-  configuration.addParameter("Run:Analysis:nSubbunchesPerBunch",     nSubbunchesPerBunch);
-  configuration.addParameter("Run:Analysis:nBunches",                nBunches);
-  configuration.addParameter("Run:Analysis:BunchLabel",              TString("BUNCH"));
-  configuration.addParameter("Run:Analysis:SubbunchLabel",           TString(""));
-
-  if (isGrid || seed!=0)
-    gRandom->SetSeed(seed);
-
-  if (isGrid)
-    {
+    configuration.addParameter("Run:Analysis:isGrid",                  isGrid);
+    configuration.addParameter("Run:Analysis:HistogramOutputPath",     histogramPath);
+    configuration.addParameter("Run:Analysis:nEventsPerSubbunch",      nEventsPerSubbunch);
+    configuration.addParameter("Run:Analysis:nSubbunchesPerBunch",     nSubbunchesPerBunch);
+    configuration.addParameter("Run:Analysis:nBunches",                nBunches);
+    configuration.addParameter("Run:Analysis:BunchLabel",              TString("BUNCH"));
+    configuration.addParameter("Run:Analysis:SubbunchLabel",           TString(""));
     // overide the ini file for selected parameters
     TString dbPath = getenv("CAP_DATABASE");
     TString dbPathParticleData   = dbPath + "ParticleData/";
@@ -115,6 +101,17 @@ int RunAna(TString configFile,
     configuration.addParameter("Run:ParticleDb:ParticleDbImportPath",dbPathParticleData);
     configuration.addParameter("Run:Analysis:Therminator:MultiplicitiesInputPath",dbPathTherminatorIni);
     }
+  else
+    {
+    TString configurationPath = getenv("CAP_PROJECTS");
+    TString configurationFile = configFile;
+    cout << "Configuration path......... : " << configurationPath << endl;
+    cout << "Configuration file......... : " << configurationFile << endl;
+    configuration.readFromFile(configurationPath,configurationFile);
+    }
+
+
+
   cout << "------------------------------------------------------------------------------------------------------" << endl;
   cout << "------------------------------------------------------------------------------------------------------" << endl;
   CAP::RunAnalysis * analysis = new CAP::RunAnalysis("Run", configuration);
