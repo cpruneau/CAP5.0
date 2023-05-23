@@ -465,7 +465,7 @@ Iterator locateMaximum(Iterator first, Iterator last)
 }
 
 template <typename T>
-T polynomial(T x, const T * coeffs, unsigned int n)
+T polynomial(T x, const T * coeffs, int n)
 {
   T result = coeffs[n-1];
   for (unsigned int i=n-1; i>0; i--) result = coeffs[i-1] + x*result;
@@ -480,6 +480,7 @@ T polynomial(T x, const vector<T> & coeffs)
   for (unsigned int i=n-1; i>0; i--) result = coeffs[i-1] + x*result;
   return result;
 }
+
 
 //template <typename T>
 //vector<T> polynomialDerivK(T x, const T * coeffs, unsigned int nCoeffs, unsigned int nResult)

@@ -7,4 +7,7 @@
 #pragma link C++ class CAP::Math::Vector3<float>+;
 #pragma link C++ class CAP::Math::Vector3<double>+;
 #pragma link C++ class CAP::Math::Vector3<long double>+;
+#pragma link C++ class CAP::Math::VectorLorentz<float>+;
+#pragma link C++ class CAP::Math::VectorLorentz<double>+;
+#pragma link C++ class CAP::Math::VectorLorentz<long double>+;
 #endif

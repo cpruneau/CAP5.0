@@ -66,7 +66,7 @@ double Model_HadronGas::getIntegrand(ParticleType& aPartType)
   rapidityP	    = momentumRapidityRange * (gRandom->Rndm() - 0.5);
   energy        = mT * cosh(rapidityP);
   denom         = statistics + exp( (energy-chemPotential)/temperature );
-  integrand     = spinFactor * pT * dPt * dSigmaP /(CAP::Math::twoPiCube()*denom);
+  integrand     = spinFactor * pT * dPt /(CAP::Math::twoPiCube()*denom);
   position.SetXYZT(rho*cos(phiS),rho*sin(phiS),Tau*sinh(rapidityS),Tau*cosh(rapidityS));
   momentum.SetPxPyPzE(pT*cos(phiP),pT*sin(phiP),mT*sinh(rapidityP),energy);
 

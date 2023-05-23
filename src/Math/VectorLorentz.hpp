@@ -1,5 +1,14 @@
 #ifndef CAP_VectorLorentz
 #define CAP_VectorLorentz
+#include <string>
+#include <vector>
+#include <cstdlib>
+#include <algorithm>
+#include <limits>
+#include <cmath>
+#include "TString.h"
+#include "Exceptions.hpp"
+#include "MathConstants.hpp"
 #include "Vector3.hpp"
 
 namespace CAP
@@ -33,7 +42,7 @@ protected:
   T v1;
   T v2;
   T v3;
-  int storageType
+  int storageType;
 
 public:
 
@@ -53,7 +62,7 @@ public:
   v1(_v1),
   v2(_v2),
   v3(_v3),
-  storage(_storageType)
+  storageType(_storageType)
   {  }
 
   VectorLorentz(T * _values, int _storageType=0)
@@ -80,11 +89,16 @@ public:
   v1(source.v1),
   v2(source.v2),
   v3(source.v3),
-  storageType(_storageType)
+  storageType(source.storageType)
   {  }
 
 
   virtual ~VectorLorentz() {};
+
+  int storage() const
+  {
+  return storageType;
+  }
 
   //!
   //! Returns the value stored at the give index.
@@ -162,12 +176,12 @@ public:
 
       case 4: // MPhiRhoY
       {
-      T mt = sqrt(v0*v0+v2*v2);
+      T mt = std::sqrt(v0*v0+v2*v2);
       switch (index)
         {
           case 0: return mt * std::cosh(v3); //!> t
-          case 1: return v2*cos(v1); //!> x
-          case 2: return v2*sin(v1);; //!> y
+          case 1: return v2*std::cos(v1); //!> x
+          case 2: return v2*std::sin(v1);; //!> y
           case 3: return mt * std::sinh(v3); //!> z
           default: throw MathException("index>3","VectorLorentz<T>::operator []");
         }
@@ -179,9 +193,9 @@ public:
       switch (index)
         {
           case 0: return v0; //!> t
-          case 1: return v2*cos(v1); //!> x
-          case 2: return v2*sin(v1);; //!> y
-          case 3: return v2*sinh(v3); //!> z
+          case 1: return v2*std::cos(v1); //!> x
+          case 2: return v2*std::sin(v1);; //!> y
+          case 3: return v2*std::sinh(v3); //!> z
           default: throw MathException("index>3","VectorLorentz<T>::operator []");
         }
       break;
@@ -310,13 +324,16 @@ public:
       }
 
       case 2:
+      {
       v0 = t;
       v1 = std::atan2(y,x);
       v2 = std::sqrt(x*x + y*y);
       v3 = z;
       break;
+      }
 
       case 3:
+      {
       T mSq = t*t-x*x-y*y-z*z;
       if (mSq<0) throw MathException("t*t-x*x-y*y-z*z < 0 case 3","setFromTXYZ");
       v0 = std::sqrt(mSq);
@@ -324,8 +341,9 @@ public:
       v2 = y;
       v3 = z;
       break;
-
+      }
       case 4:
+      {
       T mSq = t*t-x*x-y*y-z*z;
       if (mSq<0) throw MathException("t*t-x*x-y*y-z*z < 0 case 4","setFromTXYZ");
       v0 = std::sqrt(mSq);
@@ -333,18 +351,21 @@ public:
       v2 = std::sqrt(x*x + y*y);
       v3 = 0.5*std::log((t+z)/(t-z));
       break;
+      }
 
       case 5:
+      {
       v0 = t;
       v1 = std::atan2(y,x);
       v2 = std::sqrt(x*x + y*y);
-      T theta = atan2(std::sqrt(v2), z);
-      T ct = cosTheta(theta);
+      T theta = std::atan2(std::sqrt(v2), z);
+      T ct = std::cos(theta);
       if (ct*ct < 1)
         v3 = -0.5* std::log( (1.0-ct)/(1.0+ct) );
       else
         v3 = (z == 0) ? 0 : ((z>0) ? 1E10 : -1E10);
       break;
+      }
     }
   }
 
@@ -388,7 +409,7 @@ public:
 
   void setTPhiRhoEta(const T & t, const T & phi, const T & rho, const T & eta)
   {
-  v0 = m;
+  v0 = t;
   v1 = phi;
   v2 = rho;
   v3 = eta;
@@ -447,12 +468,16 @@ public:
       case 2: return std::atan2(v2,v3);
       case 3: return std::atan2(std::sqrt(v1*v1+v2*v2),v3);
       case 4:
+      {
       T mt = std::sqrt(v0*v0+v2*v2);
-      T z  = mt * sinh(v3);
+      T z  = mt * std::sinh(v3);
       return std::atan2(v2,z);
+      }
       case 5:
-      T z = v2 * sinh(v3);
+      {
+      T z = v2 * std::sinh(v3);
       return std::atan2(v2,z);
+      }
       default: throw MathException("Internal error","VectorLorentz<T>::theta()");
     }
   }
@@ -466,12 +491,16 @@ public:
       case 2: return v3/std::sqrt(v2*v2+v3*v3);
       case 3: return v3/std::sqrt(v1*v1+v2*v2+v3*v3);
       case 4:
+      {
       T mt = std::sqrt(v0*v0+v2*v2);
-      T z  = mt * sinh(v3);
+      T z  = mt * std::sinh(v3);
       return z/std::sqrt(v2*v2+z*z);
+      }
       case 5:
-      T z = v2 * sinh(v3);
+      {
+      T z = v2 * std::sinh(v3);
       return z/std::sqrt(v2*v2+z*z);
+      }
       default: throw MathException("Internal error","VectorLorentz<T>::cosTheta()");
     }
   }
@@ -481,20 +510,40 @@ public:
   switch (storageType)
     {
       case 0:
+      {
       T ptSq = v1*v1+v2*v2;
       return sqrt(ptSq)/std::sqrt(ptSq+v3*v3);
-      case 1: return std::cos(v2);
-      case 2: return v2/std::sqrt(v2*v2+v3*v3);
-      case 3: return v3/std::sqrt(v1*v1+v2*v2+v3*v3);
-      case 4:
-      T mt = std::sqrt(v0*v0+v2*v2);
-      T z  = mt * sinh(v3);
-      return v2/std::sqrt(v2*v2+z*z);
-      case 5:
-      T z = v2 * sinh(v3);
-      return v2/std::sqrt(v2*v2+z*z);
+      }
+      case 1:
+      {
+      return std::cos(v2);
+      }
 
-      default: throw MathException("Internal error","VectorLorentz<T>::sinTheta()");
+      case 2:
+      {
+      return v2/std::sqrt(v2*v2+v3*v3);
+      }
+      case 3:
+      {
+      return v3/std::sqrt(v1*v1+v2*v2+v3*v3);
+      }
+      case 4:
+      {
+      T mt = std::sqrt(v0*v0+v2*v2);
+      T z  = mt * std::sinh(v3);
+      return v2/std::sqrt(v2*v2+z*z);
+      }
+      case 5:
+      {
+      T z = v2 * std::sinh(v3);
+      return v2/std::sqrt(v2*v2+z*z);
+      }
+
+      default:
+      {
+      throw MathException("Internal error","VectorLorentz<T>::sinTheta()");
+      }
+
     }
   }
 
@@ -507,12 +556,16 @@ public:
       case 2: return std::sqrt(v2*v2+v3*v3);
       case 3: return std::sqrt(v1*v1+v2*v2+v3*v3);
       case 4:
+      {
       T mt = std::sqrt(v0*v0+v2*v2);
-      T z  = mt * sinh(v3);
+      T z  = mt * std::sinh(v3);
       return std::sqrt(v2*v2+z*z);
+      }
       case 5:
-      T z = v2 * sinh(v3);
+      {
+      T z = v2 * std::sinh(v3);
       return std::sqrt(v2*v2+z*z);
+      }
       default: throw MathException("Internal error","VectorLorentz<T>::modulus()");
     }
   }
@@ -526,12 +579,16 @@ public:
       case 2: return v2*v2+v3*v3;
       case 3: return v1*v1+v2*v2+v3*v3;
       case 4:
+      {
       T mt = std::sqrt(v0*v0+v2*v2);
-      T z  = mt * sinh(v3);
+      T z  = mt * std::sinh(v3);
       return v2*v2+z*z;
+      }
       case 5:
-      T z = v2 * sinh(v3);
+      {
+      T z = v2 * std::sinh(v3);
       return v2*v2+z*z;
+      }
       default: throw MathException("Internal error","VectorLorentz<T>::modulusSquare()");
     }
   }
@@ -541,27 +598,35 @@ public:
   switch (storageType)
     {
       case 0:
+      {
       T s = v0*v0 - (v1*v1+v2*v2+v3*v3);
       if (s<0) throw MathException("v0*v0 - (v1*v1+v2*v2+v3*v3) case 0","modulus()");
       return std::sqrt(s);
+      }
 
       case 1:
+      {
       T s = v0*v0 - v3*v3;
       if (s<0) throw MathException("v0*v0 - v3*v3 case 1","modulus()");
       return std::sqrt(s);
+      }
 
       case 2:
+      {
       T s = v0*v0 - (v2*v2+v3*v3);
       if (s<0) throw MathException("v0*v0 - v3*v3 case 1","modulus()");
       return std::sqrt(s);
+      }
 
       case 3: return v0;
       case 4: return v0;
       case 5:
-      T z = v2 * sinh(v3);
+      {
+      T z = v2 * std::sinh(v3);
       T s = v0*v0 - (v2*v2+z*z);
       if (s<0) throw MathException("v0*v0 - (v1*v1+v2*v2+v3*v3) case 0","modulus()");
       return std::sqrt(s);
+      }
 
       default: throw MathException("Internal error","VectorLorentz<T>::modulus()");
     }
@@ -583,10 +648,16 @@ public:
       case 3: return v0*v0;
       case 4: return v0*v0;
       case 5:
-      T z = v2 * sinh(v3);
-      return = v0*v0 - (v2*v2+z*z);
+      {
+      T z = v2 * std::sinh(v3);
+      return v0*v0 - (v2*v2+z*z);
+      }
 
-      default: throw MathException("Internal error","VectorLorentz<T>::modulus()");
+      default:
+      {
+      throw MathException("Internal error","VectorLorentz<T>::modulus()");
+      }
+
     }
   }
 
@@ -698,7 +769,7 @@ public:
   {
   T bSq = betaSquare();
   if (bSq>=1) throw MathException("betaSq()>=1","gamma()");
-  return 1.0/sqtd::sqrt(1-bSq);
+  return 1.0/std::sqrt(1-bSq);
   }
 
   T pseudoRapidity() const
@@ -759,13 +830,19 @@ public:
   template <typename Q>
   bool  operator== (const VectorLorentz<Q> & otherVector) const
   {
-  return (t()==otherVector.t())  && x()==otherVector.x()) && (y()==otherVector.y()) && (z()==otherVector.z());
+  return (t()==otherVector.t())  &&
+    (x()==otherVector.x()) &&
+    (y()==otherVector.y()) &&
+    (z()==otherVector.z());
   }
 
   template <typename Q>
   bool  operator!= (const VectorLorentz<Q> & otherVector) const
   {
-  return (t()!=otherVector.t()) || x()!=otherVector.x()) || (y()!=otherVector.y()) || (z()!=otherVector.z());
+  return (t()!=otherVector.t()) ||
+    (x()!=otherVector.x()) ||
+    (y()!=otherVector.y()) ||
+    (z()!=otherVector.z());
   }
 
   template <typename Q>
@@ -791,7 +868,7 @@ public:
   }
 
   //! Unary minus.
-  VectorLorentz operator- () const ;
+  VectorLorentz operator- () const
   {
   VectorLorentz v(0,0,0,storageType);
   switch (storageType)
@@ -936,12 +1013,11 @@ public:
   //! Active rotation of this VectorLorentz by the given angle relative to the x-axis
   void rotateX(const T & angle)
   {
-  T tt   = ;
   T s    = std::sin(angle);
   T c    = std::cos(angle);
   T yy  = y();
   T zz  = z();
-  setFromTXYZ(t(),x(), c*yy1 - s*zz, s*yy + c*zz);
+  setFromTXYZ(t(),x(), c*yy - s*zz, s*yy + c*zz);
   }
 
   //! Active rotation of this VectorLorentz by the given angle relative to the y-axis
@@ -968,7 +1044,7 @@ public:
   {
   T tt  = t();
   T xx  = x();
-  T gamma = 1.0/sqrt(1 - beta*beta);
+  T gamma = 1.0/std::sqrt(1 - beta*beta);
   setFromTXYZ(gamma*(tt+beta*xx), gamma*(xx+beta*tt), y(), z());
   }
 
@@ -976,15 +1052,15 @@ public:
   {
   T tt  = t();
   T yy  = y();
-  T gamma = 1.0/sqrt(1 - beta*beta);
-  setFromTXYZ(gamma*(tt+beta*xx), x(), gamma*(yy+beta*tt), z());
+  T gamma = 1.0/std::sqrt(1 - beta*beta);
+  setFromTXYZ(gamma*(tt+beta*yy), x(), gamma*(yy+beta*tt), z());
   }
 
   void boostZ(const T & beta)
   {
   T tt  = t();
   T zz  = z();
-  T gamma = 1.0/sqrt(1 - beta*beta);
+  T gamma = 1.0/std::sqrt(1 - beta*beta);
   setFromTXYZ(gamma*(tt+beta*zz), x(), y(), gamma*(zz+beta*tt));
   }
 
@@ -1017,7 +1093,9 @@ public:
   //!
   T rapidity() const
   {
-  return 0.5*std::log( (t()+z()) / (t()-z()) );
+  T arg = (t()+z()) / (t()-z());
+  if (arg<=0) throw MathException("arg<=0","VectorLorentz<T>::rapidity()");
+  return 0.5*std::log(arg);
   }
 
   virtual void print() const
