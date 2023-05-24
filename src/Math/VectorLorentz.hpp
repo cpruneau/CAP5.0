@@ -263,6 +263,8 @@ public:
     }
   }
 
+
+
   void setTXYZ(const T * values)
   {
   v0 = values[0];
@@ -456,6 +458,80 @@ public:
       case 4: return std::sin(v1);
       case 5: return std::sin(v1);
       default: throw MathException("Internal error","VectorLorentz<T>::sinPhi()");
+    }
+  }
+
+  //!
+  //! Return the azimuthal angle between this and the other vector
+  //!
+  template <typename Q>
+  T  deltaPhi(const VectorLorentz<Q> & other) const
+  {
+  switch (storageType)
+    {
+      case 0:
+      case 3:
+      {
+      switch (other.storageType)
+        {
+          case 0:
+          case 3:
+          {
+          T dPhi = std::atan2(v2,v1) - std::atan2(other.v2,other.v1);
+          while (dPhi>twoPi()) dPhi -= twoPi();
+          while (dPhi<0) dPhi += twoPi();
+          return dPhi;
+          }
+
+          case 1:
+          case 2:
+          case 4:
+          case 5:
+          {
+          T dPhi = std::atan2(v2,v1) - other.v1;
+          while (dPhi>twoPi()) dPhi -= twoPi();
+          while (dPhi<0) dPhi += twoPi();
+          return dPhi;
+          }
+
+          default:
+          throw MathException("Unknown storageType","deltaPhi(const VectorLorentz<Q> & other) const");
+        }
+      }
+
+      case 1:
+      case 2:
+      case 4:
+      case 5:
+      {
+      switch (other.storageType)
+        {
+          case 0:
+          case 3:
+          {
+          T dPhi = v1 - std::atan2(other.v2,other.v1);
+          while (dPhi>twoPi()) dPhi -= twoPi();
+          while (dPhi<0) dPhi += twoPi();
+          return dPhi;
+          }
+
+          case 1:
+          case 2:
+          case 4:
+          case 5:
+          {
+          T dPhi = v1 - other.v1;
+          while (dPhi>twoPi()) dPhi -= twoPi();
+          while (dPhi<0) dPhi += twoPi();
+          return dPhi;
+          }
+
+          default:
+          throw MathException("Unknown storageType","deltaPhi(const VectorLorentz<Q> & other) const");
+        }
+      }
+
+      default: throw MathException("Unknown storageType","VectorLorentz<T>::phi()");
     }
   }
 

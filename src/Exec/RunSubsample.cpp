@@ -54,25 +54,25 @@ void RunSubsample::setDefaultConfiguration()
   Task::setDefaultConfiguration();
   bool YES = true;
   bool NO  = false;
-  addParameter("GlobalLabel",         TString("G"));
-  addParameter("SpherocityLabel",     TString("S"));
-  addParameter("PartLabel",           TString("Part"));
-  addParameter("PairLabel",           TString("Pair"));
-  addParameter("NuDynLabel",          TString("NuDyn"));
-  addParameter("GenLabel",            TString("Gen"));
-  addParameter("RecoLabel",           TString("Reco"));
-  addParameter("Severity",            TString("DEBUG"));
-  addParameter("Subsample",           YES);
-  addParameter("SubsampleBase",       YES);
-  addParameter("SubsampleDerived",    NO);
-  addParameter("SubsampleBalFct",     NO);
-  addParameter("HistogramsImportPath",  TString("./"));
+  addParameter("GlobalLabel",          TString("G"));
+  addParameter("SpherocityLabel",      TString("S"));
+  addParameter("SingleLabel",          TString("Single"));
+  addParameter("PairLabel",            TString("Pair"));
+  addParameter("NuDynLabel",           TString("NuDyn"));
+  addParameter("GenLabel",             TString("Gen"));
+  addParameter("RecoLabel",            TString("Reco"));
+  addParameter("Severity",             TString("DEBUG"));
+  addParameter("Subsample",            YES);
+  addParameter("SubsampleBase",        YES);
+  addParameter("SubsampleDerived",     NO);
+  addParameter("SubsampleBalFct",      NO);
+  addParameter("HistogramsImportPath", TString("./"));
   addParameter("HistogramsExportPath", TString("./"));
-  addParameter("Bunched",             YES);
-  addParameter("nBunches",            2);
-  addParameter("BunchLabel",          TString("BUNCH"));
-  addParameter("SubPathLabel",        TString("Output"));
-  addParameter("MaximumDepth",        1);
+  addParameter("Bunched",              YES);
+  addParameter("nBunches",             2);
+  addParameter("BunchLabel",           TString("BUNCH"));
+  addParameter("SubPathLabel",         TString("Output"));
+  addParameter("MaximumDepth",         1);
 }
 
 void RunSubsample::addBaseSubSampleTask(const String & basePath,
@@ -82,6 +82,8 @@ void RunSubsample::addBaseSubSampleTask(const String & basePath,
                                         int   maximumDepth,
                                         const String & taskType)
 {
+
+
   if (nBunches>0)
     {
     for (int k=1;k<=nBunches; k++)
@@ -97,8 +99,8 @@ void RunSubsample::addBaseSubSampleTask(const String & basePath,
       subConfig.addParameter(TString("Run:")+taskType+TString(":ExcludedPattern2"),TString("BalFct"));
       subConfig.addParameter(TString("Run:")+taskType+TString(":ExcludedPattern3"),TString("Sum"));
       subConfig.addParameter(TString("Run:")+taskType+TString(":AppendedString"),TString("Sum"));
-      subConfig.addParameter(TString("Run:")+taskType+TString(":MaximumDepth"),maximumDepth);
-      subConfig.printConfiguration(cout);
+      subConfig.addParameter(TString("Run:")+taskType+TString(":MaximumDepth"),2); //maximumDepth);
+      //subConfig.printConfiguration(cout);
       addSubTask( new SubSampleStatCalculator(taskType,subConfig));
       }
     }
@@ -216,7 +218,7 @@ void RunSubsample::configure()
   Task::configure();
   String GlobalLabel      = getValueString("GlobalLabel");
   String SpherocityLabel  = getValueString("SpherocityLabel");
-  String PartLabel        = getValueString("PartLabel");
+  String SingleLabel      = getValueString("SingleLabel");
   String PairLabel        = getValueString("PairLabel");
   String NuDynLabel       = getValueString("NuDynLabel");
   String GenLabel         = getValueString("GenLabel");
@@ -224,73 +226,72 @@ void RunSubsample::configure()
 
   bool    RunGlobalAnalysisGen     = getValueBool("RunGlobalAnalysisGen");
   bool    RunSpherocityAnalysisGen = getValueBool("RunSpherocityAnalysisGen");
-  bool    RunPartSingleAnalysisGen       = getValueBool("RunPartSingleAnalysisGen");
-  bool    RunPartPairAnalysisReco       = getValueBool("RunPartPairAnalysisReco");
+  bool    RunPartSingleAnalysisGen = getValueBool("RunPartSingleAnalysisGen");
+  bool    RunPartPairAnalysisGen   = getValueBool("RunPartPairAnalysisGen");
   bool    RunNuDynAnalysisGen      = getValueBool("RunNuDynAnalysisGen");
 
   bool    RunSubsampleBase     = getValueBool(  "SubsampleBase");
   bool    RunSubsampleDerived  = getValueBool(  "SubsampleDerivedGen");
   bool    RunSubsampleBalFct   = getValueBool(  "SubsampleBalFctGen");
-  String inputPathName        = getValueString("HistogramsImportPath");
-  String outputPathName       = getValueString("HistogramsExportPath");
+  String  inputPathName        = getValueString("HistogramsImportPath");
+  String  outputPathName       = getValueString("HistogramsExportPath");
   bool    bunched              = getValueBool(  "Bunched");
   int     nBunches             = getValueInt(   "nBunches");
-  String bunchLabel           = getValueString("BunchLabel");
-  String subPathLabel         = getValueString("SubPathLabel");
+  String  bunchLabel           = getValueString("BunchLabel");
+  String  subPathLabel         = getValueString("SubPathLabel");
   int     maximumDepth         = getValueInt(   "MaximumDepth");
 
 
   if (reportInfo(__FUNCTION__))
     {
     cout << endl;
-    cout << "GlobalLabel................:" << GlobalLabel      << endl;
-    cout << "SpherocityLabel............:" << SpherocityLabel  << endl;
-    cout << "PartLabel..................:" << PartLabel        << endl;
-    cout << "PairLabel..................:" << PairLabel        << endl;
-    cout << "NuDynLabel.................:" << NuDynLabel       << endl;
-    cout << "SubsampleBase..............:" << RunSubsampleBase      << endl;
-    cout << "SubsampleDerived...........:" << RunSubsampleDerived   << endl;
-    cout << "SubsampleBalFct............:" << RunSubsampleBalFct    << endl;
-    cout << "HistogramsImportPath.........:" << inputPathName         << endl;
-    cout << "HistogramsExportPath........:" << outputPathName        << endl;
-    cout << "Bunched....................:" << bunched              << endl;
-    cout << "nBunches...................:" << nBunches             << endl;
-    cout << "BunchLabel.................:" << bunchLabel           << endl;
-    cout << "SubPathLabel...............:" << subPathLabel         << endl;
-    cout << "MaximumDepth...............:" << maximumDepth         << endl;
-    cout << "RunGlobalAnalysisGen...............:" << RunGlobalAnalysisGen         << endl;
-    cout << "RunSpherocityAnalysisGen...........:" << RunSpherocityAnalysisGen     << endl;
-    cout << "RunPartSingleAnalysisGen.................:" << RunPartSingleAnalysisGen           << endl;
-    cout << "RunPartPairAnalysisReco.................:" << RunPartPairAnalysisReco           << endl;
-    cout << "RunNuDynAnalysisGen................:" << RunNuDynAnalysisGen          << endl;
+    printItem("GlobalLabel",              GlobalLabel);
+    printItem("SpherocityLabel",          SpherocityLabel);
+    printItem("SingleLabel",              SingleLabel);
+    printItem("PairLabel",                PairLabel);
+    printItem("NuDynLabel:",              NuDynLabel);
+    printItem("SubsampleBase",            RunSubsampleBase);
+    printItem("SubsampleDerived",         RunSubsampleDerived);
+    printItem("SubsampleBalFct",          RunSubsampleBalFct);
+    printItem("HistogramsImportPath",     inputPathName);
+    printItem("HistogramsExportPath",     outputPathName);
+    printItem("Bunched",                  bunched);
+    printItem("nBunches",                 nBunches);
+    printItem("BunchLabel",               bunchLabel);
+    printItem("SubPathLabel",             subPathLabel);
+    printItem("MaximumDepth",             maximumDepth);
+    printItem("RunGlobalAnalysisGen",     RunGlobalAnalysisGen);
+    printItem("RunSpherocityAnalysisGen", RunSpherocityAnalysisGen);
+    printItem("RunPartSingleAnalysisGen", RunPartSingleAnalysisGen);
+    printItem("RunPartPairAnalysisGen",   RunPartPairAnalysisGen);
+    printItem("RunNuDynAnalysisGen",      RunNuDynAnalysisGen);
     }
 
   if (RunSubsampleBase && RunGlobalAnalysisGen)     addBaseSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,GlobalLabel+GenLabel);
   if (RunSubsampleBase && RunSpherocityAnalysisGen) addBaseSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,SpherocityLabel+GenLabel);
-  if (RunSubsampleBase && RunPartSingleAnalysisGen)       addBaseSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,PartLabel+GenLabel);
-  if (RunSubsampleBase && RunPartPairAnalysisReco)       addBaseSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,PairLabel+GenLabel);
+  if (RunSubsampleBase && RunPartSingleAnalysisGen) addBaseSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,SingleLabel+GenLabel);
+  if (RunSubsampleBase && RunPartPairAnalysisGen)   addBaseSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,PairLabel+GenLabel);
   if (RunSubsampleBase && RunNuDynAnalysisGen)      addBaseSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,NuDynLabel+GenLabel);
 
   if (RunSubsampleDerived && RunGlobalAnalysisGen)     addDerivedSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,GlobalLabel+GenLabel);
   if (RunSubsampleDerived && RunSpherocityAnalysisGen) addDerivedSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,SpherocityLabel+GenLabel);
-  if (RunSubsampleDerived && RunPartSingleAnalysisGen)       addDerivedSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,PartLabel+GenLabel);
-  if (RunSubsampleDerived && RunPartPairAnalysisReco)       addDerivedSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,PairLabel+GenLabel);
+  if (RunSubsampleDerived && RunPartSingleAnalysisGen) addDerivedSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,SingleLabel+GenLabel);
+  if (RunSubsampleDerived && RunPartPairAnalysisGen)   addDerivedSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,PairLabel+GenLabel);
   if (RunSubsampleDerived && RunNuDynAnalysisGen)      addDerivedSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,NuDynLabel+GenLabel);
-
-  if (RunSubsampleBalFct && RunPartPairAnalysisReco)       addBalFctSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,PairLabel+GenLabel);
+  if (RunSubsampleBalFct  && RunPartPairAnalysisGen)   addBalFctSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,PairLabel+GenLabel);
 
   if (reportInfo(__FUNCTION__))
     {
     cout << endl;
     cout << "==================================================================================" << std::endl;
-    cout << "Configuration Completed; Run Analysis" << std::endl;
+    cout << "Configuration Completed; RunSubsample" << std::endl;
+    cout << " N subtasks: " << subTasks.size() << std::endl;
     cout << "==================================================================================" << std::endl;
     }
-  if (hasSubTasks() && isTaskOk())
-    for (unsigned int  iTask=0; iTask<subTasks.size(); iTask++)
-      {
-      subTasks[iTask]->configure();
-      }
+  for (unsigned int  iTask=0; iTask<subTasks.size(); iTask++)
+    {
+    subTasks[iTask]->configure();
+    }
   if (reportEnd(__FUNCTION__))
     ;
 }

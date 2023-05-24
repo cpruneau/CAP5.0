@@ -53,7 +53,7 @@ void SubSampleStatCalculator::execute()
     ;
   int defaultGroupSize          = getValueInt("DefaultGroupSize");
   String appendedString         = getValueString("AppendedString");
-  String HistogramsImportPath   = getValueString("HistogramsImportPath");
+  String histosImportPath       = getValueString("HistogramsImportPath");
   String histosExportPath       = getValueString("HistogramsExportPath");
   String histosExportFile       = getValueString("HistogramsExportFile");
   VectorString  includePatterns = getSelectedValues("IncludedPattern", "none");
@@ -61,6 +61,8 @@ void SubSampleStatCalculator::execute()
   bool prependPath  = true;
   bool verbose      = true;
   int  maximumDepth = 2;
+  cout << " maximumDepth " << maximumDepth << endl;
+  exit(1);
   VectorString  allFilesToSum   = listFilesInDir(histoInputPath,includePatterns,excludePatterns,prependPath, verbose, maximumDepth);
   int nFilesToSum = allFilesToSum.size();
   int groupSize   = (nFilesToSum>defaultGroupSize) ? defaultGroupSize : nFilesToSum;
@@ -81,15 +83,16 @@ void SubSampleStatCalculator::execute()
     {
     cout << endl;
     cout << " ==========================================================================================" << endl;
-    cout << " nFilesToSum................: " << nFilesToSum << endl;
-    cout << " Default group size.........: " << defaultGroupSize << endl;
-    cout << " Actual group size..........: " << groupSize << endl;
-    cout << " nGroups....................: " << nGroups << endl;
-    cout << " appendedString.............: " << appendedString << endl;
-    cout << " HistogramsImportPath.........: " << HistogramsImportPath << endl;
-    cout << " HistogramsExportPath........: " << histosExportPath << endl;
-    cout << " HistogramsExportFile........: " << histosExportFile << endl;
+    printItem("nFilesToSum",nFilesToSum);
+    printItem("Default group size",defaultGroupSize);
+    printItem("Actual group size",groupSize);
+    printItem("nGroups",nGroups);
+    printItem("appendedString",appendedString);
+    printItem("HistogramsImportPath",histosImportPath);
+    printItem("HistogramsExportPath",histosExportPath);
+    printItem("HistogramsExportFile",histosExportFile);
     cout << " ==========================================================================================" << endl;
+    cout << endl;
     }
   postTaskOk();
   

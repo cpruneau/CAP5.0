@@ -25,6 +25,23 @@ namespace CAP
 //!
 class DerivedHistoIterator : public Task
 {
+protected:
+
+  long nEventsProcessed;   //!< Number of events processed in the current file
+  long sumEventsProcessed; //!< Sum of the number of events processes.
+  long * nEventsAccepted;    //!< Number of events accepted in the current file for each event filter
+  long * sumEventsAccepted;  //!< Cumulated number of events accepted for each event filter
+
+
+  String appendedString;
+  int    defaultGroupSize;
+  int    nInputFile;
+  int    maximumDepth;
+  int    nEventFilters;
+
+ // bool   histosForceRewrite;
+
+
 public:
   
   //!
@@ -47,6 +64,8 @@ public:
   //! The configuration stipulates the input and output paths, the file template names and the output file append string.
   //!
   virtual void setDefaultConfiguration();
+
+  virtual void configure();
 
   //!
   //! Execute the calculation for all registered tasks and all the files they select.

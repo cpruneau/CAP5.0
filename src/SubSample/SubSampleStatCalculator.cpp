@@ -32,6 +32,8 @@ sumEventsAccepted(nullptr)
 
 void SubSampleStatCalculator::setDefaultConfiguration()
 {
+  Task::setDefaultConfiguration();
+  cout << "setDefaultConfiguration() --- Name of this task:" << getName() << endl;
   String none  = "none";
   addParameter("HistogramsCreate",       true);
   addParameter("HistogramsImport",       true);
@@ -50,15 +52,20 @@ void SubSampleStatCalculator::setDefaultConfiguration()
 
 void SubSampleStatCalculator::configure()
 {
+  Task::configure();
+  setSeverity();
   nEventFilters = 0;
-  defaultGroupSize    = getValueInt(   "DefaultGroupSize");
-  appendedString      = getValueString("AppendedString");
+  cout << " Name of this task:" << getName() << endl;
+
   histosImport        = getValueString("HistogramsImport");
   histosImportPath    = getValueString("HistogramsImportPath");
   histosExport        = getValueString("HistogramsExport");
   histosExportPath    = getValueString("HistogramsExportPath");
   histosExportFile    = getName();
-  maximumDepth        = getValueInt(   "MaximumDepth");
+  defaultGroupSize    = getValueInt(   "DefaultGroupSize");
+  appendedString      = getValueString("AppendedString");
+  maximumDepth        = getValueInt("MaximumDepth");
+  defaultGroupSize    = getValueInt("DefaultGroupSize");
 
   if (reportInfo(__FUNCTION__))
     {
@@ -90,11 +97,6 @@ void SubSampleStatCalculator::execute()
   if (reportInfo(__FUNCTION__))
     {
     cout << endl;
-    printItem("DefaultGroupSize",    defaultGroupSize);
-    printItem("AppendedString",      appendedString);
-    printItem("HistogramsImportPath",histosImportPath);
-    printItem("HistogramsExportPath",histosExportPath);
-    printItem("MaximumDepth",        maximumDepth);
     printItem("N included patterns", int(includePatterns.size()));
     for (unsigned int k=0;k<includePatterns.size();k++) printItem("Included",includePatterns[k]);
     printItem("N excluded patterns", int(excludePatterns.size()));
@@ -153,60 +155,58 @@ void SubSampleStatCalculator::execute()
     String parameterName;
 
     int nInputFile = last - first+1;
-    for (int iFile=first; iFile<last; iFile++)
+    String histosImportFile = allFilesToSum[first];
+    TFile & firstFile = openRootFile("", histosImportFile, "READ");
+    collectionAvg  = new HistogramCollection("Sum",getSeverityLevel());
+    collectionAvg->loadCollection(firstFile);
+    parameterName      = "taskExecuted";
+    nEventsProcessed   = readParameter(firstFile,parameterName);
+    sumEventsProcessed = nEventsProcessed;
+    parameterName      = "nEventFilters";
+    nEventFilters      = readParameter(firstFile,parameterName);
+    if (nEventFilters>0)
       {
-      String HistogramsImportFile = allFilesToSum[iFile];
-      TFile & inputFile = openRootFile("", HistogramsImportFile, "READ");
-      if (iFile==first)
+      nEventsAccepted    = new long[nEventFilters];
+      sumEventsAccepted  = new long[nEventFilters];
+      for (int iFilter=0; iFilter<nEventFilters; iFilter++)
         {
-        collectionAvg  = new HistogramCollection("Sum",getSeverityLevel());
-        collectionAvg->loadCollection(inputFile);
-        parameterName      = "taskExecuted";
-        nEventsProcessed   = readParameter(inputFile,parameterName);
-        sumEventsProcessed = nEventsProcessed;
-        parameterName      = "nEventFilters";
-        nEventFilters      = readParameter(inputFile,parameterName);
-        if (nEventFilters>0)
+        parameterName = "EventFilter";
+        parameterName += iFilter;
+        nEventsAccepted[iFilter]   = readParameter(firstFile,parameterName);
+        sumEventsAccepted[iFilter] = nEventsAccepted[iFilter];
+        }
+      }
+    else
+      {
+      if (reportWarning(__FUNCTION__)) cout << "nEventFilters is null" << endl;
+      }
+
+    for (int iFile=first+1; iFile<last; iFile++)
+      {
+      histosImportFile = allFilesToSum[iFile];
+      TFile & inputFile = openRootFile("", histosImportFile, "READ");
+      collection = new HistogramCollection(histosImportFile,getSeverityLevel());;
+      collection->loadCollection(inputFile);
+      collectionAvg->squareDifferenceCollection(*collection, double(sumEventsProcessed), double(nEventsProcessed), (iFile==(last-1)) ? nInputFile : -iFile);
+      parameterName      = "taskExecuted";
+      nEventsProcessed   = readParameter(inputFile,parameterName);
+      sumEventsProcessed += nEventsProcessed;
+      if (nEventFilters>0)
+        {
+        for (int iFilter=0; iFilter<nEventFilters; iFilter++)
           {
-          nEventsAccepted    = new long[nEventFilters];
-          sumEventsAccepted  = new long[nEventFilters];
-          for (int iFilter=0; iFilter<nEventFilters; iFilter++)
-            {
-            parameterName = "EventFilter";
-            parameterName += iFilter;
-            nEventsAccepted[iFilter]   = readParameter(inputFile,parameterName);
-            sumEventsAccepted[iFilter] = nEventsAccepted[iFilter];
-            }
-          }
-        else
-          {
-          if (reportWarning(__FUNCTION__)) cout << "nEventFilters is null" << endl;
+          parameterName = "EventFilter";
+          parameterName += iFilter;
+          nEventsAccepted[iFilter] = readParameter(inputFile,parameterName);
+          sumEventsAccepted[iFilter] += nEventsAccepted[iFilter];
           }
         }
       else
         {
-        collection = new HistogramCollection(HistogramsImportFile,getSeverityLevel());;
-        collection->loadCollection(inputFile);
-        collectionAvg->squareDifferenceCollection(*collection, double(sumEventsProcessed), double(nEventsProcessed), (iFile==(last-1)) ? nInputFile : -iFile);
-        parameterName      = "taskExecuted";
-        nEventsProcessed   = readParameter(inputFile,parameterName);
-        sumEventsProcessed += nEventsProcessed;
-        if (nEventFilters>0)
-          {
-          for (int iFilter=0; iFilter<nEventFilters; iFilter++)
-            {
-            parameterName = "EventFilter";
-            parameterName += iFilter;
-            nEventsAccepted[iFilter] = readParameter(inputFile,parameterName);
-            sumEventsAccepted[iFilter] += nEventsAccepted[iFilter];
-            }
-          }
-        else
-          {
-          if (reportWarning(__FUNCTION__)) cout << "nEventFilters is null" << endl;
-          }
-        delete collection;
+        if (reportWarning(__FUNCTION__)) cout << "nEventFilters is null" << endl;
         }
+      delete collection;
+      inputFile.Close();
       if (reportInfo(__FUNCTION__))
         {
         cout << endl;
@@ -232,9 +232,16 @@ void SubSampleStatCalculator::execute()
         }
       }
 
+    cout << " -- 1 --" << endl;
     collectionAvg->exportHistograms(outputFile);
-    outputFile.Close();
+    cout << " -- 2 --" << endl;
+    firstFile.Close();
+    cout << " -- 2b --" << endl;
+    collectionAvg->setOwnership(0);
     delete collectionAvg;
+    cout << " -- 3 --" << endl;
+    outputFile.Close();
+    cout << " -- 4 --" << endl;
     }
   if (reportEnd(__FUNCTION__))
     ;

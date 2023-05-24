@@ -16,8 +16,8 @@ using CAP::ParticleSingleHistos;
 ClassImp(ParticleSingleHistos);
 
 ParticleSingleHistos::ParticleSingleHistos(Task * _parent,
-                               const String & _name,
-                               const Configuration & _configuration)
+                                           const String & _name,
+                                           const Configuration & _configuration)
 :
 HistogramGroup(_parent,_name,_configuration),
 fillEta(0),
@@ -70,6 +70,8 @@ void ParticleSingleHistos::createHistograms()
   const String & bn  = getName();
   const String & ptn = getParentName();
   const String & ppn = getParentPathName();
+
+
   nBins_n1 = configuration.getValueInt(ppn,"nBins_n1");
   min_n1   = configuration.getValueDouble(ppn,"Min_n1");
   max_n1   = configuration.getValueDouble(ppn,"Max_n1");
@@ -98,39 +100,38 @@ void ParticleSingleHistos::createHistograms()
   fillY   = configuration.getValueBool(ppn,"FillY");
   fillP2  = configuration.getValueBool(ppn,"FillP2");
 
-  if (reportDebug(__FUNCTION__))
+  if (reportInfo(__FUNCTION__))
     {
     cout << endl;
-    cout << "  Part:Parent Task Name....................: " << ptn << endl;
-    cout << "  Part:Parent Path Name....................: " << ppn << endl;
-    cout << "  Part:Histo Base Name.....................: " << bn << endl;
-    cout << "  Part:FillEta.............................: " << fillEta << endl;
-    cout << "  Part:FillY...............................: " << fillY   << endl;
-    cout << "  Part:FillP2..............................: " << fillP2  << endl;
-    cout << "  Part:nBins_n1............................: " << nBins_n1 << endl;
-    cout << "  Part:Min_n1..............................: " << min_n1 << endl;
-    cout << "  Part:Max_n1..............................: " << max_n1 << endl;
-    cout << "  Part:nBins_pt............................: " << nBins_pt << endl;
-    cout << "  Part:Min_pt..............................: " << min_pt << endl;
-    cout << "  Part:Max_pt..............................: " << max_pt << endl;
-    cout << "  Part:scale_pt............................: " << scale_pt << endl;
-    cout << "  Part:nBins_phi...........................: " << nBins_phi << endl;
-    cout << "  Part:Min_phi.............................: " << min_phi << endl;
-    cout << "  Part:Max_phi.............................: " << max_phi << endl;
-    cout << "  Part:scale_phi...........................: " << scale_phi << endl;
-    cout << "  Part:nBins_eta...........................: " << nBins_eta << endl;
-    cout << "  Part:Min_eta.............................: " << min_eta << endl;
-    cout << "  Part:Max_eta.............................: " << max_eta << endl;
-    cout << "  Part:range_eta...........................: " << range_eta << endl;
-    cout << "  Part:nBins_y.............................: " << nBins_y << endl;
-    cout << "  Part:Min_y...............................: " << min_y << endl;
-    cout << "  Part:Max_y...............................: " << max_y << endl;
-    cout << "  Part:range_y.............................: " << range_y << endl;
-    cout << "  Part:FillEta.............................: " << fillEta << endl;
-    cout << "  Part:FillY...............................: " << fillY << endl;
-    cout << "  Part:FillP2..............................: " << fillP2 << endl;
+    printItem("Single:Parent Task Name",   ptn);
+    printItem("Single:Parent Path Name",   ppn);
+    printItem("Single:Histo Base Name",   bn);
+    printItem("Single:FillEta",    fillEta);
+    printItem("Single:FillY",      fillY  );
+    printItem("Single:FillP2",     fillP2 );
+    printItem("Single:nBins_n1",   int(nBins_n1));
+    printItem("Single:Min_n1",     min_n1);
+    printItem("Single:Max_n1",     max_n1);
+    printItem("Single:nBins_pt",   int(nBins_pt));
+    printItem("Single:Min_pt",     min_pt);
+    printItem("Single:Max_pt",     max_pt);
+    printItem("Single:scale_pt",   scale_pt);
+    printItem("Single:nBins_phi",  int(nBins_phi));
+    printItem("Single:Min_phi",    min_phi);
+    printItem("Single:Max_phi",    max_phi);
+    printItem("Single:scale_phi",  scale_phi);
+    printItem("Single:nBins_eta",  int(nBins_eta));
+    printItem("Single:Min_eta",    min_eta);
+    printItem("Single:Max_eta",    max_eta);
+    printItem("Single:range_eta",  range_eta);
+    printItem("Single:nBins_y",    int(nBins_y));
+    printItem("Single:Min_y",      min_y);
+    printItem("Single:Max_y",      max_y);
+    printItem("Single:range_y",    range_y);
+    printItem("Single:FillEta",    fillEta);
+    printItem("Single:FillY",      fillY);
+    printItem("Single:FillP2",     fillP2);
     }
-
   h_n1         = createHistogram(createName(bn,"n1"),           nBins_n1,  min_n1,  max_n1,  "n_1","N");
   h_n1_eTotal  = createHistogram(createName(bn,"n1_eTotal"),    nBins_n1,  min_n1,  10.0*max_n1,  "n1_eTotal","N");
   h_n1_pt      = createHistogram(createName(bn,"n1_pt"),        nBins_pt,  min_pt,  max_pt,  "p_{T}","N");
@@ -174,12 +175,12 @@ void ParticleSingleHistos::importHistograms(TFile & inputFile)
   if (reportDebug(__FUNCTION__))
     {
     cout << endl;
-    cout << "  Part:Parent Task Name....................: " << ptn << endl;
-    cout << "  Part:Parent Path Name....................: " << ppn << endl;
-    cout << "  Part:Histo Base Name.....................: " << bn << endl;
-    cout << "  Part:FillEta.............................: " << fillEta << endl;
-    cout << "  Part:FillY...............................: " << fillY   << endl;
-    cout << "  Part:FillP2..............................: " << fillP2  << endl;
+    printItem("Single:Parent Task Name",   ptn);
+    printItem("Single:Parent Path Name",   ppn);
+    printItem("Single:Histo Base Name.",   bn);
+    printItem("Single:FillEta",   fillEta);
+    printItem("Single:FillY",   fillY  );
+    printItem("Single:FillP2",   fillP2 );
     }
 
   fillEta      = configuration.getValueBool(ppn,"FillEta");
@@ -225,11 +226,11 @@ void ParticleSingleHistos::loadCalibration(TFile & inputFile)
   if (reportDebug(__FUNCTION__))
     {
     cout << endl;
-    cout << "  Part:Parent Task Name....................: " << ptn << endl;
-    cout << "  Part:Parent Path Name....................: " << ppn << endl;
-    cout << "  Part:Histo Base Name.....................: " << bn << endl;
-    cout << "  Part:useEffCorrection....................: " << useEffCorrection << endl;
-    cout << "  Part:efficiencyOpt.......................: " << efficiencyOpt   << endl;
+    printItem("Single:Parent Task Name",   ptn);
+    printItem("Single:Parent Path Name",   ppn);
+    printItem("Single:Histo Base Name",   bn);
+    printItem("Single:useEffCorrection",   useEffCorrection);
+    printItem("Single:efficiencyOpt",   efficiencyOpt  );
     }
 
   switch (efficiencyOpt)

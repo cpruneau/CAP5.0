@@ -15,6 +15,7 @@
 #include <TROOT.h>
 
 void loadBase(const TString & includeBasePath);
+void loadParticles(const TString & includeBasePath);
 void loadPythia(const TString & includeBasePath);
 void loadPerformance(const TString & includeBasePath);
 void loadAmpt(const TString & includeBasePath);
@@ -24,7 +25,7 @@ void loadHerwig(const TString & includeBasePath);
 void loadUrqmd(const TString & includeBasePath);
 void loadBasicGen(const TString & includeBasePath);
 void loadGlobal(const TString & includeBasePath);
-void loadParticle(const TString & includeBasePath);
+void loadSingle(const TString & includeBasePath);
 void loadPair(const TString & includeBasePath);
 void loadNuDyn(const TString & includeBasePath);
 void loadSubSample(const TString & includeBasePath);
@@ -38,16 +39,17 @@ int RunSum(TString configFile,
 {
   TString includeBasePath = getenv("CAP_SRC");
   loadBase(includeBasePath);
+  loadParticles(includeBasePath);
   loadPythia(includeBasePath);
   loadPerformance(includeBasePath);
   loadAmpt(includeBasePath);
-  loadEpos(includeBasePath);
-  loadHijing(includeBasePath);
-  loadHerwig(includeBasePath);
-  loadUrqmd(includeBasePath);
+  //loadEpos(includeBasePath);
+  //loadHijing(includeBasePath);
+  //loadHerwig(includeBasePath);
+  //loadUrqmd(includeBasePath);
   loadBasicGen(includeBasePath);
   loadGlobal(includeBasePath);
-  loadParticle(includeBasePath);
+  loadSingle(includeBasePath);
   loadPair(includeBasePath);
   loadNuDyn(includeBasePath);
   loadSubSample(includeBasePath);
@@ -58,27 +60,27 @@ int RunSum(TString configFile,
   std::cout << "==================================================================================" << std::endl;
   std::cout << "Run Ana" << endl;
   std::cout << "==================================================================================" << std::endl;
-  Configuration configuration;
-  configuration.readFromFile(configFile);
-  configuration.setParameter("Run:HistogramInputPath",pathName);
-  configuration.setParameter("Run:HistogramOutputPath",pathName);
-  configuration.setParameter("Run:Subsample",          true);
-  configuration.setParameter("Run:SubsampleBaseGen",   true);
-  configuration.setParameter("Run:Bunched",            true);
-  configuration.setParameter("Run:nBunches",           nBunches);
-  configuration.setParameter("Run:BunchLabel",    TString("BUNCH"));
-  configuration.setParameter("Run:SubPathLabel",  TString(""));
-  configuration.setParameter("Run:MaximumDepth",  2);
+  CAP::Configuration configuration;
+  configuration.readFromFile("",configFile);
+  configuration.addParameter("Run:HistogramInputPath", pathName);
+  configuration.addParameter("Run:HistogramOutputPath",pathName);
+  configuration.addParameter("Run:Subsample",          true);
+  configuration.addParameter("Run:SubsampleBaseGen",   true);
+  configuration.addParameter("Run:Bunched",            true);
+  configuration.addParameter("Run:nBunches",           nBunches);
+  configuration.addParameter("Run:BunchLabel",         TString("BUNCH"));
+  configuration.addParameter("Run:SubPathLabel",       TString(""));
+  configuration.addParameter("Run:MaximumDepth",       2);
 
 //  if (isGrid)
 //    {
 //     }
 //  else
 //    {
-//    configuration.setParameter("Run:BunchLabel",    TString("Partial"));
-//    configuration.setParameter("Run:SubPathLabel",  TString(""));
+//    configuration.addParameter("Run:BunchLabel",    TString("Partial"));
+//    configuration.addParameter("Run:SubPathLabel",  TString(""));
 //    }
-  RunSubsample * analysis = new RunSubsample("Run", configuration);
+  CAP::RunSubsample * analysis = new CAP::RunSubsample("Run", configuration);
   analysis->configure();
   analysis->execute();
   //if (selectedLevel==MessageLogger::Debug) analysis->getConfiguration().writeToFile("DebugConfig.txt");
@@ -94,15 +96,36 @@ void loadBase(const TString & includeBasePath)
   gSystem->Load(includePath+"Task.hpp");
   gSystem->Load(includePath+"TaskIterator.hpp");
   gSystem->Load(includePath+"Collection.hpp");
-  gSystem->Load(includePath+"CanvasCollection.hpp");
-  gSystem->Load(includePath+"HistogramCollection.hpp");
-  gSystem->Load(includePath+"Histograms.hpp");
-  gSystem->Load(includePath+"Particle.hpp");
-  gSystem->Load(includePath+"ParticleType.hpp");
-  gSystem->Load(includePath+"ParticleTypeCollection.hpp");
-  gSystem->Load(includePath+"ParticleDecayMode.hpp");
   gSystem->Load(includePath+"DerivedHistoIterator.hpp");
   gSystem->Load("libBase.dylib");
+}
+
+void loadParticles(const TString & includeBasePath)
+{
+  TString includePath = includeBasePath + "/Particles/";
+  gSystem->Load(includePath+"Particle.hpp");
+  gSystem->Load(includePath+"ParticleType.hpp");
+  gSystem->Load(includePath+"ParticleDecayMode.hpp");
+  gSystem->Load("libParticles.dylib");
+}
+
+void loadSingle(const TString & includeBasePath)
+{
+  TString includePath = includeBasePath + "/ParticleSingle/";
+  gSystem->Load(includePath+"ParticleSingleHistos.hpp");
+  gSystem->Load(includePath+"ParticleSingleDerivedHistos.hpp");
+  gSystem->Load(includePath+"ParticleSingleAnalyzer.hpp");
+  gSystem->Load("libParticleSingle.dylib");
+}
+
+void loadPair(const TString & includeBasePath)
+{
+  TString includePath = includeBasePath + "/ParticlePair/";
+  gSystem->Load(includePath+"ParticlePairAnalyzer.hpp");
+  gSystem->Load(includePath+"ParticlePairHistos.hpp");
+  gSystem->Load(includePath+"ParticlePairDerivedHistos.hpp");
+  gSystem->Load(includePath+"BalanceFunctionCalculator.hpp");
+  gSystem->Load("libParticlePair.dylib");
 }
 
 void loadPythia(const TString & includeBasePath)
@@ -181,24 +204,7 @@ void loadGlobal(const TString & includeBasePath)
   gSystem->Load("libBasicGen.dylib");
 }
 
-void loadParticle(const TString & includeBasePath)
-{
-  TString includePath = includeBasePath + "/Particle/";
-  gSystem->Load(includePath+"ParticleHistos.hpp");
-  gSystem->Load(includePath+"ParticleDerivedHistos.hpp");
-  gSystem->Load(includePath+"ParticleAnalyzer.hpp");
-  gSystem->Load("libParticle.dylib");
-}
 
-void loadPair(const TString & includeBasePath)
-{
-  TString includePath = includeBasePath + "/Pair/";
-  gSystem->Load(includePath+"ParticlePairAnalyzer.hpp");
-  gSystem->Load(includePath+"ParticlePairHistos.hpp");
-  gSystem->Load(includePath+"ParticlePairDerivedHistos.hpp");
-  gSystem->Load(includePath+"BalanceFunctionCalculator.hpp");
-  gSystem->Load("libPair.dylib");
-}
 
 void loadNuDyn(const TString & includeBasePath)
 {

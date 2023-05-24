@@ -65,3 +65,58 @@ const String HistogramGroup::getParentPathName() const
   return parent->getFullTaskPath();
 }
 
+void HistogramGroup::printItem(const char * keyword, ostream & output, int size, int style)  const
+{
+  switch (style)
+    {
+      case 0: output <<  left << setw(size) << setfill('.')<< keyword << " : " << configuration.getParameter(keyword) << setfill(' ') << endl; break;
+      case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << configuration.getParameter(keyword) << endl; break;
+    }
+}
+
+void HistogramGroup::printItem(const char * keyword, bool   value, ostream & output, int size, int style)  const
+{
+  switch (style)
+    {
+      case 0: output <<  left << setw(size) << setfill('.')<< keyword << " : " << value << setfill(' ') << endl; break;
+      case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << value << endl; break;
+    }
+}
+
+void HistogramGroup::printItem(const char * keyword, int    value, ostream & output, int size, int style)  const
+{
+  switch (style)
+    {
+      case 0: output <<  left << setw(size) << setfill('.')<< keyword << " : " << value << setfill(' ') << endl; break;
+      case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << value << endl; break;
+    }
+}
+
+void HistogramGroup::printItem(const char * keyword, long   value, ostream & output, int size, int style)  const
+{
+  switch (style)
+    {
+      case 0: output <<  left << setw(size) << setfill('.')<< keyword << " : " << value << setfill(' ') << endl; break;
+      case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << value << endl; break;
+    }
+}
+
+void HistogramGroup::printItem(const char * keyword, double value, ostream & output, int size, int style)  const
+{
+  switch (style)
+    {
+      case 0: output <<  left << setw(size) << setfill('.')<< keyword << " : " << value << setfill(' ') << endl; break;
+      case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << value << endl; break;
+    }
+}
+
+void HistogramGroup::printItem(const char * keyword, const char * value, ostream & output, int size, int style)  const
+{
+  switch (style)
+    {
+      case 0: output <<  left << setw(size) << setfill('.')<< keyword << " : " << value << setfill(' ') << endl; break;
+      case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << value << endl; break;
+    }
+}
+
+

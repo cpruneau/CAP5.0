@@ -52,7 +52,7 @@ void RunAnalysis::setDefaultConfiguration()
   bool NO  = false;
   addParameter("GlobalLabel",     TString("G"));
   addParameter("SpherocityLabel", TString("S"));
-  addParameter("PartLabel",       TString("Part"));
+  addParameter("SingleLabel",     TString("Single"));
   addParameter("PairLabel",       TString("Pair"));
   addParameter("NuDynLabel",      TString("NuDyn"));
   addParameter("SimAnaLabel",     TString("SimAna"));
@@ -76,7 +76,7 @@ void RunAnalysis::setDefaultConfiguration()
   //  addParameter("histoModelDataName",      TString("none"));
   //  addParameter("histoAnalyzerName",       TString("none"));
   //  addParameter("histoBaseName",           TString("none"));
-  addParameter("Severity",                TString("Info"));
+  addParameter("Severity",                   TString("Info"));
   addParameter("RunParticleDbManager",       YES);
   addParameter("RunEventAnalysis",           YES);
   addParameter("RunEventAnalysisGen",        YES);
@@ -188,7 +188,7 @@ void RunAnalysis::configure()
   TaskIterator            * eventAnalysis = nullptr;
   String GlobalLabel      = getValueString("GlobalLabel");
   String SpherocityLabel  = getValueString("SpherocityLabel");
-  String PartLabel        = getValueString("PartLabel");
+  String SingleLabel      = getValueString("SingleLabel");
   String PairLabel        = getValueString("PairLabel");
   String NuDynLabel       = getValueString("NuDynLabel");
   String SimAnaLabel      = getValueString("SimAnaLabel");
@@ -286,7 +286,7 @@ void RunAnalysis::configure()
     cout << endl;
     printItem("GlobalLabel",GlobalLabel);
     printItem("SpherocityLabel",SpherocityLabel);
-    printItem("PartLabel",PartLabel);
+    printItem("SingleLabel",SingleLabel);
     printItem("PairLabel",PairLabel);
     printItem("NuDynLabel",NuDynLabel);
     printItem("SimAnaLabel",SimAnaLabel);
@@ -513,13 +513,13 @@ void RunAnalysis::configure()
 
     if (runGlobalAnalysisGen)       eventAnalysis->addSubTask(new GlobalAnalyzer(GlobalLabel+GenLabel, *requestedConfiguration,eventFilterAnalysis, particleFiltersAnalysis));
     if (runSpherocityAnalysisGen)   eventAnalysis->addSubTask(new TransverseSpherocityAnalyzer(SpherocityLabel+GenLabel, *requestedConfiguration,eventFilterAnalysis, particleFiltersAnalysis));
-    if (runPartSingleAnalysisGen)   eventAnalysis->addSubTask(new ParticleSingleAnalyzer(PartLabel+GenLabel, *requestedConfiguration,eventFilterAnalysis, particleFiltersAnalysis));
+    if (runPartSingleAnalysisGen)   eventAnalysis->addSubTask(new ParticleSingleAnalyzer(SingleLabel+GenLabel, *requestedConfiguration,eventFilterAnalysis, particleFiltersAnalysis));
     if (runPartPairAnalysisGen)     eventAnalysis->addSubTask(new ParticlePairAnalyzer(PairLabel+GenLabel, *requestedConfiguration,eventFilterAnalysis, particleFiltersAnalysis));
     if (runNuDynAnalysisGen)        eventAnalysis->addSubTask(new NuDynAnalyzer(NuDynLabel+GenLabel,*requestedConfiguration,eventFilterAnalysis,particleFiltersAnalysis));
 
     if (runGlobalAnalysisReco)      eventAnalysis->addSubTask(new GlobalAnalyzer(GlobalLabel+RecoLabel,*requestedConfiguration,eventFilterAnalysis, particleFiltersAnalysis));
     if (runSpherocityAnalysisReco)  eventAnalysis->addSubTask(new TransverseSpherocityAnalyzer(SpherocityLabel+RecoLabel, *requestedConfiguration,eventFilterAnalysis, particleFiltersAnalysis));
-    if (runPartSingleAnalysisReco)  eventAnalysis->addSubTask(new ParticleSingleAnalyzer(PartLabel+RecoLabel, *requestedConfiguration,eventFilterAnalysis, particleFiltersAnalysis));
+    if (runPartSingleAnalysisReco)  eventAnalysis->addSubTask(new ParticleSingleAnalyzer(SingleLabel+RecoLabel, *requestedConfiguration,eventFilterAnalysis, particleFiltersAnalysis));
     if (runPartPairAnalysisReco)    eventAnalysis->addSubTask(new ParticlePairAnalyzer(PairLabel+RecoLabel, *requestedConfiguration,eventFilterAnalysis, particleFiltersAnalysis));
     if (runNuDynAnalysisReco)       eventAnalysis->addSubTask(new NuDynAnalyzer(NuDynLabel+RecoLabel,*requestedConfiguration,eventFilterAnalysis,particleFiltersAnalysis));
     if (runPerformanceAna)          eventAnalysis->addSubTask(new ParticlePerformanceAnalyzer(SimAnaLabel,*requestedConfiguration,eventFilterAnalysis, particleFiltersAnalysis));
