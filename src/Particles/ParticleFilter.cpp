@@ -309,7 +309,7 @@ vector<ParticleFilter*> ParticleFilter::createIndexFilters(int minIndex,
   String name;
   for (int index=minIndex; index<=maxIndex; index++)
     {
-    name = "Part ";
+    name = "Part";
     name += index;
     filters.push_back(createIndexFilter(index,name,name,
                                         filteringOnPt,minPt,maxPt,
