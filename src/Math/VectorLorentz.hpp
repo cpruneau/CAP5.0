@@ -463,7 +463,7 @@ public:
 
   //!
   //! Return the azimuthal angle between this and the other vector
-  //!
+  //!  TXYZ=0, TPhiThetaR,  TPhiRhoZ, MXYZ, MPhiRhoY, MPhiRhoEta};
   template <typename Q>
   T  deltaPhi(const VectorLorentz<Q> & other) const
   {
@@ -848,7 +848,7 @@ public:
   return 1.0/std::sqrt(1-bSq);
   }
 
-  T pseudoRapidity() const
+  T pseudorapidity() const
   {
   T ct = cosTheta();
   if (ct*ct < 1) return -0.5* std::log( (1.0-ct)/(1.0+ct) );
@@ -1173,6 +1173,131 @@ public:
   if (arg<=0) throw MathException("arg<=0","VectorLorentz<T>::rapidity()");
   return 0.5*std::log(arg);
   }
+
+  //!
+  //! Return the rapidity difference between this and the other vector
+  //!  TXYZ=0, TPhiThetaR,  TPhiRhoZ, MXYZ, MPhiRhoY, MPhiRhoEta};
+  template <typename Q>
+  T  deltaRapidity(const VectorLorentz<Q> & other) const
+  {
+  switch (storageType)
+    {
+      case 0:
+      case 1:
+      case 2:
+      case 3:
+      case 5:
+      {
+      switch (other.storageType)
+        {
+          case 0:
+          case 1:
+          case 2:
+          case 3:
+          case 5:
+          {
+          return rapidity() - other.rapidity();
+          }
+
+          case 4:
+          {
+          return rapidity() - other.v3;
+          }
+
+          default:
+          throw MathException("Unknown storageType","deltaPhi(const VectorLorentz<Q> & other) const");
+        }
+      }
+
+      case 4:
+      {
+      switch (other.storageType)
+        {
+          case 0:
+          case 1:
+          case 2:
+          case 3:
+          case 5:
+          {
+          return v3 - other.rapidity() ;
+          }
+
+          case 4:
+          {
+          return v3 - other.v3 ;
+          }
+
+          default:
+          throw MathException("Unknown storageType","deltaPhi(const VectorLorentz<Q> & other) const");
+        }
+      }
+
+      default: throw MathException("Unknown storageType","VectorLorentz<T>::phi()");
+    }
+  }
+
+  //!
+  //! Return the rapidity difference between this and the other vector
+  //!  TXYZ=0, TPhiThetaR,  TPhiRhoZ, MXYZ, MPhiRhoY, MPhiRhoEta};
+  template <typename Q>
+  T  deltaPseudoRapidity(const VectorLorentz<Q> & other) const
+  {
+  switch (storageType)
+    {
+      case 0:
+      case 1:
+      case 2:
+      case 3:
+      case 4:
+      {
+      switch (other.storageType)
+        {
+          case 0:
+          case 1:
+          case 2:
+          case 3:
+          case 4:
+          {
+          return pseudorapidity() - other.pseudorapidity();
+          }
+
+          case 5:
+          {
+          return pseudorapidity() - other.v3;
+          }
+
+          default:
+          throw MathException("Unknown storageType","deltaPhi(const VectorLorentz<Q> & other) const");
+        }
+      }
+
+      case 5:
+      {
+      switch (other.storageType)
+        {
+          case 0:
+          case 1:
+          case 2:
+          case 3:
+          case 4:
+          {
+          return v3 - other.rapidity() ;
+          }
+
+          case 5:
+          {
+          return v3 - other.v3 ;
+          }
+
+          default:
+          throw MathException("Unknown storageType","deltaPhi(const VectorLorentz<Q> & other) const");
+        }
+      }
+
+      default: throw MathException("Unknown storageType","VectorLorentz<T>::phi()");
+    }
+  }
+
 
   virtual void print() const
   {
