@@ -15,8 +15,10 @@ using CAP::Configuration;
 using CAP::String;
 using CAP::VectorString;
 
-ClassImp(DerivedHistoIterator);
+ClassImp(CAP::DerivedHistoIterator);
 
+namespace CAP
+{
 
 DerivedHistoIterator::DerivedHistoIterator(const String & _name,
                                            const Configuration & _configuration)
@@ -43,8 +45,7 @@ void DerivedHistoIterator::configure()
   Task::configure();
   setSeverity();
   nEventFilters = 0;
-  cout << " Name of this task:" << getName() << endl;
-
+  if (reportInfo(__FUNCTION__)) cout << "Configuring task:" << getName() << endl;
   histosForceRewrite  = getValueBool(  "HistogramsForceRewrite");
   histosImport        = getValueString("HistogramsImport");
   histosImportPath    = getValueString("HistogramsImportPath");
@@ -70,6 +71,12 @@ void DerivedHistoIterator::configure()
     }
 }
 
+void DerivedHistoIterator::initialize()
+{
+  initializeTaskExecuted();
+  //initializeFilters();
+  //initializeParticleDbLink();
+}
 
 
 void DerivedHistoIterator::execute()
@@ -94,7 +101,7 @@ void DerivedHistoIterator::execute()
 
   for (unsigned int iTask=0; iTask<nSubTasks; iTask++)
     {
-    Task & subTask = *subTasks[iTask];
+    CAP::Task & subTask = *subTasks[iTask];
     analyzerName = subTask.getName();
     VectorString  includePatterns = getSelectedValues("IncludedPattern", "none");
     VectorString  excludePatterns = getSelectedValues("ExcludedPattern", "none");
@@ -145,31 +152,41 @@ void DerivedHistoIterator::execute()
       }
     for (int iFile=0; iFile<nFiles; iFile++)
       {
-      String HistogramsImportFile  = allFilesToProcess[iFile];
-      String histosExportFile = removeRootExtension(HistogramsImportFile);
+      histosImportFile  = allFilesToProcess[iFile];
+      histosExportFile  = removeRootExtension(histosImportFile);
       histosExportFile += appendedString;
       if (reportInfo(__FUNCTION__))
         {
         cout << endl;
         cout << " nFiles................: " << nFiles << endl;
         cout << " iFile.................: " << iFile  << endl;
-        cout << " Input file............: " << HistogramsImportFile << endl;
+        cout << " Input file............: " << histosImportFile << endl;
         cout << " Output file...........: " << histosExportFile << endl;
         }
       String nullString = "";
-      subTask.addParameter("HistogramsImportPath",nullString);
-      subTask.addParameter("HistogramsExportPath",nullString);
-      subTask.addParameter("HistogramsImportFile",HistogramsImportFile);
-      subTask.addParameter("HistogramsExportFile",histosExportFile);
-      subTask.importHistograms();
-      subTask.createDerivedHistograms();
-      if (!isTaskOk()) break;
+      subTask.setHistosCreate(false);
+      subTask.setHistosImport(true);
+      subTask.setHistosImportPath(nullString);
+      subTask.setHistosImportFile(histosImportFile);
+      subTask.setHistosImportDerived(false);
+      subTask.setHistosCreateDerived(true);
+      subTask.setHistosExport(true);
+      subTask.setHistosExportPath(nullString);
+      subTask.setHistosExportFile(histosExportFile);
+      subTask.setHistosReset(false);
+      subTask.setHistosClear(true);
+      subTask.setHistosPlot(false);
+      subTask.setHistosPrint(false);
+      subTask.setHistosScale(false);
+      subTask.setHistosForceRewrite(true);
+      subTask.initialize();
       subTask.calculateDerivedHistograms();
-      if (!isTaskOk()) break;
-      subTask.exportHistograms();
+      subTask.finalize();
+      subTask.clear();
       }
     }
   if (reportEnd(__FUNCTION__))
     ;
 }
 
+} // namespace CAP

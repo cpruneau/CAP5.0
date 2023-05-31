@@ -32,23 +32,19 @@ using std::cout;
 using std::endl;
 
 
-#define postTaskConfigured()  ( StateManager::getStateManager()->setState(StateManager::CONFIGURED)  )
-#define postTaskInitialized() ( StateManager::getStateManager()->setState(StateManager::INITIALIZED) )
-#define postTaskOk()          ( StateManager::getStateManager()->setState(StateManager::OK)     )
-#define postTaskRunning()     ( StateManager::getStateManager()->setState(StateManager::OK)     )
-#define postTaskCompleted()   ( StateManager::getStateManager()->setState(StateManager::COMPLETED)   )
+//#define postTaskConfigured()  ( StateManager::getStateManager()->setState(StateManager::CONFIGURED)  )
+//#define postTaskInitialized() ( StateManager::getStateManager()->setState(StateManager::INITIALIZED) )
+//#define postTaskOk()          ( StateManager::getStateManager()->setState(StateManager::OK)     )
+//#define postTaskRunning()     ( StateManager::getStateManager()->setState(StateManager::OK)     )
+//#define postTaskCompleted()   ( StateManager::getStateManager()->setState(StateManager::COMPLETED)   )
 #define postTaskEof()         ( StateManager::getStateManager()->setState(StateManager::EOFILE)      )
 #define postTaskEod()         ( StateManager::getStateManager()->setState(StateManager::EODATA)     )
-#define postTaskWarning()     ( StateManager::getStateManager()->setState(StateManager::WARNING)     )
-#define postTaskError()       ( StateManager::getStateManager()->setState(StateManager::ERROR)       )
-#define postTaskFatal()       ( StateManager::getStateManager()->setState(StateManager::FATAL)       )
-
-#define isTaskConfigured()    ( StateManager::getStateManager()->isConfigured()  )
-#define isTaskInitialized()   ( StateManager::getStateManager()->Initialized()   )
-#define isTaskOk()            ( StateManager::getStateManager()->isOK()          )
-#define isTaskRunning()       ( StateManager::getStateManager()->isOK()          )
-#define isTaskCompleted()     ( StateManager::getStateManager()->isCompleted()   )
-#define isTaskEof()           ( StateManager::getStateManager()->isEof()   )
+//#define postTaskWarning()     ( StateManager::getStateManager()->setState(StateManager::WARNING)     )
+//#define postTaskError()       ( StateManager::getStateManager()->setState(StateManager::ERROR)       )
+//#define postTaskFatal()       ( StateManager::getStateManager()->setState(StateManager::FATAL)       )
+//
+//#define isTaskConfigured()    ( StateManager::getStateManager()->isConfigured()  )
+//#define isTaskInitialized()   ( StateManager::getStateManager()->Initialized()   )
 #define isTaskEod()           ( StateManager::getStateManager()->isEod()   )
 
 
@@ -78,6 +74,7 @@ protected:
   Task * parent;
 
   bool   histosCreate;
+  bool   histosCreateDerived;
   bool   histosReset;
   bool   histosClear;
   bool   histosScale;
@@ -85,6 +82,7 @@ protected:
   bool   histosPrint;
   bool   histosForceRewrite;
   bool   histosImport;
+  bool   histosImportDerived;
   String histosImportPath;
   String histosImportFile;
   bool   histosExport;
@@ -531,6 +529,37 @@ public:
   //! Print the version number of this class
   //!
   virtual void printVersion(const TString & option) const;
+
+  String getHistosImportPath() const { return histosImportPath; }
+  String getHistosExportPath() const { return histosExportPath; }
+  String getHistosImportFile() const { return histosImportFile; }
+  String getHistosExportFile() const { return histosExportFile; }
+
+  void setHistosImportPath(const String & s)  { histosImportPath = s; }
+  void setHistosExportPath(const String & s)  { histosExportPath = s; }
+  void setHistosImportFile(const String & s)  { histosImportFile = s; }
+  void setHistosExportFile(const String & s)  { histosExportFile = s; }
+
+  void setHistosCreate(bool v)        {  histosCreate = v;}
+  void setHistosCreateDerived(bool v) {  histosCreateDerived = v;}
+  void setHistosReset(bool v)         {  histosReset = v;}
+  void setHistosClear(bool v)         {  histosClear = v;}
+  void setHistosScale(bool v)         {  histosScale = v;}
+  void setHistosPlot(bool v)          {  histosPlot = v;}
+  void setHistosPrint(bool v)         {  histosPrint = v;}
+  void setHistosForceRewrite(bool v)  {  histosForceRewrite = v;}
+  void setHistosImport(bool v)        {  histosImport = v;}
+  void setHistosImportDerived(bool v) {  histosImportDerived = v;}
+  void setHistosExport(bool v)        {  histosExport = v;}
+
+
+//  bool   histosExport;
+//  bool   histosExportAsRoot;
+//  bool   histosExportAsText;
+//  bool   histosExportPartial;
+//  long   histosExportPartialCount;
+//  long   histosExportMaxPerPartial;
+
 
   ClassDef(Task,0)
 };

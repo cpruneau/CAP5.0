@@ -16,11 +16,9 @@ using CAP::PythiaEventGenerator;
 ClassImp(PythiaEventGenerator);
 
 PythiaEventGenerator::PythiaEventGenerator(const String & _name,
-                                           const Configuration & _configuration,
-                                           vector<EventFilter*>&   _eventFilters,
-                                           vector<ParticleFilter*>&_particleFilters)
+                                           const Configuration & _configuration)
 :
-EventTask(_name, _configuration, _eventFilters, _particleFilters),
+EventTask(_name, _configuration),
 pythia(nullptr),
 outputFile(nullptr),
 //outputEvent(nullptr),
@@ -218,8 +216,7 @@ void PythiaEventGenerator::initialize()
   }
   if(!useQCDCR && useRopes)
     {
-    cout<<"You are trying to turn on ropes without the necessary junctions! Flip kQCDCR=kTRUE"<<endl;
-    exit(1);
+    throw TaskException("ropes w/o the necessary junctions! Flip kQCDCR=kTRUE","PythiaEventGenerator::initialize()");
     }
 
   if(useShoving)

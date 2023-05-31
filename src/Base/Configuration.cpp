@@ -13,6 +13,7 @@
 #include "TextParser.hpp"
 //using CAP::Configuration;
 using CAP::TextParser;
+using CAP::ConfigurationException;
 
 ClassImp(CAP::Configuration);
 
@@ -52,7 +53,7 @@ CAP::String CAP::Configuration::getParameter(const char* aKeyword)  const
       return iter->value;
       }
     }
-  throw *(new CAP::String(aKeyword));
+  throw ConfigurationException(aKeyword,"Parameter not found: ","Configuration::getParameter(const char* aKeyword) ");
 }
 
 CAP::String  CAP::Configuration::standardize(const char * path, const char* aKeyword) const
@@ -95,8 +96,6 @@ CAP::String  CAP::Configuration::getValueString(const char * path, const char* a
 
 bool  CAP::Configuration::getValueBool(const char* aKeyword) const
 {
-  try
-  {
   CAP::String v = getParameter(aKeyword);
   v.ToUpper();
   //cout << " CAP::Configuration::getValueBool(const char* aKeyword) for keyword: " << aKeyword << " finds:" << v << endl;
@@ -108,83 +107,43 @@ bool  CAP::Configuration::getValueBool(const char* aKeyword) const
     return vv>0;
     }
   return false;
-  }
-  catch (CAP::String s)
-  {
-  cout << "Exception for keyword:" << s << endl;
-  return false;
-  }
-}
+ }
 
 
 int CAP::Configuration::getValueInt(const char* aKeyword) const
 {
-  try
-  {
   CAP::String v = getParameter(aKeyword);
   if (!v.IsDec())
     {
     return -99999;
     }
   return v.Atoi();
-  }
-  catch (CAP::String s)
-  {
-  cout << "Exception for keyword:" << s << endl;
-  return -99999;
-  }
 }
 
 long CAP::Configuration::getValueLong(const char* aKeyword) const
 {
-  try
-  {
   CAP::String v = getParameter(aKeyword);
   if (!v.IsDec())
     {
     return -99999;
     }
   return v.Atoll();
-  }
-  catch (CAP::String s)
-  {
-  cout << "Exception for keyword:" << s << endl;
-  return -99999;
-  }
 }
 
 double CAP::Configuration::getValueDouble (const char* aKeyword) const
 {
-  try
-  {
   CAP::String v = getParameter(aKeyword);
   if (!v.IsFloat())
     {
     return -1.0E100;
     }
   return v.Atof();
-  }
-  catch (CAP::String s)
-  {
-  cout << "Exception for keyword:" << s << endl;
-  return -1.0E100;
-  }
-}
+ }
 
 
 CAP::String CAP::Configuration::getValueString (const char* aKeyword) const
 {
-  try
-  {
-  CAP::String v = getParameter(aKeyword);
-  //cout << " CAP::Configuration::getValueString(const char* aKeyword) for keyword: " << aKeyword << " finds:" << v << endl;
-  return v;
-  }
-  catch (CAP::String s)
-  {
-  cout << "Exception for keyword:" << s << endl;
-  return CAP::String("");
-  }
+  return getParameter(aKeyword);
 }
 
 
@@ -215,7 +174,6 @@ void CAP::Configuration::addParameters(const Configuration & source)
 void CAP::Configuration::addParameter(Parameter& parameter)
 {
   vector<Parameter>::iterator iter;
-
   bool stop = false;
 
 //  if (parameter.keyword.Contains("EventsAnalyze"))
@@ -394,64 +352,36 @@ bool CAP::Configuration::isBool(const char * keyword) const
 
 bool CAP::Configuration::isInt(const char * keyword) const
 {
-  try
-  {
   CAP::String v = getParameter(keyword);
   if (!v.IsDec())
     {
     return false;
     }
   return true;
-  }
-  catch (...)
-  {
-  return false;
-  }
 }
 
 
 bool CAP::Configuration::isLong(const char * keyword) const
 {
-  try
-  {
   CAP::String v = getParameter(keyword);
   if (!v.IsDec())
     {
     return false;
     }
   return true;
-  }
-  catch (...)
-  {
-  return false;
-  }
 }
 
 bool CAP::Configuration::isDouble(const char * keyword) const
 {
-  try
-  {
   CAP::String v = getParameter(keyword);
   if (v.IsFloat()) return true;
   return false;
-  }
-  catch (...)
-  {
-  return false;
-  }
 }
 
 bool CAP::Configuration::isString(const char * keyword) const
 {
-  try
-  {
   CAP::String v = getParameter(keyword);
   return true;
-  }
-  catch (...)
-  {
-  return false;
-  }
 }
 
 bool CAP::Configuration::isFound(const char * keyword) const

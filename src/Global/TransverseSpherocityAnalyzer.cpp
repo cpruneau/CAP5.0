@@ -16,11 +16,9 @@ using CAP::TransverseSpherocityAnalyzer;
 ClassImp(TransverseSpherocityAnalyzer);
 
 TransverseSpherocityAnalyzer::TransverseSpherocityAnalyzer(const String & _name,
-                                                           const Configuration & _configuration,
-                                                           vector<EventFilter*> & _eventFilters,
-                                                           vector<ParticleFilter*> & _particleFilters)
+                                                           const Configuration & _configuration)
 :
-EventTask(_name,_configuration,_eventFilters,_particleFilters),
+EventTask(_name,_configuration),
 setEvent(true),
 fillS0(true),
 fillS1(false),
@@ -34,6 +32,7 @@ stepSize(CAP::Math::twoPi()/360.0)
 //!
 void TransverseSpherocityAnalyzer::setDefaultConfiguration()
 {
+  EventTask::setDefaultConfiguration();
   addParameter("HistogramsCreate",    true);
   addParameter("HistogramsExport",    true);
   addParameter("EventsAnalyze",       true);
@@ -81,7 +80,11 @@ void TransverseSpherocityAnalyzer::configure()
     }
 }
 
-
+void TransverseSpherocityAnalyzer::initializeHistogramManager()
+{
+  histogramManager.addSet("global");
+  histogramManager.addSet("derived");
+}
 
 void TransverseSpherocityAnalyzer::initialize()
 {
@@ -113,7 +116,6 @@ void TransverseSpherocityAnalyzer::createHistograms()
     cout << " S:nEventFilters..............: " << nEventFilters << endl;
     cout << " S:nParticleFilters...........: " << nParticleFilters << endl;
     }
-  histogramManager.addSet("Spherocity");
   for (unsigned int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {
     TransverseSpherocityHistos * histos = new TransverseSpherocityHistos(this,prefixName+eventFilters[iEventFilter]->getName(),configuration,particleFilters);
@@ -138,7 +140,6 @@ void TransverseSpherocityAnalyzer::importHistograms(TFile & inputFile)
     cout << "       nEventFilters: " << nEventFilters << endl;
     cout << "    nParticleFilters: " << nParticleFilters << endl;
     }
-  histogramManager.addSet("Spherocity");
   for (unsigned int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {
     String evtFilterName = eventFilters[iEventFilter]->getName();

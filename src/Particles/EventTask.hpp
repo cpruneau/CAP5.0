@@ -56,6 +56,8 @@ protected:
   bool   eventsUseStream2;
   bool   eventsUseStream3;
   bool   eventsAnalyze;
+  bool   filtersUseModel;
+  bool   filtersUseAnalysis;
 
   bool   calibsCreate;
   bool   calibsReset;
@@ -152,14 +154,6 @@ public:
             const Configuration & _configuration);
 
   //!
-  //! Longer constructor. It allocates resources but DOES NOT initialize the EventTask. EventTask initialization can be performed by a call to the initializationEventTask() and/or
-  //!  initialization() methods.
-  //!
-  EventTask(const String & _name,
-            const Configuration & _configuration,
-            vector<EventFilter*> &   _eventFilters,
-            vector<ParticleFilter*>& _particleFilters);
-  //!
   //! dtor
   virtual ~EventTask() {}
   
@@ -169,13 +163,6 @@ public:
   virtual void setDefaultConfiguration();
 
   virtual void configure();
-  //!
-  //! Initialize this EventTask instance. Implement this method in a derived class if the functionality provided in this base class is insufficient.
-  //!
-  virtual void initialize();
-
-  virtual void initializeParticleFactory();
-  virtual void initializeParticleDbLink();
 
 //  void importParticleDbCAP() {}
 //  void importParticleDbNative(){}
@@ -201,13 +188,23 @@ public:
 
   virtual void execute();
 
+  //!
+  //! Initialize this EventTask instance. Implement this method in a derived class if the functionality provided in this base class is insufficient.
+  //!
+  virtual void initialize();
+
+  virtual void initializeParticleFactory();
+  virtual void initializeParticleDbLink();
+
   virtual void initializeEventGenerator();
   virtual void initializeEventReader();
   virtual void initializeEventWriter();
   virtual void initializeEventStreams();
+  virtual void initializeFilters();
 //  virtual void initializeEvent();
 //  virtual void initializeEventCAP();
 //  virtual void initializeEventNative();
+  virtual void initializeHistogramManager();
   virtual void importEvent();
   virtual void importEventCAP();
   virtual void importEventNative();

@@ -38,9 +38,7 @@ public:
   //! @param _reportLevel Message log level to be used by this task.
   //!
   TransverseSpherocityAnalyzer(const String & _name,
-                               const Configuration & _configuration,
-                               vector<EventFilter*> & _eventFilters,
-                               vector<ParticleFilter*> & _particleFilters);
+                               const Configuration & _configuration);
   
   //!
   //! DTOR
@@ -58,7 +56,7 @@ public:
   //! Initialize this task
   //!
   virtual void initialize();
-
+  virtual void initializeHistogramManager();
   //!
   //! Execute the spherocity analysis on one event of the incoming event stream. Optionally set the EventProperty of the event for analysis by other tasks.
   //!

@@ -257,7 +257,7 @@ void DataGraph::setProperties(GraphConfiguration & graphConfig)
   yAxis->SetTitleOffset(graphConfig.getValueDouble("yTitleOffset"));
   yAxis->SetLabelSize(  graphConfig.getValueDouble("yLabelSize"));
   yAxis->SetLabelOffset(graphConfig.getValueDouble("yLabelOffset"));
-  //cout << "<I> DataGraph::::setProperties() Completed" << endl;
+  //cout << "<I> DataGraph::setProperties() Completed" << endl;
 }
 
 void DataGraph::printToFile(ostream & output)

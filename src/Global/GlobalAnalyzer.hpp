@@ -45,9 +45,7 @@ public:
   //! @param _reportLevel Message log level to be used by this task.
   //!
   GlobalAnalyzer(const String & _name,
-                 const Configuration & _configuration,
-                 vector<EventFilter*> & _eventFilters,
-                 vector<ParticleFilter*> & _particleFilters);
+                 const Configuration & _configuration);
   
   //!
   //! DTOR
@@ -66,6 +64,8 @@ public:
   //!
   virtual void initialize();
   
+  virtual void initializeHistogramManager();
+
   //!
   //! Execute this task based on the configuration and class variable specified at construction. This involves the determination of multiplicities, total energies, etc based on the event filters
   //! and particle filters operated by this task. It is also involves the filling of corresponding histograms.

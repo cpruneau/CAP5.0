@@ -11,16 +11,15 @@
  * *********************************************************************/
 #include "AmptEventReader.hpp"
 
-using CAP::AmptEventReader;
 
-ClassImp(AmptEventReader);
+ClassImp(CAP::AmptEventReader);
 
+namespace CAP
+{
 AmptEventReader::AmptEventReader(const String & _name,
-                                 const Configuration & _configuration,
-                                 vector<EventFilter*> & _eventFilters,
-                                 vector<ParticleFilter*> & _particleFilters)
+                                 const Configuration & _configuration)
 :
-RootTreeReader(_name, _configuration, _eventFilters, _particleFilters)
+RootTreeReader(_name, _configuration)
 {
   appendClassName("AmptEventReader");
 }
@@ -55,10 +54,8 @@ void AmptEventReader::importEvent()
   nBytes += nb;
   if (nParticles > arraySize)
     {
-    if (reportError(__FUNCTION__))
-      cout<< "nParticles: " << nParticles << "  exceeds capacity " << arraySize << endl;
-    postTaskFatal();
-    exit(1);
+    if (reportError(__FUNCTION__)) cout<< "nParticles: " << nParticles << "  exceeds capacity " << arraySize << endl;
+    throw TaskException("nParticles exceeds capacity","AmptEventReader::importEvent()");
     }
   
   double eventPhi;
@@ -148,3 +145,4 @@ void AmptEventReader::initInputTreeMapping()
     ;
 }
 
+} // namespace CAP

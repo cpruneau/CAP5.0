@@ -46,11 +46,9 @@ public:
   //! @param _particleFilters Array of particle filters to be used by this task
   //!
   RootTreeReader(const TString & _name,
-                 const Configuration & _configuration,
-                 vector<EventFilter*>&   _eventFilters,
-                 vector<ParticleFilter*>&_particleFilters)
+                 const Configuration & _configuration)
   :
-  EventTask::EventTask(_name, _configuration, _eventFilters, _particleFilters),
+  EventTask::EventTask(_name, _configuration),
   eventsImportPath(),
   eventsImportFileName("FOLDER"),
   dataInputTreeName("tree"),
@@ -122,7 +120,7 @@ public:
   if (!inputRootChain)
     {
     if (reportFatal(__FUNCTION__)) cout << "Chain is a null pointer" << endl;
-    postTaskFatal();
+    throw TaskException("!inputRootChain","RootTreeReader::initialize()");
     return;
     }
 
@@ -142,8 +140,7 @@ public:
   if (selectedFileNames.size()<1)
     {
     if (reportError(__FUNCTION__)) cout << "No root data file selected for input" << endl;
-    postTaskError();
-    exit(1);
+    throw TaskException("selectedFileNames.size()<1","RootTreeReader::initialize()");
     }
 
   // If the parameters firstFile and lastFile are less than zero, unspecified by the user,
@@ -164,13 +161,12 @@ public:
   nEntries = inputRootChain->GetEntriesFast();
   if (nEntries < 1)
     {
-    if (reportError(__FUNCTION__)) cout << "No data found: nEntries < 1. Abort job!" << endl;
-    postTaskFatal();
-    return;
+    if (reportFatal(__FUNCTION__)) cout << "No data found: nEntries < 1. Abort job!" << endl;
+    throw TaskException("nEntries < 1","RootTreeReader::initialize()");
     }
   else
     {
-    if (reportInfo(__FUNCTION__)) cout << "nEntries: " << nEntries << endl;
+    if (reportDebug(__FUNCTION__)) cout << "nEntries: " << nEntries << endl;
     }
   nBytes = 0;
   nb = 0;

@@ -40,9 +40,7 @@ public:
   //! @param _particleFilters Array of particle filters to be used by this task
   //! @param _reportLevel Message log level to be used by this task.
   RadialBoostTask(const String & _name,
-                  const Configuration & _configuration,
-                  vector<EventFilter*>&    _eventFilters,
-                  vector<ParticleFilter*>& _particleFilters);
+                  const Configuration & _configuration);
   
   //!
   //!DTOR

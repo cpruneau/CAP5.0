@@ -19,7 +19,7 @@ CAP::HistogramManager::HistogramManager()
 :
 names(),
 sets()
-{}
+{  }
 
 //!
 //! CTOR. Allocate resources for nSets=names.size() with the given names. If the given array of name is null, no error is
@@ -46,7 +46,8 @@ void CAP::HistogramManager::addGroupInSet(unsigned int index, HistogramGroup * g
   unsigned int nSets = sets.size();
   if (index>=nSets)
     {
-    // do nothing
+    String s(""); s += int(index);
+    throw HistogramException(s,"index>=nSets","HistogramManager::addGroupInSet(unsigned int index, HistogramGroup * group)");
     }
   sets[index].push_back(group);
 }
@@ -86,10 +87,12 @@ void CAP::HistogramManager::reset()
 //!
 void CAP::HistogramManager::save(TFile & outputFile)
 {
+  //cout << "<INFO> CAP::HistogramManager::save(TFile & outputFile)" << endl;
   for (unsigned int iSet=0; iSet<sets.size(); iSet++)
     {
     for (unsigned int iGroup=0; iGroup<sets[iSet].size(); iGroup++)
       {
+      //cout << "Saving iSet: " << iSet << "   iGroup: " << iGroup << endl;
       sets[iSet][iGroup]->exportHistograms(outputFile);
       }
     }
@@ -113,13 +116,13 @@ void CAP::HistogramManager::save(ofstream & outputFile)
 //!
 //!Load histograms of all sets and all groups they contain
 //!
-void CAP::HistogramManager::load(TFile & outputFile)
+void CAP::HistogramManager::load(TFile & inputFile)
 {
   for (unsigned int iSet=0; iSet<sets.size(); iSet++)
     {
     for (unsigned int iGroup=0; iGroup<sets[iSet].size(); iGroup++)
       {
-      sets[iSet][iGroup]->importHistograms(outputFile);
+      sets[iSet][iGroup]->importHistograms(inputFile);
       }
     }
 }

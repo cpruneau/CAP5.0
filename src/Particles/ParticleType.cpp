@@ -179,13 +179,11 @@ void ParticleType::addDecayMode(double branchingRatio,
 {
   if (branchingRatio<0.0  || branchingRatio>1.0)
     {
-    cout << "<FATAL> ParticleType::addDecayMode() Attempting to create a decay mode with Br:" << branchingRatio<< endl;
-    exit(1);
+    throw Exception("branchingRatio<0.0||branchingRatio>1.0","ParticleType::addDecayMode(double branchingRatio,std::vector<int> children)");
     }
   if (children.size()<2)
     {
-    cout << "<FATAL> ParticleType::addDecayMode() Attempting to create a decay mode with no or only one particle"<< endl;
-    exit(1);
+    throw Exception("decay mode with no or only one particle","ParticleType::addDecayMode(double branchingRatio,std::vector<int> children)");
     }
   ParticleDecayMode decayMode;
   decayMode.setBranchingRatio(branchingRatio);
@@ -240,7 +238,7 @@ ParticleDecayMode & ParticleType::generateDecayMode()
     cout << "<F> ParticleType::generateDecayMode()        stable: " << stable << endl;
     cout << "<F> ParticleType::generateDecayMode()         width: " << width << endl;
     cout << "<F> ParticleType::generateDecayMode()       n modes: " << decayModes.size()  << endl;
-    exit(0);
+    throw Exception("index<0","ParticleType::generateDecayMode()");
     }
   else if (index>= int(decayModes.size()))
     {

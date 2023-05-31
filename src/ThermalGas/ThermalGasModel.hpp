@@ -19,22 +19,22 @@ namespace CAP
 class ThermalGasModel : public EventTask
 {
 public:
-
+  
   ThermalGasModel(const String & _name,
-                         const Configuration & _configuration);
+                  const Configuration & _configuration);
   virtual ~ThermalGasModel() {}
   virtual void setDefaultConfiguration();
   virtual void initialize();
   virtual void execute();
   virtual void createHistograms();
   virtual void importHistograms(TFile & inputFile);
-
+  
 protected:
   ParticleDb *   particleTypes;
   ParticleDb *   stableParticleTypes;
   int nThermalSpecies;
   int nStableSpecies;
-
+  
   String modelName;
   int     nChemicalTemp;
   double  minChemicalTemp;
@@ -48,7 +48,7 @@ protected:
   double  minMuS;
   double  maxMuS;
   double  stepMuS;
-
+  
   ClassDef(ThermalGasModel,0)
 };
 

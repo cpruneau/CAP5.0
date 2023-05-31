@@ -58,32 +58,77 @@ int RunSum(TString configFile,
   //outputPath = "/Volumes/ClaudeDisc4/OutputFiles/Reso/";
 
   std::cout << "==================================================================================" << std::endl;
-  std::cout << "Run Ana" << endl;
+  std::cout << "Executing RunSum" << endl;
+  std::cout << "configFile......: " << configFile << endl;
+  std::cout << "pathName........: " << pathName   << endl;
+  std::cout << "nBunches........: " << nBunches   << endl;
   std::cout << "==================================================================================" << std::endl;
   CAP::Configuration configuration;
-  configuration.readFromFile("",configFile);
-  configuration.addParameter("Run:HistogramInputPath", pathName);
-  configuration.addParameter("Run:HistogramOutputPath",pathName);
-  configuration.addParameter("Run:Subsample",          true);
-  configuration.addParameter("Run:SubsampleBaseGen",   true);
-  configuration.addParameter("Run:Bunched",            true);
-  configuration.addParameter("Run:nBunches",           nBunches);
-  configuration.addParameter("Run:BunchLabel",         TString("BUNCH"));
-  configuration.addParameter("Run:SubPathLabel",       TString(""));
-  configuration.addParameter("Run:MaximumDepth",       2);
 
-//  if (isGrid)
-//    {
-//     }
-//  else
-//    {
-//    configuration.addParameter("Run:BunchLabel",    TString("Partial"));
-//    configuration.addParameter("Run:SubPathLabel",  TString(""));
-//    }
-  CAP::RunSubsample * analysis = new CAP::RunSubsample("Run", configuration);
+  try
+  {
+  configuration.readFromFile("",configFile);
+  }
+  catch (CAP::ConfigurationException ce)
+  {
+  ce.print();
+  }
+  catch (...)
+  {
+  cout << "Unknown exception while reading configuration file." << endl;
+  return 1;
+  }
+  configuration.addParameter("Run:HistogramsExportPath",      pathName);
+  configuration.addParameter("Run:HistogramsImportPath",      pathName);
+  configuration.addParameter("Run:HistogramsForceRewrite",    true);
+  configuration.addParameter("Run:RunParticleDbManager",      false);
+  configuration.addParameter("Run:RunFilterCreator",          false);
+  configuration.addParameter("Run:RunEventAnalysis",          false);
+  configuration.addParameter("Run:RunEventAnalysisGen",       false);
+  configuration.addParameter("Run:RunEventAnalysisReco",      false);
+  configuration.addParameter("Run:RunDerived",                false);
+  configuration.addParameter("Run:RunDerivedGen",             false);
+  configuration.addParameter("Run:RunDerivedReco",            false);
+  configuration.addParameter("Run:RunBalFct",                 false);
+  configuration.addParameter("Run:RunBalFctGen",              false);
+  configuration.addParameter("Run:RunBalFctReco",             false);
+  configuration.addParameter("Run:RunPartSingleAnalysisGen",  false);
+  configuration.addParameter("Run:RunPartSingleAnalysisReco", false);
+  configuration.addParameter("Run:RunPartPairAnalysisGen",    false);
+  configuration.addParameter("Run:RunPartPairAnalysisReco",   false);
+
+  configuration.addParameter("Run:RunSubsample",              true);
+  configuration.addParameter("Run:RunSubsampleBase",          true);
+  configuration.addParameter("Run:RunSubsampleBaseGen",       true);
+  configuration.addParameter("Run:RunSubsampleBaseReco",      false);
+  configuration.addParameter("Run:RunSubsampleDerived",       false);
+  configuration.addParameter("Run:RunSubsampleDerivedeGen",   false);
+  configuration.addParameter("Run:RunSubsampleDerivedReco",   false);
+  configuration.addParameter("Run:RunSubsampleBalFct",        false);
+  configuration.addParameter("Run:RunSubsampleBalFctGen",     false);
+  configuration.addParameter("Run:RunSubsampleBalFctReco",    false);
+
+  configuration.addParameter("Run:Bunched",                   true);
+  configuration.addParameter("Run:nBunches",                  nBunches);
+  configuration.addParameter("Run:MaximumDepth",              2);
+  configuration.addParameter("Run:RunPartSingleAnalysisGen",      true);
+  configuration.addParameter("Run:RunPartSingleAnalysisReco",     false);
+  configuration.addParameter("Run:RunPartPairAnalysisGen",        true);
+  configuration.addParameter("Run:RunPartPairAnalysisReco",       false);
+
+  configuration.addParameter("Run:RunGlobalAnalysisGen",          false);
+  configuration.addParameter("Run:RunGlobalAnalysisReco",         false);
+  configuration.addParameter("Run:RunSpherocityAnalysisGen",      false);
+  configuration.addParameter("Run:RunSpherocityAnalysisReco",     false);
+  configuration.addParameter("Run:RunNuDynAnalysisGen",           false);
+  configuration.addParameter("Run:RunNuDynAnalysisReco",          false);
+
+
+
+
+  CAP::RunAnalysis * analysis = new CAP::RunAnalysis("Run", configuration);
   analysis->configure();
   analysis->execute();
-  //if (selectedLevel==MessageLogger::Debug) analysis->getConfiguration().writeToFile("DebugConfig.txt");
   return 0;
 }
 

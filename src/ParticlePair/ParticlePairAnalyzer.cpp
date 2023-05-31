@@ -18,21 +18,15 @@ using CAP::ParticlePairAnalyzer;
 ClassImp(ParticlePairAnalyzer);
 
 ParticlePairAnalyzer::ParticlePairAnalyzer(const String & _name,
-                                           const Configuration & _configuration,
-                                           vector<EventFilter*> & _eventFilters,
-                                           vector<ParticleFilter*> & _particleFilters)
+                                           const Configuration & _configuration)
 :
-EventTask(_name, _configuration, _eventFilters, _particleFilters),
+EventTask(_name, _configuration),
 fillEta(true),
 fillY(false),
 fillP2(false)
 {
   appendClassName("ParticlePairAnalyzer");
-  for (unsigned int k=0; k<particleFilters.size(); k++)
-    {
-    vector<ParticleDigit*> list;
-    filteredParticles.push_back(list);
-    }
+
 }
 
 void ParticlePairAnalyzer::setDefaultConfiguration()
@@ -88,6 +82,7 @@ void ParticlePairAnalyzer::setDefaultConfiguration()
   addParameter("nBins_DeltaP",   10);
   addParameter("Min_DeltaP",   -4.0);
   addParameter("Max_DeltaP",    4.0);
+  addParameter("binCorrPP",     1.0);
 }
 
 void ParticlePairAnalyzer::configure()
@@ -152,7 +147,31 @@ void ParticlePairAnalyzer::configure()
     printItem("Max_DeltaP");
     cout << endl;
     }
+  for (unsigned int k=0; k<particleFilters.size(); k++)
+    {
+    vector<ParticleDigit*> list;
+    filteredParticles.push_back(list);
+    }
 }
+
+void ParticlePairAnalyzer::initialize()
+{
+  EventTask::initialize();
+  for (unsigned int k=0; k<particleFilters.size(); k++)
+    {
+    vector<ParticleDigit*> list;
+    filteredParticles.push_back(list);
+    }
+}
+
+void ParticlePairAnalyzer::initializeHistogramManager()
+{
+  histogramManager.addSet("single");
+  histogramManager.addSet("pair");
+  histogramManager.addSet("singleDerived");
+  histogramManager.addSet("pairDerived");
+}
+
 
 void ParticlePairAnalyzer::createHistograms()
 {
@@ -172,8 +191,6 @@ void ParticlePairAnalyzer::createHistograms()
     cout << "fillP2........................: " << fillP2   << endl;
     cout << endl;
     }
-  histogramManager.addSet("Pair-1");
-  histogramManager.addSet("Pair-2");
 
   for (int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {
@@ -212,8 +229,6 @@ void ParticlePairAnalyzer::importHistograms(TFile & inputFile)
     ;
   String bn  = getName();
   HistogramGroup * histos;
-  histogramManager.addSet("Pair-1");
-  histogramManager.addSet("Pair-2");
 
   fillEta = getValueBool("FillEta");
   fillY   = getValueBool("FillY");
@@ -464,7 +479,6 @@ void ParticlePairAnalyzer::createDerivedHistograms()
     ;
   String bn  = getName();
   HistogramGroup * histos;
-  histogramManager.addSet("PairDerived");
 
   if (reportInfo(__FUNCTION__))
     {

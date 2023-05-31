@@ -24,13 +24,18 @@ ClassImp(BalanceFunctionCalculator)
 
 
 BalanceFunctionCalculator::BalanceFunctionCalculator(const TString & _name,
-                                                     const Configuration & _configuration,
-                                                     vector<EventFilter*> & _eventFilters,
-                                                     vector<ParticleFilter*> & _particleFilters)
+                                                     const Configuration & _configuration)
 :
-EventTask(_name,_configuration,_eventFilters, _particleFilters),
+EventTask(_name,_configuration),
 sObservableNames(),
-pObservableNames()
+pObservableNames(),
+allFilesToAnalyze(),
+appendedString("BalFct"),
+calculateCI(1),
+calculateCD(1),
+calculateBFv1(1),
+calculateDiffs(0),
+calculateBFv2(1)
 {
   appendClassName("BalanceFunctionCalculator");
 }
@@ -38,10 +43,10 @@ pObservableNames()
 void BalanceFunctionCalculator::setDefaultConfiguration()
 {
   EventTask::setDefaultConfiguration();
-  addParameter("UseParticles",           false);
+  String null("null");
   addParameter("HistogramsCreate",       true);
-  addParameter("HistogramsImport",         true);
-  addParameter("HistogramsExport",         true);
+  addParameter("HistogramsImport",       true);
+  addParameter("HistogramsExport",       true);
   addParameter("HistogramsForceRewrite", true);
   addParameter("AppendedString",         TString("BalFct"));
   addParameter("calculateCI",            true);
@@ -387,42 +392,75 @@ TH2* BalanceFunctionCalculator::calculate_Diff(const TString & histoBaseName,
   return obs;
 }
 
-
-//!
-//! Create Balance Function HistogramGroup for the input file, event classes, observables and particles...
-//!
-void BalanceFunctionCalculator::execute()
+void BalanceFunctionCalculator::configure()
 {
-  
-  if (reportStart(__FUNCTION__))
-    ;
-  TString histogramsImportPath  = getValueString("HistogramsImportPath");
-  TString histogramsImportFile  = getValueString("HistogramsImportFile");
-  TString histosExportPath      = getValueString("HistogramsExportPath");
-  TString histosExportFile      = getValueString("HistogramsExportFile");
-  TString appendedString        = getValueString("AppendedString");
-  bool histosForceRewrite       = getValueBool("HistogramsForceRewrite" );
-  bool calculateCI              = getValueBool("calculateCI" );
-  bool calculateCD              = getValueBool("calculateCD" );
-  bool calculateBFv1            = getValueBool("calculateBFv1" );
-  bool calculateDiffs           = getValueBool("calculateDiffs" );
-  bool calculateBFv2            = getValueBool("calculateBFv2" );
-  vector<TString> allFilesToAnalyze;
+  EventTask::configure();
+
+  histosImport        = getValueString("HistogramsImport");
+  histosImportPath    = getValueString("HistogramsImportPath");
+  histosImportFile    = getValueString("HistogramsImportFile");
+  histosExport        = getValueString("HistogramsExport");
+  histosExportPath    = getValueString("HistogramsExportPath");
+  histosExportFile    = getValueString("HistogramsExportFile");
+  histosForceRewrite  = getValueBool(  "HistogramsForceRewrite");
+  appendedString      = getValueString("AppendedString");
+  calculateCI         = getValueBool("calculateCI" );
+  calculateCD         = getValueBool("calculateCD" );
+  calculateBFv1       = getValueBool("calculateBFv1" );
+  calculateDiffs      = getValueBool("calculateDiffs" );
+  calculateBFv2       = getValueBool("calculateBFv2" );
 
   if (reportInfo(__FUNCTION__))
     {
     cout << endl;
-    cout << " ===========================================================" << endl;
-    cout << " Task name.......................: " << getName() << endl;
-    cout << " HistogramsImportPath............: " << histogramsImportPath << endl;
-    cout << " HistogramsImportFile............: " << histogramsImportFile << endl;
-    cout << " HistogramsExportPath............: " << histosExportPath << endl;
-    cout << " HistogramsExportFile............: " << histosExportFile << endl;
-    cout << " ===========================================================" << endl;
+    printItem("Task name",             getName());
+    printItem("HistogramsImportPath",  histosImportPath);
+    printItem("HistogramsImportFile",  histosImportFile);
+    printItem("HistogramsExportPath",  histosExportPath);
+    printItem("HistogramsExportFile",  histosExportFile);
+    printItem("HistogramsForceRewrite",histosForceRewrite);
+    printItem("AppendedString",        appendedString);
+    printItem("calculateCI",           calculateCI);
+    printItem("calculateCD",           calculateCD);
+    printItem("calculateBFv1",         calculateBFv1);
+    printItem("calculateDiffs",        calculateDiffs);
+    printItem("calculateBFv2",         calculateBFv2);
+    cout << endl;
     }
+}
 
-  if (histogramsImportFile.Contains("none") || histogramsImportFile.Contains("null") || histogramsImportFile.IsNull() )
+void BalanceFunctionCalculator::initialize()
+{
+  initializeTaskExecuted();
+  initializeNEventsAccepted();
+  initializeNParticlesAccepted();
+  initializeFilters();
+  initializeParticleDbLink();
+}
+
+
+
+void BalanceFunctionCalculator::execute()
+{
+  if (reportStart(__FUNCTION__))
+    ;
+
+//  cout << "histosImportPath : " << histosImportPath << endl;
+//  cout << "histosImportFile : " << histosImportFile << endl;
+//  cout << "histosExportPath : " << histosExportPath << endl;
+//  cout << "histosExportFile : " << histosExportFile << endl;
+//  exit(1);
+
+  if (histosImportFile.Contains("none") ||
+      histosImportFile.Contains("null") ||
+      histosImportFile.Contains("nil") ||
+      histosImportFile.IsNull() )
     {
+    if (reportInfo(__FUNCTION__))
+      {
+      cout << endl;
+      cout << "Generating a list of files!" << endl;
+      }
     vector<TString> includePatterns = getSelectedValues("IncludedPattern", "none");
     vector<TString> excludePatterns = getSelectedValues("ExcludedPattern", "none");
     for (unsigned int k=0;k<includePatterns.size();k++) cout << " k:" << k << "  Include: " << includePatterns[k] << endl;
@@ -431,18 +469,25 @@ void BalanceFunctionCalculator::execute()
     bool prependPath = true;
     bool verbose     = true;
     int  maximumDepth = 2;
-    allFilesToAnalyze = listFilesInDir(histogramsImportPath,includePatterns,excludePatterns,prependPath, verbose, maximumDepth);
+    allFilesToAnalyze = listFilesInDir(histosImportPath,includePatterns,excludePatterns,prependPath, verbose, maximumDepth);
     }
   else
     {
-    allFilesToAnalyze.push_back(histogramsImportPath+histogramsImportFile);
+    if (reportInfo(__FUNCTION__))
+      {
+      cout << endl;
+      cout << "Using a fixed file!" << endl;
+      printItem("HistogramsImportPath",histosImportPath);
+      printItem("HistogramsImportFile",histosImportFile);
+      }
+    allFilesToAnalyze.push_back(histosImportPath+histosImportFile);
     }
 
-
   int nFilesToAnalyze = allFilesToAnalyze.size();
+  if (reportInfo(__FUNCTION__)) cout << "nFilesToAnalyze : " << nFilesToAnalyze << endl;
   if (nFilesToAnalyze<1)
     {
-    if (reportError(__FUNCTION__))
+    if (reportFatal(__FUNCTION__))
       {
       cout << endl;
       cout << "========================================================================"  << endl;
@@ -452,35 +497,32 @@ void BalanceFunctionCalculator::execute()
       cout << "========================================================================"  << endl;
       cout << "========================================================================"  << endl;
       }
-    return;
+    throw TaskException("Check input file","BalanceFunctionCalculator::execute()");
     }
   if (reportInfo(__FUNCTION__))
     {
     cout << endl;
-    cout << " ===========================================================" << endl;
-    cout << " Task name.......................: " << getName() << endl;
-    cout << " HistogramsImportPath............: " << histogramsImportPath << endl;
-    cout << " HistogramsImportFile............: " << histogramsImportFile << endl;
-    cout << " HistogramsExportPath............: " << histosExportPath << endl;
-    cout << " HistogramsExportFile............: " << histosExportFile << endl;
-    cout << " n files to analyze..............: " << nFilesToAnalyze     << endl;
-    cout << " appendedString..................: " << appendedString      << endl;
-    cout << " calculateCI.....................: " << calculateCI         << endl;
-    cout << " calculateCD.....................: " << calculateCD         << endl;
-    cout << " calculateBFv1...................: " << calculateBFv1       << endl;
-    cout << " calculateDiffs..................: " << calculateDiffs      << endl;
-    cout << " calculateBFv2...................: " << calculateBFv2       << endl;
-    cout << " ===========================================================" << endl;
+    printItem("Task name",             getName());
+    printItem("HistogramsImportPath",  histosImportPath);
+    printItem("HistogramsImportFile",  histosImportFile);
+    printItem("HistogramsExportPath",  histosExportPath);
+    printItem("HistogramsExportFile",  histosExportFile);
+    printItem("HistogramsForceRewrite",histosForceRewrite);
+    printItem("AppendedString",        appendedString);
+    printItem("calculateCI",           calculateCI);
+    printItem("calculateCD",           calculateCD);
+    printItem("calculateBFv1",         calculateBFv1);
+    printItem("calculateDiffs",        calculateDiffs);
+    printItem("calculateBFv2",         calculateBFv2);
+    cout << endl;
     }
-  postTaskOk();
-
 
   for (int iFile =0; iFile<nFilesToAnalyze; iFile++)
     {
-    histogramsImportFile  = allFilesToAnalyze[iFile];
-    histosExportFile      = removeRootExtension(histogramsImportFile);
+    histosImportFile  = allFilesToAnalyze[iFile];
+    histosExportFile  = removeRootExtension(histosImportFile);
     histosExportFile.ReplaceAll(TString("Derived"),appendedString);
-    TFile & inputFile = openRootFile("",histogramsImportFile,"OLD");
+    TFile & inputFile = openRootFile("",histosImportFile,"OLD");
     String option = "NEW";
     if (histosForceRewrite) option = "RECREATE";
     TFile & outputFile = openRootFile("",histosExportFile,option);
@@ -488,9 +530,10 @@ void BalanceFunctionCalculator::execute()
       {
       cout << endl;
       cout << " CalculateBF...................: "  << calculateBFv2       << endl;
-      cout << " From..........................: "  << histogramsImportFile << endl;
+      cout << " From..........................: "  << histosImportFile << endl;
       cout << " Saved to:.....................: "  << histosExportFile << endl;
       }
+
     // Use histogramGroup  as helper to load and calculate histograms, etc.
     HistogramGroup * histogramGroup  = new HistogramGroup(this,getName(), configuration);
     histogramGroup ->setOwnership(false);
@@ -560,16 +603,15 @@ void BalanceFunctionCalculator::execute()
     if (reportInfo(__FUNCTION__))
       {
       cout << endl;
-      cout << " nSpecies.........................: "  << nSpecies  << endl;
-      cout << " sObservableNames.size()..........: "  << sObservableNames.size()  << endl;
+      printItem("nSpecies",nSpecies);
+      printItem("sObservableNames.size()",int(sObservableNames.size()));
       for (unsigned int k=0; k<sObservableNames.size(); k++)
-        cout << "   " << k << "    " << sObservableNames[k] << endl;
-      cout << " pObservableNames.size()..........: "  << pObservableNames.size()  << endl;
+        printItem("   ",sObservableNames[k]);
+      printItem("pObservableNames.size()",int(pObservableNames.size()));
       for (unsigned int k=0; k<pObservableNames.size(); k++)
-        cout << "   " << k << "    " << pObservableNames[k] << endl;
+        printItem("   ",pObservableNames[k]);
       }
-
-    for (unsigned int iObservable = 0; iObservable<pObservableNames.size();iObservable++)
+     for (unsigned int iObservable = 0; iObservable<pObservableNames.size();iObservable++)
       {
       for (unsigned int iPart1=0; iPart1<nSpecies; iPart1++)
         {
@@ -582,21 +624,15 @@ void BalanceFunctionCalculator::execute()
             TString particleName1    = particleFilters[iPart1]->getName();
             TString particleName1Bar = particleFilters[iPart1+nSpecies]->getName();
             TString particleName2    = particleFilters[iPart2]->getName();
-            TString particleName2Bar   = particleFilters[iPart2+nSpecies]->getName();
-            TH1 * rho1_1    = histogramGroup ->loadH1(inputFile,createName(getName(),eventClassName,particleName1,   sObservableNames[0]));
-            TH1 * rho1_1Bar = histogramGroup ->loadH1(inputFile,createName(getName(),eventClassName,particleName1Bar,sObservableNames[0]));
-            TH1 * rho1_2    = histogramGroup ->loadH1(inputFile,createName(getName(),eventClassName,particleName2,   sObservableNames[0]));
-            TH1 * rho1_2Bar = histogramGroup ->loadH1(inputFile,createName(getName(),eventClassName,particleName2Bar,sObservableNames[0]));
-            if (!rho1_1 || !rho1_1Bar || !rho1_2 || !rho1_2Bar)
-              {
-              if (reportError(__FUNCTION__)) cout << "Cannot load one or more histograms. ABORT" << endl;
-              exit(1);
-              }
-            TH2 * obs_1_2       = histogramGroup ->loadH2(inputFile,createName(getName(),eventClassName,particleName1,    particleName2,    pObservableNames[iObservable]));
-            TH2 * obs_1Bar_2    = histogramGroup ->loadH2(inputFile,createName(getName(),eventClassName,particleName1Bar, particleName2,    pObservableNames[iObservable]));
-            TH2 * obs_1_2Bar    = histogramGroup ->loadH2(inputFile,createName(getName(),eventClassName,particleName1,    particleName2Bar, pObservableNames[iObservable]));
-            TH2 * obs_1Bar_2Bar = histogramGroup ->loadH2(inputFile,createName(getName(),eventClassName,particleName1Bar, particleName2Bar, pObservableNames[iObservable]));
-            if (!obs_1_2 || !obs_1Bar_2 || !obs_1_2Bar || !obs_1Bar_2Bar) return;
+            TString particleName2Bar = particleFilters[iPart2+nSpecies]->getName();
+            TH1 * rho1_1             = histogramGroup ->loadH1(inputFile,createName(getName(),eventClassName,particleName1,   sObservableNames[0]));
+            TH1 * rho1_1Bar          = histogramGroup ->loadH1(inputFile,createName(getName(),eventClassName,particleName1Bar,sObservableNames[0]));
+            TH1 * rho1_2             = histogramGroup ->loadH1(inputFile,createName(getName(),eventClassName,particleName2,   sObservableNames[0]));
+            TH1 * rho1_2Bar          = histogramGroup ->loadH1(inputFile,createName(getName(),eventClassName,particleName2Bar,sObservableNames[0]));
+            TH2 * obs_1_2            = histogramGroup ->loadH2(inputFile,createName(getName(),eventClassName,particleName1,    particleName2,    pObservableNames[iObservable]));
+            TH2 * obs_1Bar_2         = histogramGroup ->loadH2(inputFile,createName(getName(),eventClassName,particleName1Bar, particleName2,    pObservableNames[iObservable]));
+            TH2 * obs_1_2Bar         = histogramGroup ->loadH2(inputFile,createName(getName(),eventClassName,particleName1,    particleName2Bar, pObservableNames[iObservable]));
+            TH2 * obs_1Bar_2Bar      = histogramGroup ->loadH2(inputFile,createName(getName(),eventClassName,particleName1Bar, particleName2Bar, pObservableNames[iObservable]));
 
             if (calculateCI)
               calculate_CI(getName(),eventClassName,particleName1,particleName2, pObservableNames[iObservable],obs_1_2,obs_1Bar_2,obs_1_2Bar,obs_1Bar_2Bar,histogramGroup );

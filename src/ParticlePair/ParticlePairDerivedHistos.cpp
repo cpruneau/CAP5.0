@@ -11,9 +11,12 @@
  * *********************************************************************/
 #include "Task.hpp"
 #include "ParticlePairDerivedHistos.hpp"
-using CAP::ParticlePairDerivedHistos;
 
-ClassImp(ParticlePairDerivedHistos);
+ClassImp(CAP::ParticlePairDerivedHistos);
+
+namespace CAP
+{
+
 
 ParticlePairDerivedHistos::ParticlePairDerivedHistos(Task * _parent,
                                                      const String & _name,
@@ -183,47 +186,47 @@ void ParticlePairDerivedHistos::createHistograms()
   if (reportDebug(__FUNCTION__))
     {
     cout << endl;
-    cout << "  Pair:Parent Task Name....................: " << ptn << endl;
-    cout << "  Pair:Parent Path Name....................: " << ppn << endl;
-    cout << "  Pair:Histo Base Name.....................: " << bn << endl;
-    cout << "  Pair:nBins_n2............................: " << nBins_n2 << endl;
-    cout << "  Pair:Min_n2..............................: " << min_n2 << endl;
-    cout << "  Pair:Max_n2..............................: " << max_n2 << endl;
-    cout << "  Pair:nBins_pt............................: " << nBins_pt << endl;
-    cout << "  Pair:Min_pt..............................: " << min_pt << endl;
-    cout << "  Pair:Max_pt..............................: " << max_pt << endl;
-    cout << "  Pair:nBins_phi...........................: " << nBins_phi << endl;
-    cout << "  Pair:Min_phi.............................: " << min_phi << endl;
-    cout << "  Pair:Max_phi.............................: " << max_phi << endl;
-    cout << "  Pair:scale_phi...........................: " << scale_phi << endl;
+    printItem("Pair:Parent Task Name",  ptn);
+    printItem("Pair:Parent Path Name",  ppn);
+    printItem("Pair:Histo Base Name",   bn);
+    printItem("Pair:nBins_n2",          int(nBins_n2));
+    printItem("Pair:Min_n2",            min_n2);
+    printItem("Pair:Max_n2",            max_n2);
+    printItem("Pair:nBins_pt",          int(nBins_pt));
+    printItem("Pair:Min_pt",            min_pt);
+    printItem("Pair:Max_pt",            max_pt);
+    printItem("Pair:nBins_phi",         int(nBins_phi));
+    printItem("Pair:Min_phi",           min_phi);
+    printItem("Pair:Max_phi",           max_phi);
+    printItem("Pair:scale_phi",         scale_phi);
 
-    cout << "  Pair:nBins_Dphi..........................: " << nBins_Dphi << endl;
-    cout << "  Pair:Min_Dphi............................: " << min_Dphi << endl;
-    cout << "  Pair:Max_Dphi............................: " << max_Dphi << endl;
-    cout << "  Pair:width_Dphi..........................: " << width_Dphi << endl;
-    cout << "  Pair:nBins_Dphi_shft.....................: " << nBins_Dphi_shft << endl;
-    cout << "  Pair:min_Dphi_shft.......................: " << min_Dphi_shft << endl;
-    cout << "  Pair:max_Dphi_shft.......................: " << max_Dphi_shft << endl;
+    printItem("Pair:nBins_Dphi",     int(nBins_Dphi));
+    printItem("Pair:Min_Dphi",       min_Dphi);
+    printItem("Pair:Max_Dphi",       max_Dphi);
+    printItem("Pair:width_Dphi",     width_Dphi);
+    printItem("Pair:nBins_Dphi_shft",int(nBins_Dphi_shft));
+    printItem("Pair:min_Dphi_shft",  min_Dphi_shft);
+    printItem("Pair:max_Dphi_shft",  max_Dphi_shft);
 
-    cout << "  Pair:nBins_eta...........................: " << nBins_eta << endl;
-    cout << "  Pair:Min_eta.............................: " << min_eta << endl;
-    cout << "  Pair:Max_eta.............................: " << max_eta << endl;
-    cout << "  Pair:range_eta...........................: " << range_eta << endl;
-    cout << "  Pair:nBins_Deta..........................: " << nBins_Deta << endl;
-    cout << "  Pair:min_Deta............................: " << min_Deta << endl;
-    cout << "  Pair:max_Deta............................: " << max_Deta << endl;
+    printItem("Pair:nBins_eta",   int(nBins_eta));
+    printItem("Pair:Min_eta",     min_eta);
+    printItem("Pair:Max_eta",     max_eta);
+    printItem("Pair:range_eta",   range_eta);
+    printItem("Pair:nBins_Deta",  int(nBins_Deta));
+    printItem("Pair:min_Deta",    min_Deta);
+    printItem("Pair:max_Deta",    max_Deta);
 
-    cout << "  Pair:nBins_y.............................: " << nBins_y << endl;
-    cout << "  Pair:Min_y...............................: " << min_y << endl;
-    cout << "  Pair:Max_y...............................: " << max_y << endl;
-    cout << "  Pair:range_y.............................: " << range_y << endl;
-    cout << "  Pair:nBins_Dy............................: " << nBins_Dy << endl;
-    cout << "  Pair:min_Dy..............................: " << min_Dy << endl;
-    cout << "  Pair:max_Dy..............................: " << max_Dy << endl;
+    printItem("Pair:nBins_y",  int(nBins_y));
+    printItem("Pair:Min_y",    min_y);
+    printItem("Pair:Max_y",    max_y);
+    printItem("Pair:range_y",  range_y);
+    printItem("Pair:nBins_Dy", int(nBins_Dy));
+    printItem("Pair:min_Dy",   min_Dy);
+    printItem("Pair:max_Dy",   max_Dy);
 
-    cout << "  Pair:FillEta.............................: " << fillEta << endl;
-    cout << "  Pair:FillY...............................: " << fillY << endl;
-    cout << "  Pair:FillP2..............................: " << fillP2 << endl;
+    printItem("Pair:FillEta",  fillEta);
+    printItem("Pair:FillY",    fillY);
+    printItem("Pair:FillP2",   fillP2);
     }
 
 
@@ -350,12 +353,12 @@ void ParticlePairDerivedHistos::importHistograms(TFile & inputFile)
   if (reportDebug(__FUNCTION__))
     {
     cout << endl;
-    cout << "  Pair:Parent Task Name....................: " << ptn << endl;
-    cout << "  Pair:Parent Path Name....................: " << ppn << endl;
-    cout << "  Pair:Histo Base Name.....................: " << bn << endl;
-    cout << "  Pair:FillEta.............................: " << fillEta << endl;
-    cout << "  Pair:FillY...............................: " << fillY << endl;
-    cout << "  Pair:FillP2..............................: " << fillP2 << endl;
+    printItem("Pair:Parent Task Name",  ptn);
+    printItem("Pair:Parent Path Name",  ppn);
+    printItem("Pair:Histo Base Name",   bn);
+    printItem("Pair:FillEta",           fillEta);
+    printItem("Pair:FillY",             fillY);
+    printItem("Pair:FillP2",            fillP2);
     }
 
   h_n1n1_phiPhi          = loadH2(inputFile, CAP::createName(bn,"n1n1_phiPhi"));
@@ -472,8 +475,10 @@ void quickCopy(TH2 * source, TH2 * target)
 
   if (sNx!=tNx || sNy!=tNy)
     {
-    cout << "You are out of luck body" << endl;
-    return;
+    TString s = source->GetName();
+    s += "-->";
+    s += target->GetName();
+    throw CAP::HistogramException(s,"sNx!=tNx || sNy!=tNy","ParticlePairDerivedHistos::quickCopy(TH2 * source, TH2 * target)");
     }
   for (int iX=1; iX<sNx; iX++)
     {
@@ -517,19 +522,16 @@ void ParticlePairDerivedHistos::calculatePairDerivedHistograms(ParticleSingleHis
   //
   if (reportDebug(__FUNCTION__))
     {
-    if (!part1BaseHistos.h_n1_pt ) { cout << "  no part1BaseHistos" << endl; exit(0); }
-    if (!part2BaseHistos.h_n1_pt ) { cout << "  no part2BaseHistos" << endl; exit(0); }
-    if (!pairHistos.h_n2_ptpt )    { cout << "  no pairHistos.h_n2_ptpt" << endl; exit(0); }
-    if (!h_n1n1_ptpt ) { cout << "  no h_n1n1_ptpt" << endl; exit(0); }
-    if (!h_C2_ptpt ) { cout << "  no h_C2_ptpt" << endl; exit(0); }
-    if (!h_B2_ptpt ) { cout << "  no h_B2_ptpt" << endl; exit(0); }
-    if (!h_A2_ptpt ) { cout << "  no h_A2_ptpt" << endl; exit(0); }
-    if (!h_R2_ptpt ) { cout << "  h_R2_ptpt" << endl; exit(0); }
+    if (!part1BaseHistos.h_n1_pt ) throw HistogramException("LOGIC","!part1BaseHistos.h_n1_pt","ParticlePairDerivedHistos::calculatePairDerivedHistograms()");
+    if (!part2BaseHistos.h_n1_pt ) throw HistogramException("LOGIC","!part2BaseHistos.h_n1_pt","ParticlePairDerivedHistos::calculatePairDerivedHistograms()");
+    if (!pairHistos.h_n2_ptpt )    throw HistogramException("LOGIC","!pairHistos.h_n2_ptpt","ParticlePairDerivedHistos::calculatePairDerivedHistograms()");
+    if (!h_n1n1_ptpt ) throw HistogramException("LOGIC","!h_n1n1_ptpt","ParticlePairDerivedHistos::calculatePairDerivedHistograms()");
+    if (!h_C2_ptpt )   throw HistogramException("LOGIC","!h_C2_ptpt","ParticlePairDerivedHistos::calculatePairDerivedHistograms()");
+    if (!h_B2_ptpt )   throw HistogramException("LOGIC","!h_B2_ptpt","ParticlePairDerivedHistos::calculatePairDerivedHistograms()");
+    if (!h_A2_ptpt )   throw HistogramException("LOGIC","!h_A2_ptpt","ParticlePairDerivedHistos::calculatePairDerivedHistograms()");
+    if (!h_R2_ptpt )   throw HistogramException("LOGIC","!h_R2_ptpt","ParticlePairDerivedHistos::calculatePairDerivedHistograms()");
     }
-
-    cout << "Calculate XXX_ptpt" << endl;
-
-//  yield1 = part1BaseHistos.h_n1_pt->Integral();
+  //  yield1 = part1BaseHistos.h_n1_pt->Integral();
   yield2 = part2BaseHistos.h_n1_pt->Integral();
   calculateN1N1_H1H1H2( part1BaseHistos.h_n1_pt,   part2BaseHistos.h_n1_pt,  h_n1n1_ptpt,1.0, 1.0);
   h_C2_ptpt->Add(pairHistos.h_n2_ptpt,h_n1n1_ptpt,1.0,-1.0);
@@ -543,7 +545,7 @@ void ParticlePairDerivedHistos::calculatePairDerivedHistograms(ParticleSingleHis
   // phi vs phi
   //
   if (reportDebug(__FUNCTION__))  cout << "Calculate XXX_phiPhi" << endl;
-//  yield1 = part1DerivedHistos.h_n1_phi->Integral();
+  //  yield1 = part1DerivedHistos.h_n1_phi->Integral();
   yield2 = part2DerivedHistos.h_n1_phi->Integral();
   calculateN1N1_H1H1H2( part1DerivedHistos.h_n1_phi,  part2DerivedHistos.h_n1_phi, h_n1n1_phiPhi,1.0, 1.0);
   h_C2_phiPhi->Add(pairHistos.h_n2_phiPhi,h_n1n1_phiPhi,1.0,-1.0);
@@ -571,7 +573,7 @@ void ParticlePairDerivedHistos::calculatePairDerivedHistograms(ParticleSingleHis
     // eta vs eta
     //
     if (reportDebug(__FUNCTION__))  cout <<  "Calculate XXX_etaEta" << endl;
-//    yield1 = part1DerivedHistos.h_n1_eta->Integral();
+    //    yield1 = part1DerivedHistos.h_n1_eta->Integral();
     yield2 = part2DerivedHistos.h_n1_eta->Integral();
     calculateN1N1_H1H1H2(part1DerivedHistos.h_n1_eta,part2DerivedHistos.h_n1_eta,h_n1n1_etaEta,1.0, 1.0);
     h_C2_etaEta->Add(pairHistos.h_n2_etaEta,h_n1n1_etaEta,1.0,-1.0);
@@ -632,7 +634,7 @@ void ParticlePairDerivedHistos::calculatePairDerivedHistograms(ParticleSingleHis
     // y vs y
     //
     if (reportDebug(__FUNCTION__))  cout <<  "Calculate XXX_yY" << endl;
-//    yield1 = part1DerivedHistos.h_n1_y->Integral();
+    //    yield1 = part1DerivedHistos.h_n1_y->Integral();
     yield2 = part2DerivedHistos.h_n1_y->Integral();
     calculateN1N1_H1H1H2(part1DerivedHistos.h_n1_y,part2DerivedHistos.h_n1_y,h_n1n1_yY,1.0, 1.0);
     h_C2_yY->Add(pairHistos.h_n2_yY,h_n1n1_yY,1.0,-1.0);
@@ -662,12 +664,12 @@ void ParticlePairDerivedHistos::calculatePairDerivedHistograms(ParticleSingleHis
     shiftY(*h_C2_DyDphi,  *h_C2_DyDphi_shft,     nBins_Dphi_shft);
     shiftY(*h_R2_DyDphi,  *h_R2_DyDphi_shft,     nBins_Dphi_shft);
 
-//    vector<double> omegaFactor;
-//    calculateOmegaFactor(h_rho2_DyDphi, omegaFactor)
-//    calculateAverageYbar(h_A2_DyDphi, h_A2A_DyDphi, omegaFactor);
-//    calculateAverageYbar(h_B2_DyDphi, h_B2A_DyDphi, omegaFactor);
-//    calculateAverageYbar(h_C2_DyDphi, h_C2A_DyDphi, omegaFactor);
-//    calculateAverageYbar(h_R2_DyDphi, h_R2A_DyDphi, omegaFactor);
+    //    vector<double> omegaFactor;
+    //    calculateOmegaFactor(h_rho2_DyDphi, omegaFactor)
+    //    calculateAverageYbar(h_A2_DyDphi, h_A2A_DyDphi, omegaFactor);
+    //    calculateAverageYbar(h_B2_DyDphi, h_B2A_DyDphi, omegaFactor);
+    //    calculateAverageYbar(h_C2_DyDphi, h_C2A_DyDphi, omegaFactor);
+    //    calculateAverageYbar(h_R2_DyDphi, h_R2A_DyDphi, omegaFactor);
 
 
     if (fillP2)
@@ -716,13 +718,13 @@ void ParticlePairDerivedHistos::calculateOmegaFactor(TH2 * source, vector<double
     if (sums[iX]>0.0) index = iX;
     }
   cout << " index : " << index << endl;
-//  double y0 = source->GetXaxis()->GetBinLowEdge(yIndex);
-//  for (int iY=yIndex; iY<=nYBins+1-yIndex)
-//    {
-//    double dy = source->GetXaxis()->GetBinCenter(yIndex);
-//    omegaFactor[-1+iY] = y0-fabs(dy);
-//    cout << " iY : " << iY << " omega[iY] : " << omegaFactor[-1+iY] << endl;
-//    }
+  //  double y0 = source->GetXaxis()->GetBinLowEdge(yIndex);
+  //  for (int iY=yIndex; iY<=nYBins+1-yIndex)
+  //    {
+  //    double dy = source->GetXaxis()->GetBinCenter(yIndex);
+  //    omegaFactor[-1+iY] = y0-fabs(dy);
+  //    cout << " iY : " << iY << " omega[iY] : " << omegaFactor[-1+iY] << endl;
+  //    }
 }
 
 
@@ -744,4 +746,7 @@ void ParticlePairDerivedHistos::calculateAverageYbar(TH2 * source,
       target->SetBinError(iX,iY,ev*scale);
       }
     }
-  }
+}
+
+
+} // namespace CAP

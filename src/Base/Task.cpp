@@ -15,9 +15,10 @@
 #include "TParameter.h"
 #include "Task.hpp"
 
-using namespace CAP;
+ClassImp(CAP::Task);
 
-ClassImp(Task);
+namespace CAP
+{
 
 Task::Task()
 :
@@ -28,6 +29,7 @@ timer                    (),
 histogramManager         (),
 parent                   (nullptr),
 histosCreate             (false),
+histosCreateDerived      (false),
 histosReset              (false),
 histosClear              (false),
 histosScale              (false),
@@ -35,16 +37,17 @@ histosPlot               (false),
 histosPrint              (false),
 histosForceRewrite       (false),
 histosImport             (false),
-histosImportPath         (""),
-histosImportFile         (""),
+histosImportDerived      (false),
+histosImportPath         ("none"),
+histosImportFile         ("none"),
 histosExport             (false),
 histosExportAsRoot       (false),
 histosExportAsText       (false),
 histosExportPartial      (false),
 histosExportPartialCount (false),
 histosExportMaxPerPartial(false),
-histosExportPath         (""),
-histosExportFile         (""),
+histosExportPath         ("none"),
+histosExportFile         ("none"),
 taskExecutedTotal        (0),
 taskExecuted             (0),
 subTasks                 ()
@@ -62,6 +65,7 @@ timer                    (),
 histogramManager         (),
 parent                   (nullptr),
 histosCreate             (false),
+histosCreateDerived      (false),
 histosReset              (false),
 histosClear              (false),
 histosScale              (false),
@@ -69,6 +73,7 @@ histosPlot               (false),
 histosPrint              (false),
 histosForceRewrite       (false),
 histosImport             (false),
+histosImportDerived      (false),
 histosImportPath         (""),
 histosImportFile         (""),
 histosExport             (false),
@@ -115,6 +120,7 @@ void Task::setDefaultConfiguration()
   String debug("Debug");
   addParameter("Severity",                      debug);
   addParameter("HistogramsCreate",              histosCreate);
+  addParameter("HistogramsCreateDerived",       histosCreateDerived);
   addParameter("HistogramsReset",               histosReset);
   addParameter("HistogramsClear",               histosClear);
   addParameter("HistogramsScale",               histosScale);
@@ -122,6 +128,7 @@ void Task::setDefaultConfiguration()
   addParameter("HistogramsPrint",               histosPrint);
   addParameter("HistogramsForceRewrite",        histosForceRewrite);
   addParameter("HistogramsImport",              histosImport);
+  addParameter("HistogramsImportDerived",       histosImportDerived);
   addParameter("HistogramsImportPath",          histosImportPath);
   addParameter("HistogramsImportFile",          histosImportFile);
   addParameter("HistogramsExport",              histosExport);
@@ -140,7 +147,9 @@ void Task::configure()
     ;
 
   ConfigurationManager::configure();
+  setSeverity();
   histosCreate              = getValueBool("HistogramsCreate");
+  histosCreateDerived       = getValueBool("HistogramsCreateDerived");
   histosReset               = getValueBool("HistogramsReset");
   histosClear               = getValueBool("HistogramsClear");
   histosScale               = getValueBool("HistogramsScale");
@@ -148,6 +157,7 @@ void Task::configure()
   histosPrint               = getValueBool("HistogramsPrint");
   histosForceRewrite        = getValueBool("HistogramsForceRewrite");
   histosImport              = getValueBool("HistogramsImport");
+  histosImportDerived       = getValueBool("HistogramsImportDerived");
   histosImportPath          = getValueString("HistogramsImportPath");
   histosImportFile          = getValueString("HistogramsImportFile");
   histosExport              = getValueBool("HistogramsExport");
@@ -171,27 +181,15 @@ void Task::configure()
 }
 
 
-
-//
-//void Task::setSeverity()
-//{
-//  MessageLogger::Severity selectedLevel;
-//  String  logOption = getValueString("Severity");
-//  if (logOption.Contains("Debug"))        selectedLevel = MessageLogger::Debug;
-//  else if (logOption.Contains("Info"))    selectedLevel = MessageLogger::Info;
-//  else if (logOption.Contains("Warning")) selectedLevel = MessageLogger::Warning;
-//  else selectedLevel = MessageLogger::Info;
-//  setSeverityLevel(selectedLevel);
-//}
-//
-
 void Task::initialize()
 {
   if (reportStart(__FUNCTION__))
     ;
   initializeTaskExecuted();
-  if (histosImport)  importHistograms();
-  if (histosCreate)  createHistograms();
+//  if (histosImport)         importHistograms();
+//  if (histosImportDerived)  importDerivedHistograms();
+//  if (histosCreate)         createHistograms();
+//  if (histosCreateDerived)  createDerivedHistograms();
 //  if (calibsImport)  importCalibrations();
 //  if (calibsCreate)  createCalibrations();
   if (hasSubTasks())  initializeSubTasks();
@@ -217,6 +215,8 @@ void Task::finalize()
   if (histosPlot)    plotHistograms();
   if (histosPrint)   printHistograms();
   if (hasSubTasks()) finalizeSubTasks();
+//  if (histosReset)   reset();
+//  if (histosClear)   clear();
   if (reportEnd(__FUNCTION__))
     ;
 }
@@ -236,6 +236,7 @@ void Task::clear()
 {
   if (reportStart(__FUNCTION__))
     ;
+  resetTaskExecuted();
   if (histosCreate)  clearHistograms();
   if (hasSubTasks()) clearSubTasks();
   if (reportEnd(__FUNCTION__))
@@ -259,8 +260,11 @@ void Task::importHistograms()
 {
   if (reportStart(__FUNCTION__))
     ;
-  String importPath = getValueString("HistogramsImportPath");
-  String importFile = getValueString("HistogramsImportFile");
+  String importPath = histosImportPath;
+  String importFile = histosImportFile;
+
+//  String importPath = getValueString("HistogramsImportPath");
+//  String importFile = getValueString("HistogramsImportFile");
   if (reportDebug(__FUNCTION__))
     {
     cout << endl;
@@ -281,8 +285,10 @@ void Task::importDerivedHistograms()
 {
   if (reportStart(__FUNCTION__))
     ;
-  String importPath = getValueString("HistogramsImportPath");
-  String importFile = getValueString("HistogramsImportFile");
+//  String importPath = getValueString("HistogramsImportPath");
+//  String importFile = getValueString("HistogramsImportFile");
+  String importPath = histosImportPath;
+  String importFile = histosImportFile;
   if (reportDebug(__FUNCTION__))
     {
     cout << endl;
@@ -360,42 +366,32 @@ void Task::exportHistograms()
 {
   if (reportStart(__FUNCTION__))
     ;
-  String histosExportPath     = getValueString("HistogramsExportPath");
-  String histosExportFile     = getValueString("HistogramsExportFile");
-  if (histosExportPath.Contains("null") || histosExportPath.Contains("none")) histosExportPath = "";
-  if (histosExportFile.Contains("null") || histosExportFile.Contains("none")) histosExportFile = getName();
+  String exportPath = histosExportPath;
+  String exportFile = histosExportFile;
+
+//  String histosExportPath     = getValueString("HistogramsExportPath");
+//  String histosExportFile     = getValueString("HistogramsExportFile");
+//  if (histosExportPath.Contains("null") || histosExportPath.Contains("none")) histosExportPath = "";
+//  if (histosExportFile.Contains("null") || histosExportFile.Contains("none")) histosExportFile = getName();
+
   if (reportInfo(__FUNCTION__))
     {
     cout << endl;
-    printItem("HistogramsExportPath",histosExportPath);
-    printItem("HistogramsExportFile",histosExportFile);
+    printItem("HistogramsExportPath",exportPath);
+    printItem("HistogramsExportFile",exportFile);
     cout << endl;
     }
-  gSystem->mkdir(histosExportPath,1);
+  if (exportPath.Length()>2) gSystem->mkdir(exportPath,1);
+  if (exportFile.Length()<5)
+    throw FileException(exportFile,"File name too short. Must 5 charter or more...","Task::exportHistograms()");
 
 //  if (histosExportAsRoot)
 //  {
   String option = "NEW";
   if (histosForceRewrite) option = "RECREATE";
-  TFile & outputFile = openRootFile(histosExportPath,histosExportFile,option);
+  TFile & outputFile = openRootFile(exportPath,exportFile,option);
   exportHistograms(outputFile);
   outputFile.Close();
-//  }
-//  if (histosExportAsText)
-//  {
-//    ofstream * outputFile;
-//    if (histosForceRewrite)
-//      outputFile = openOutputAsciiFile(histosExportPath,histosExportFile,".dat","RECREATE");
-//    else
-//      outputFile = openOutputAsciiFile(histosExportPath,histosExportFile,".dat","NEW");
-//    if (!outputFile)
-//    {
-//      postTaskError();
-//      return;
-//    }
-//    exportHistograms(*outputFile);
-//    outputFile->close();
-//  }
   if (reportEnd(__FUNCTION__))
     ;
 }
@@ -437,8 +433,7 @@ long Task::readParameter(TFile & inputFile, const String & parameterName)
   if (!par)
   {
     if (reportError(__FUNCTION__)) cout << "Parameter not found:" <<  parameterName << endl;
-    postTaskError();
-    return 1.0;
+    throw TaskException("Parameter not found","Task::readParameter(TFile & inputFile, const String & parameterName)");
   }
   double value = par->GetVal();
   delete par;
@@ -622,22 +617,11 @@ void Task::clearSubTasks()
 
 Task * Task::addSubTask(Task * task)
 {
-  if (!task)
-  {
-    if (reportFatal(__FUNCTION__)) cout << "Given task pointer is null. Abort." << endl;
-    postTaskFatal();
-    return task;
-  }
-  if (task==this)
-  {
-    if (reportFatal(__FUNCTION__)) cout << "Given task pointer is self. Abort." << endl;
-    postTaskFatal();
-    return task;
-  }
-
+  if (!task)  throw TaskException("Given task pointer is null.", "Task::addSubTask(Task * task)");
+  if (task==this) throw TaskException("Given task pointer is self.", "Task::addSubTask(Task * task)");
   subTasks.push_back( task );
   if (task->parent == nullptr)  task->setParent(this);
-  if (reportInfo(__FUNCTION__)) cout << "Added task " << task->getName() << " to task " << getName() << endl;
+  if (reportDebug(__FUNCTION__)) cout << "Added task " << task->getName() << " to task " << getName() << endl;
   return task;
 }
 
@@ -763,7 +747,7 @@ vector<String>  Task::listFilesInDir(const String & pathName,
           name.Remove(dot,len-dot);
       }
       //String check = pathName+name;
-      //cout << " CHECK:::::: " << check << endl;
+      //cout << " CHECK:::: " << check << endl;
       outputList.push_back(name);
     }
   }
@@ -869,8 +853,8 @@ vector<String> Task::getTaskPathTokens() const
     const Task * task= getTaskAt(k);
     if (task==nullptr)
     {
-      cout << "<F> getTaskPathTokens()  Logic error." << endl;
-      exit(1);
+    String s="task==nullptr at k="; s+=k;
+    throw TaskException(s,"Task::getTaskPathTokens()");
     }
     else
     {
@@ -947,5 +931,6 @@ void Task::printVersion(const TString & option __attribute__ (( unused )) ) cons
     }
 }
 
+} // namespace CAP
 
 

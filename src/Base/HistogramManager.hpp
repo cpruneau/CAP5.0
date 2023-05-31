@@ -101,6 +101,7 @@ public:
   return sets[iSet][iGroup];
   }
 
+
   ClassDef(HistogramManager,0)
 };
 

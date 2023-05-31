@@ -130,7 +130,8 @@ void ThermalGas::calculateParticleDecayProbability()
           cout << "iPart: " << iPart << " indexStable:" << indexStable << " --- LOGIC ERROR - ABORT" << endl;
           cout << "Terminate task."  << endl;
           cout << "==================================================================================" << std::endl;
-          exit(1);
+          throw TaskException("indexStable<0 || indexStable>=nStablePart","ThermalGas::calculateParticleDecayProbability()");
+
           }
         }
       // this hadron is stable and thus has a unit
@@ -173,7 +174,7 @@ void ThermalGas::calculateParticleDecayProbability()
             cout << "Could not find PDG code: " << pdgCode << endl;
             cout << "Terminate task."  << endl;
             cout << "==================================================================================" << std::endl;
-            exit(1);
+            throw TaskException("decayHadron==nullptr","ThermalGas::calculateParticleDecayProbability()");
             }
           }
         ptrToDecayHadron[kHadron] = decayHadron;

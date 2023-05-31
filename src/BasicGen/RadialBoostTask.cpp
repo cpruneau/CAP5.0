@@ -16,11 +16,9 @@ using CAP::RadialBoostTask;
 ClassImp(RadialBoostTask);
 
 RadialBoostTask::RadialBoostTask(const String & _name,
-                                 const Configuration & _configuration,
-                                 vector<EventFilter*>&    _eventFilters,
-                                 vector<ParticleFilter*>& _particleFilters)
+                                 const Configuration & _configuration)
 :
-EventTask(_name, _configuration, _eventFilters, _particleFilters),
+EventTask(_name, _configuration),
 param_b(0),
 param_a(0),
 betaMaximum(0)

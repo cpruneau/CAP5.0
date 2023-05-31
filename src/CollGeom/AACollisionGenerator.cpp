@@ -16,15 +16,18 @@ using CAP::AACollisionGenerator;
 ClassImp(AACollisionGenerator);
 
 AACollisionGenerator::AACollisionGenerator(const String * _name,
-                                           const Configuration & _configuration,
-                                           vector<EventFilter*> & _eventFilters,
-                                           vector<ParticleFilter*>& _particleFilters)
+                                           const Configuration & _configuration)
 :
-EventTask(_name, _configuration, eventFilters, particleFilters, _reportLevel),
+EventTask(_name, _configuration),
 nnCollisionGenerator(NucleonNucleonCollisionGenerator::getDefaultNNCollisionGenerator() )
 {
-  nnCollisionGenerator = new NucleonNucleonCollisionGenerator("NN",_configuration,_eventFilters,_particleFilters);
+  nnCollisionGenerator = new NucleonNucleonCollisionGenerator("NN",_configuration);
   appendClassName("AACollisionGenerator");
+}
+
+void AACollisionGenerator::configure()
+{
+  EventTask::configure();
 }
 
 void AACollisionGenerator::setDefaultConfiguration()
@@ -74,8 +77,7 @@ void AACollisionGenerator::setNucleonNucleonCollisionGenerator(NucleonNucleonCol
   if (!_nnCollisionGenerator)
     {
     if (reportFatal()) cout << "No nnCollisionGenerator available (nnCollisionGenerator==nullptr)" <<endl;
-    postTaskFatal();
-    return;
+    throw TaskException("!_nnCollisionGenerator","AACollisionGenerator::setNucleonNucleonCollisionGenerator(NucleonNucleonCollisionGenerator  *)");
     }
   nnCollisionGenerator = _nnCollisionGenerator;
 }

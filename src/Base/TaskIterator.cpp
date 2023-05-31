@@ -97,7 +97,7 @@ void TaskIterator::partial(const String & outputPathBase)
 void TaskIterator::execute()
 {
   timer.start();
-  initialize();
+  //initialize();
   iEvent           = 0;
   iSubBunch        = 0;
   iBunch           = 0;

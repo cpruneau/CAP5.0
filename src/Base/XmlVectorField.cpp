@@ -47,7 +47,7 @@ VectorField* XmlVectorField::getXmlVectorField()
       cout << endl;
       cout << "No current tag selected or not a VECTOR3D tag." << endl;
       cout << "Abort." << endl;
-      exit(1);
+    throw FileException("Bad tag","VectorField::setValue(...)","XmlVectorField::getXmlVectorField()");
     }
 
 

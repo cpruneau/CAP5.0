@@ -32,8 +32,8 @@ void loadSubSample(const TString & includeBasePath);
 void loadExec(const TString & includeBasePath);
 
 
-int RunDerived(TString configFile="ResoAnalysis.txt",
-               TString pathName="/Volumes/ClaudeDisc4/OutputFiles/Reso",
+int RunDerived(TString configFile,
+               TString pathName,
                int nBunches=5)
 {
   TString includeBasePath = getenv("CAP_SRC");
@@ -54,21 +54,76 @@ int RunDerived(TString configFile="ResoAnalysis.txt",
   loadSubSample(includeBasePath);
   loadExec(includeBasePath);
 
-
-  //outputPath = "/Volumes/ClaudeDisc4/OutputFiles/Reso/";
-
   std::cout << "==================================================================================" << std::endl;
-  std::cout << "RunDerived" << endl;
+  std::cout << "Executing RunDerived" << endl;
+  std::cout << "configFile......: " << configFile << endl;
+  std::cout << "pathName........: " << pathName   << endl;
+  std::cout << "nBunches........: " << nBunches   << endl;
   std::cout << "==================================================================================" << std::endl;
+
   CAP::Configuration configuration;
+  try
+  {
   configuration.readFromFile("",configFile);
-  configuration.addParameter("Run:HistogramsExportPath",pathName);
-  configuration.addParameter("Run:HistogramsImportPath", pathName);
-  configuration.addParameter("Run:DerivedGen",    true);
-  CAP::RunDerivedCalculation * analysis = new CAP::RunDerivedCalculation("Run", configuration);
+  }
+  catch (CAP::ConfigurationException ce)
+  {
+  ce.print();
+  }
+  catch (...)
+  {
+  cout << "Unknown exception while reading configuration file." << endl;
+  return 1;
+  }
+
+  configuration.addParameter("Run:nBunches",                  nBunches);
+
+  configuration.addParameter("Run:HistogramsExportPath",      pathName);
+  configuration.addParameter("Run:HistogramsImportPath",      pathName);
+  configuration.addParameter("Run:HistogramsForceRewrite",    true);
+
+  configuration.addParameter("Run:RunParticleDbManager",      true);
+  configuration.addParameter("Run:RunFilterCreator",          true);
+  configuration.addParameter("Run:RunEventAnalysis",          false);
+  configuration.addParameter("Run:RunEventAnalysisGen",       false);
+  configuration.addParameter("Run:RunEventAnalysisReco",      false);
+  configuration.addParameter("Run:RunDerived",                true);
+  configuration.addParameter("Run:RunDerivedGen",             false);
+  configuration.addParameter("Run:RunDerivedReco",            false);
+  configuration.addParameter("Run:RunBalFct",                 false);
+  configuration.addParameter("Run:RunBalFctGen",              true);
+  configuration.addParameter("Run:RunBalFctReco",             false);
+
+  configuration.addParameter("Run:RunPartSingleAnalysisGen",  true);
+  configuration.addParameter("Run:RunPartSingleAnalysisReco", false);
+  configuration.addParameter("Run:RunPartPairAnalysisGen",    true);
+  configuration.addParameter("Run:RunPartPairAnalysisReco",   false);
+  configuration.addParameter("Run:RunGlobalAnalysisGen",      false);
+  configuration.addParameter("Run:RunGlobalAnalysisReco",     false);
+  configuration.addParameter("Run:RunSpherocityAnalysisGen",  false);
+  configuration.addParameter("Run:RunSpherocityAnalysisReco", false);
+  configuration.addParameter("Run:RunNuDynAnalysisGen",       false);
+  configuration.addParameter("Run:RunNuDynAnalysisReco",      false);
+
+
+  configuration.addParameter("Run:RunSubsample",              false);
+  configuration.addParameter("Run:RunSubsampleBase",          false);
+  configuration.addParameter("Run:RunSubsampleBaseGen",       false);
+  configuration.addParameter("Run:RunSubsampleBaseReco",      false);
+  configuration.addParameter("Run:RunSubsampleDerived",       false);
+  configuration.addParameter("Run:RunSubsampleDerivedeGen",   false);
+  configuration.addParameter("Run:RunSubsampleDerivedReco",   false);
+  configuration.addParameter("Run:RunSubsampleBalFct",        false);
+  configuration.addParameter("Run:RunSubsampleBalFctGen",     false);
+  configuration.addParameter("Run:RunSubsampleBalFctReco",    false);
+
+
+
+  CAP::RunAnalysis * analysis = new CAP::RunAnalysis("Run", configuration);
   analysis->configure();
   analysis->execute();
-  //if (selectedLevel==MessageLogger::Debug) analysis->getConfiguration().writeToFile("DebugConfig.txt");
+
+
   return 0;
 }
 
@@ -209,7 +264,8 @@ void loadSubSample(const TString & includeBasePath)
 void loadExec(const TString & includeBasePath)
 {
   TString includePath = includeBasePath + "/Exec/";
-  gSystem->Load(includePath+"RunDerivedCalculation.hpp");
+  gSystem->Load(includePath+"RunAnalysis.hpp");
   gSystem->Load("libExec.dylib");
 }
+
 

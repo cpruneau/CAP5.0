@@ -14,12 +14,10 @@ using CAP::HijingEventReader;
 
 ClassImp(HijingEventReader);
 
-HijingEventReader::HijingEventReader(const String &          _name,
-                                     const Configuration &          _configuration,
-                                     vector<EventFilter*>   & _eventFilters,
-                                     vector<ParticleFilter*>& _particleFilters)
+HijingEventReader::HijingEventReader(const String & _name,
+                                     const Configuration & _configuration)
 :
-RootTreeReader(_name, _configuration, _eventFilters, _particleFilters)
+RootTreeReader(_name, _configuration)
 {
   appendClassName("HijingEventReader");
 }
@@ -58,8 +56,7 @@ void HijingEventReader::importEvent()
     {
     if (reportError(__FUNCTION__))
       cout<< "nParticles: " << nParticles << "  exceeds capacity " << arraySize << endl;
-    postTaskFatal();
-    exit(1);
+    throw TaskException("nParticles > arraySize","HijingEventReader::importEvent()");
     }
   
   double eventPhi;

@@ -172,7 +172,7 @@ void Model::calculateHyperCubeVolume()
 //  cout << "   spatialRapidityRange: " << spatialRapidityRange << endl;
 //  cout << "                 rhoMax: " << rhoMax << endl;
 //  cout << "  momentumRapidityRange: " << momentumRapidityRange << endl;
-//  exit(1);
+//  
 }
 
 double Model::getHyperCubeSpatialVolume()  const

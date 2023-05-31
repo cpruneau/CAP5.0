@@ -45,10 +45,7 @@ double& VectorField::operator()(unsigned int iX, unsigned int iY, unsigned int i
   if (type==0)
     return constValue;
   else if (iX>=mXpts || iY>=mYpts || iZ>=mZpts)
-    {
-    cout << "VectorField::operator(): Invalid input" << endl;
-    exit(1);
-    }
+    throw MathException("Invalid input","VectorField::operator()(unsigned int iX, unsigned int iY, unsigned int iZ)");
   else
     return field[iX][iY][iZ];
 }
@@ -97,8 +94,7 @@ field(nullptr)
   if(mZpts < 1) mZpts = 1;
   if (mXampx<=mXmin || mYampx<=mYmin || mZampx<=mZmin)
     {
-    cout << "VectorField::VectorField: Invalid input" << endl;
-    exit(1);
+    throw MathException("Invalid input: mXampx<=mXmin || mYampx<=mYmin || mZampx<=mZmin","VectorField::operator()(unsigned int iX, unsigned int iY, unsigned int iZ)");
     }
   mDi = (mXpts - 1) / (mXampx - mXmin);
   mDj = (mYpts - 1) / (mYampx - mYmin);
@@ -208,8 +204,7 @@ void VectorField::setValue(const TString & aName,
   if(mZpts < 1) mZpts = 1;
   if (mXampx<=mXmin || mYampx<=mYmin || mZampx<=mZmin)
     {
-    cout << "VectorField::setValue() -- Invalid input" << endl;
-    exit(1);
+    throw MathException("Invalid input: mXampx<=mXmin || mYampx<=mYmin || mZampx<=mZmin","VectorField::setValue(...)");
     }
   mDi = (mXpts - 1) / (mXampx - mXmin);
   mDj = (mYpts - 1) / (mYampx - mYmin);

@@ -40,8 +40,7 @@ int  ParticleDbParser::readChunShen(ParticleDb    & _particleDb,
     if (reportError(__FUNCTION__))
       {
       cout << "Could not open ParticleDb file:" << particleDbImportPath << particleDbImportFile << endl;
-      postTaskError();
-      return;
+      throw TaskException("!inputDbFile","ParticleDbParser::readChunShen(...)");
       }
     }
   ifstream & inputFile = *inputDbFile;

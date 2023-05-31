@@ -100,7 +100,7 @@ void ParticleSingleHistos::createHistograms()
   fillY   = configuration.getValueBool(ppn,"FillY");
   fillP2  = configuration.getValueBool(ppn,"FillP2");
 
-  if (reportInfo(__FUNCTION__))
+  if (reportDebug(__FUNCTION__))
     {
     cout << endl;
     printItem("Single:Parent Task Name",   ptn);
@@ -178,9 +178,9 @@ void ParticleSingleHistos::importHistograms(TFile & inputFile)
     printItem("Single:Parent Task Name",   ptn);
     printItem("Single:Parent Path Name",   ppn);
     printItem("Single:Histo Base Name.",   bn);
-    printItem("Single:FillEta",   fillEta);
-    printItem("Single:FillY",   fillY  );
-    printItem("Single:FillP2",   fillP2 );
+    printItem("Single:FillEta",            fillEta);
+    printItem("Single:FillY",              fillY  );
+    printItem("Single:FillP2",             fillP2 );
     }
 
   fillEta      = configuration.getValueBool(ppn,"FillEta");
@@ -228,9 +228,9 @@ void ParticleSingleHistos::loadCalibration(TFile & inputFile)
     cout << endl;
     printItem("Single:Parent Task Name",   ptn);
     printItem("Single:Parent Path Name",   ppn);
-    printItem("Single:Histo Base Name",   bn);
+    printItem("Single:Histo Base Name",    bn);
     printItem("Single:useEffCorrection",   useEffCorrection);
-    printItem("Single:efficiencyOpt",   efficiencyOpt  );
+    printItem("Single:efficiencyOpt",      efficiencyOpt  );
     }
 
   switch (efficiencyOpt)

@@ -49,11 +49,9 @@ ClassImp(TherminatorGenerator);
 
 
 TherminatorGenerator::TherminatorGenerator(const TString & _name,
-                                           const Configuration & _configuration,
-                                           vector<EventFilter*>&   _eventFilters,
-                                           vector<ParticleFilter*>&_particleFilters)
+                                           const Configuration & _configuration)
 :
-EventTask::EventTask(_name, _configuration, _eventFilters,_particleFilters),
+EventTask::EventTask(_name, _configuration),
 modelType(0),
 modelSubType(0),
 modelInputPath(),
@@ -72,6 +70,9 @@ multiplicitiesInputPath(),
 multiplicitiesInputFile(),
 multiplicitiesOutputPath(),
 multiplicitiesOutputFile(),
+multiplicitiesFractionMin(0.5),
+multiplicitiesFractionMax(1.0),
+multiplicitiesFractionRange(0.5),
 disablePhotons(true),
 nSamplesIntegration(10000),
 modelOnlyBackFlow(0),
@@ -109,6 +110,8 @@ void TherminatorGenerator::setDefaultConfiguration()
   addParameter( "MultiplicitiesInputFile",      multiplicitiesInputFile);
   addParameter( "MultiplicitiesOutputPath",     multiplicitiesOutputPath);
   addParameter( "MultiplicitiesOutputFile",     multiplicitiesOutputFile);
+  addParameter( "MultiplicitiesFractionMin",    multiplicitiesFractionMin);
+  addParameter( "MultiplicitiesFractionMax",    multiplicitiesFractionMax);
   addParameter( "DisablePhotons",               disablePhotons);
   addParameter( "nSamplesIntegration",          nSamplesIntegration);
   addParameter( "ModelOnlyBackFlow",            modelOnlyBackFlow);
@@ -123,64 +126,70 @@ void TherminatorGenerator::setDefaultConfiguration()
 void TherminatorGenerator::configure()
 {
   EventTask::configure();
-  modelType                = getValueInt(    "ModelType");
-  modelSubType             = getValueInt(    "ModelSubType");
-  modelInputPath           = getValueString( "ModelInputPath");
-  modelInputFile           = getValueString( "ModelInputFile");
-  modelOutputPath          = getValueString( "ModelOutputPath");
-  modelOutputFile          = getValueString( "ModelOutputFile");
-  hypersurfaceInputPath    = getValueString( "HypersurfaceInputPath");
-  hypersurfaceInputFile    = getValueString( "HypersurfaceInputFile");
-  hypersurfaceOutputPath   = getValueString( "HypersurfaceOutputPath");
-  hypersurfaceOutputFile   = getValueString( "HypersurfaceOutputFile");
-  multiplicitiesImport     = getValueBool(   "MultiplicitiesImport");
-  multiplicitiesExport     = getValueBool(   "MultiplicitiesExport");
-  multiplicitiesCreate     = getValueBool(   "MultiplicitiesCreate");
-  multiplicitiesFluctType  = getValueInt(    "MultiplicitiesFluctType");
-  multiplicitiesInputPath  = getValueString( "MultiplicitiesInputPath");
-  multiplicitiesInputFile  = getValueString( "MultiplicitiesInputFile");
-  multiplicitiesOutputPath = getValueString( "MultiplicitiesOutputPath");
-  multiplicitiesOutputFile = getValueString( "MultiplicitiesOutputFile");
-  disablePhotons           = getValueBool(   "DisablePhotons");
-  nSamplesIntegration      = getValueInt(    "nSamplesIntegration");
-  modelOnlyBackFlow        = getValueBool(   "ModelOnlyBackFlow");
-  decayRescaleChannels     = getValueBool(   "DecayRescaleChannels");
-  decayDisabled            = getValueBool(   "DecayDisabled");
-  decayDisable3Prong       = getValueBool(   "DecayDisable3Prong");
-  decayDisable2Prong       = getValueBool(   "DecayDisable2Prong");
-  decayNoWeakDecay         = getValueBool(   "DecayNoWeakDecay");
-  decayStoreDecayedParts   = getValueBool(   "DecayStoreDecayedParts");
+  modelType                   = getValueInt(    "ModelType");
+  modelSubType                = getValueInt(    "ModelSubType");
+  modelInputPath              = getValueString( "ModelInputPath");
+  modelInputFile              = getValueString( "ModelInputFile");
+  modelOutputPath             = getValueString( "ModelOutputPath");
+  modelOutputFile             = getValueString( "ModelOutputFile");
+  hypersurfaceInputPath       = getValueString( "HypersurfaceInputPath");
+  hypersurfaceInputFile       = getValueString( "HypersurfaceInputFile");
+  hypersurfaceOutputPath      = getValueString( "HypersurfaceOutputPath");
+  hypersurfaceOutputFile      = getValueString( "HypersurfaceOutputFile");
+  multiplicitiesImport        = getValueBool(   "MultiplicitiesImport");
+  multiplicitiesExport        = getValueBool(   "MultiplicitiesExport");
+  multiplicitiesCreate        = getValueBool(   "MultiplicitiesCreate");
+  multiplicitiesFluctType     = getValueInt(    "MultiplicitiesFluctType");
+  multiplicitiesInputPath     = getValueString( "MultiplicitiesInputPath");
+  multiplicitiesInputFile     = getValueString( "MultiplicitiesInputFile");
+  multiplicitiesOutputPath    = getValueString( "MultiplicitiesOutputPath");
+  multiplicitiesOutputFile    = getValueString( "MultiplicitiesOutputFile");
+  multiplicitiesFractionMin   = getValueDouble( "MultiplicitiesFractionMin");
+  multiplicitiesFractionMax   = getValueDouble( "MultiplicitiesFractionMax");
+  multiplicitiesFractionRange = multiplicitiesFractionMax - multiplicitiesFractionMin;
+  disablePhotons              = getValueBool(   "DisablePhotons");
+  nSamplesIntegration         = getValueInt(    "nSamplesIntegration");
+  modelOnlyBackFlow           = getValueBool(   "ModelOnlyBackFlow");
+  decayRescaleChannels        = getValueBool(   "DecayRescaleChannels");
+  decayDisabled               = getValueBool(   "DecayDisabled");
+  decayDisable3Prong          = getValueBool(   "DecayDisable3Prong");
+  decayDisable2Prong          = getValueBool(   "DecayDisable2Prong");
+  decayNoWeakDecay            = getValueBool(   "DecayNoWeakDecay");
+  decayStoreDecayedParts      = getValueBool(   "DecayStoreDecayedParts");
 
   if (reportInfo(__FUNCTION__))
     {
     cout << endl;
-    printItem( "ModelType");
-    printItem( "ModelSubType");
-    printItem( "ModelInputPath");
-    printItem( "ModelInputFile");
-    printItem( "ModelOutputPath");
-    printItem( "ModelOutputFile");
-    printItem( "HypersurfaceInputPath");
-    printItem( "HypersurfaceInputFile");
-    printItem( "HypersurfaceOutputPath");
-    printItem( "HypersurfaceOutputFile");
-    printItem( "MultiplicitiesImport");
-    printItem( "MultiplicitiesExport");
-    printItem( "MultiplicitiesCreate");
-    printItem( "MultiplicitiesFluctType");
-    printItem( "MultiplicitiesInputPath");
-    printItem( "MultiplicitiesInputFile");
-    printItem( "MultiplicitiesOutputPath");
-    printItem( "MultiplicitiesOutputFile");
-    printItem( "DisablePhotons");
-    printItem( "nSamplesIntegration");
-    printItem( "ModelOnlyBackFlow");
-    printItem( "DecayRescaleChannels");
-    printItem( "DecayDisabled");
-    printItem( "DecayDisable3Prong");
-    printItem( "DecayDisable2Prong");
-    printItem( "DecayNoWeakDecay");
-    printItem( "DecayStoreDecayedParts");
+    printItem( "ModelType",                   modelType);
+    printItem( "ModelSubType",                modelSubType);
+    printItem( "ModelInputPath",              modelInputPath);
+    printItem( "ModelInputFile",              modelInputFile);
+    printItem( "ModelOutputPath",             modelOutputPath);
+    printItem( "ModelOutputFile",             modelOutputFile);
+    printItem( "HypersurfaceInputPath",       hypersurfaceInputPath);
+    printItem( "HypersurfaceInputFile",       hypersurfaceInputFile);
+    printItem( "HypersurfaceOutputPath",      hypersurfaceOutputPath);
+    printItem( "HypersurfaceOutputFile",      hypersurfaceOutputFile);
+    printItem( "MultiplicitiesImport",        multiplicitiesImport);
+    printItem( "MultiplicitiesExport",        multiplicitiesExport);
+    printItem( "MultiplicitiesCreate",        multiplicitiesCreate);
+    printItem( "MultiplicitiesFluctType",     multiplicitiesFluctType);
+    printItem( "MultiplicitiesInputPath",     multiplicitiesInputPath);
+    printItem( "MultiplicitiesInputFile",     multiplicitiesInputFile);
+    printItem( "MultiplicitiesOutputPath",    multiplicitiesOutputPath);
+    printItem( "MultiplicitiesOutputFile",    multiplicitiesOutputFile);
+    printItem( "MultiplicitiesFractionMin",   multiplicitiesFractionMin);
+    printItem( "MultiplicitiesFractionMax",   multiplicitiesFractionMax);
+    printItem( "MultiplicitiesFractionRange", multiplicitiesFractionRange);
+    printItem( "DisablePhotons",              disablePhotons);
+    printItem( "nSamplesIntegration",         nSamplesIntegration);
+    printItem( "ModelOnlyBackFlow",           modelOnlyBackFlow);
+    printItem( "DecayRescaleChannels",        decayRescaleChannels);
+    printItem( "DecayDisabled",               decayDisabled);
+    printItem( "DecayDisable3Prong",          decayDisable3Prong);
+    printItem( "DecayDisable2Prong",          decayDisable2Prong);
+    printItem( "DecayNoWeakDecay",            decayNoWeakDecay);
+    printItem( "DecayStoreDecayedParts",      decayStoreDecayedParts);
     cout << endl;
     }
 }
@@ -231,8 +240,14 @@ void TherminatorGenerator::createEvent()
     if (reportError(__FUNCTION__))
       {
       cout << " Array averageMultiplicities is not initialized." << endl;
-      exit(1);
+      throw TaskException("averageMultiplicities.size() < 1","TherminatorGenerator::createEvent()");
       }
+    }
+
+  double multiplicitiesFraction = 1.0;
+  if (multiplicitiesFractionRange>0 || multiplicitiesFractionMin<1)
+    {
+    multiplicitiesFraction = multiplicitiesFractionMin + multiplicitiesFractionRange*gRandom->Rndm();
     }
 
   switch (multiplicitiesFluctType)
@@ -241,7 +256,7 @@ void TherminatorGenerator::createEvent()
       // Poisson fluctuations
       for (unsigned int iType=0; iType<nTypes; iType++)
         {
-        double mean  = averageMultiplicities[iType].multiplicity;
+        double mean  = multiplicitiesFraction * averageMultiplicities[iType].multiplicity;
         eventMultiplicities[iType] = gRandom->Poisson(mean);
         }
       break;
@@ -257,7 +272,7 @@ void TherminatorGenerator::createEvent()
       // Gaussian fluctuations
       for (unsigned int iType=0; iType<nTypes; iType++)
         {
-        double mean  = averageMultiplicities[iType].multiplicity;
+        double mean  = multiplicitiesFraction * averageMultiplicities[iType].multiplicity;
         double sigma = sqrt(mean);
         eventMultiplicities[iType] = TMath::Max(0, int(gRandom->Gaus(mean,sigma)));
         }
@@ -266,7 +281,7 @@ void TherminatorGenerator::createEvent()
       // Poisson or Gaussian fluctuations
       for (unsigned int iType=0; iType<nTypes; iType++)
         {
-        double mean  = averageMultiplicities[iType].multiplicity;
+        double mean  = multiplicitiesFraction * averageMultiplicities[iType].multiplicity;
         if (mean>20)
           {
           double sigma = sqrt(mean);
@@ -438,8 +453,8 @@ void TherminatorGenerator::decayParticle(Event & event, Particle & parent)
       default:
       case 4:
       {
-      cout << "4- or more body decay should not happen " << endl;
-      exit(1);
+      throw TaskException("4- or more body decay should not happen","TherminatorGenerator::createEvent()");
+
       //        Particle * child1 = particleFactory->getNextObject();
       //        Particle * child2 = particleFactory->getNextObject();
       //        Particle * child3 = particleFactory->getNextObject();
@@ -530,15 +545,7 @@ void TherminatorGenerator::initializeEventGenerator()
   if (reportInfo(__FUNCTION__)) printIntroMessage();
   particleDb = ParticleDb::getDefaultParticleDb();
   if (particleDb->getNumberOfTypes()<1)
-    {
-    if (reportFatal(__FUNCTION__))
-      {
-      cout << endl;
-      cout << "Particle Database is not initialized. Waky Waky!!!!!" << endl;
-      cout << "ABORT/EXIT." << endl;
-      }
-    exit(1);
-    }
+    throw TaskException("Particle Database is not initialized. Waky Waky!!!!!","TherminatorGenerator::initializeEventGenerator()");
   switch (modelType)
     {
       default:
@@ -668,8 +675,8 @@ void TherminatorGenerator::calculateMultiplicities()
     cout << endl;
     cout << " nPartTypes : " << nPartTypes << endl<< endl;
     }
-  if (nPartTypes<1) exit(1);
-
+  if (nPartTypes<1)
+    throw TaskException("nPartTypes<1","TherminatorGenerator::calculateMultiplicities()");
   for (int iPartType = 0; iPartType<nPartTypes; iPartType++)
     {
     ParticleType & particleType = *particleDb->getParticleType(iPartType);
@@ -699,7 +706,6 @@ void TherminatorGenerator::calculateMultiplicities()
       //cout << "            multiplicity: "  <<  multiplicity << endl;
       particleMultiplicity.integral     = maxIntegrand;
       particleMultiplicity.multiplicity = multiplicity;
-      //if (iPartType > 10) exit(1);
       }
     averageMultiplicities.push_back(particleMultiplicity);
     }

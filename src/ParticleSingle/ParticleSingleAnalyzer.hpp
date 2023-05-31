@@ -70,9 +70,7 @@ public:
   //! @param _reportLevel Message log level to be used by this task.
   //!
   ParticleSingleAnalyzer(const String & _name,
-                   const Configuration & _configuration,
-                   vector<EventFilter*> & _eventFilters,
-                   vector<ParticleFilter*> & _particleFilters);
+                   const Configuration & _configuration);
   
   //!
   //!DTOR
@@ -85,6 +83,9 @@ public:
   virtual void setDefaultConfiguration();
 
   virtual void configure();
+  virtual void initialize();
+  virtual void initializeHistogramManager();
+
   //!
   //! Execute a single particle analysis  based on event and particle fileter operated with this task instance.
   //! Two options are implemented and chosen automatically by the code. 

@@ -80,29 +80,28 @@ void ParticleSingleDerivedHistos::createHistograms()
   min_y     = configuration.getValueDouble(ppn,"Min_y");
   max_y     = configuration.getValueDouble(ppn,"Max_y");
 
-  if (reportDebug(__FUNCTION__))
+  if (reportInfo(__FUNCTION__))
     {
     cout << endl;
-    cout << "  Part:Parent Task Name....................: " << ptn << endl;
-    cout << "  Part:Parent Path Name....................: " << ppn << endl;
-    cout << "  Part:Histo Base Name.....................: " << bn << endl;
-    cout << "  Part:nBins_pt............................: " << nBins_pt << endl;
-    cout << "  Part:Min_pt..............................: " << min_pt << endl;
-    cout << "  Part:Max_pt..............................: " << max_pt << endl;
-    cout << "  Part:nBins_phi...........................: " << nBins_phi << endl;
-    cout << "  Part:Min_phi.............................: " << min_phi << endl;
-    cout << "  Part:Max_phi.............................: " << max_phi << endl;
-    cout << "  Part:nBins_eta...........................: " << nBins_eta << endl;
-    cout << "  Part:Min_eta.............................: " << min_eta << endl;
-    cout << "  Part:Max_eta.............................: " << max_eta << endl;
-    cout << "  Part:nBins_y.............................: " << nBins_y << endl;
-    cout << "  Part:Min_y...............................: " << min_y << endl;
-    cout << "  Part:Max_y...............................: " << max_y << endl;
-    cout << "  Part:FillEta.............................: " << fillEta << endl;
-    cout << "  Part:FillY...............................: " << fillY << endl;
-    cout << "  Part:FillP2..............................: " << fillP2 << endl;
+    printItem("Single:Parent Task Name",    ptn);
+    printItem("Single:Parent Path Name",    ppn);
+    printItem("Single:Histo Base Name.",    bn);
+    printItem("Single:nBins_pt",            int(nBins_pt));
+    printItem("Single:Min_pt",              min_pt);
+    printItem("Single:Max_pt",              max_pt);
+    printItem("Single:nBins_phi",           int(nBins_phi));
+    printItem("Single:Min_phi",             min_phi);
+    printItem("Single:Max_phi",             max_phi);
+    printItem("Single:nBins_eta",           int(nBins_eta));
+    printItem("Single:Min_eta",             min_eta);
+    printItem("Single:Max_eta.",            max_eta);
+    printItem("Single:nBins_y",             int(nBins_y));
+    printItem("Single:Min_y",               min_y);
+    printItem("Single:Max_y",               max_y);
+    printItem("Single:FillEta",             fillEta);
+    printItem("Single:FillY",               fillY);
+    printItem("Single:FillP2",              fillP2);
     }
-
   h_n1_phi     = createHistogram(createName(bn,"n1_phi"), nBins_phi, min_phi, max_phi, "#varphi","#rho_{1}(#varphi)");
   if (fillP2)
     {
@@ -130,6 +129,7 @@ void ParticleSingleDerivedHistos::createHistograms()
       h_pt_phiY   = createHistogram(createName(bn,"pt_phiY"),  nBins_y,   min_y,   max_y, nBins_phi, min_phi, max_phi, "y", "#varphi","N");
       }
     }
+  cout << "<INFO> ParticleSingleDerivedHistos::createHistograms()  n:" << getNHistograms() << endl;
   if ( reportEnd(__FUNCTION__))
     ;
 }
@@ -146,9 +146,9 @@ void ParticleSingleDerivedHistos::importHistograms(TFile & inputFile)
   if (reportDebug(__FUNCTION__))
     {
     cout << endl;
-    cout << "  Part:FillEta.............: " << fillEta << endl;
-    cout << "  Part:FillY...............: " << fillY << endl;
-    cout << "  Part:FillP2..............: " << fillP2 << endl;
+    printItem("Single:FillEta",fillEta);
+    printItem("Single:FillY",fillY);
+    printItem("Single:FillP2",fillP2);
     }
   h_n1_phi  = loadH1(inputFile,  createName(bn,"n1_phi"));
   h_spt_phi = loadH1(inputFile,  createName(bn,"spt_phi"));

@@ -17,11 +17,9 @@ using CAP::NuDynAnalyzer;
 ClassImp(NuDynAnalyzer);
 
 NuDynAnalyzer::NuDynAnalyzer(const String & _name,
-                             const Configuration & _configuration,
-                             vector<EventFilter*> & _eventFilters,
-                             vector<ParticleFilter*> & _particleFilters)
+                             const Configuration & _configuration)
 :
-EventTask(_name, _configuration, _eventFilters, _particleFilters),
+EventTask(_name, _configuration),
 multiplicityType(1)
 {
   appendClassName("NuDynAnalyzer");
@@ -72,6 +70,12 @@ void NuDynAnalyzer::configure()
     }
 }
 
+void NuDynAnalyzer::initializeHistogramManager()
+{
+  histogramManager.addSet("base");
+  histogramManager.addSet("derived");
+}
+
 void NuDynAnalyzer::initialize()
 {
   EventTask::initialize();
@@ -79,7 +83,6 @@ void NuDynAnalyzer::initialize()
     {
     deltaRapidtyBin.push_back(min_rapidity+double(iEta)*width_rapidity );
     }
-
 }
 
 void NuDynAnalyzer::createHistograms()
@@ -100,7 +103,6 @@ void NuDynAnalyzer::createHistograms()
     }
   partFilterName = particleFilters[0]->getName();
   partFilterName += particleFilters[1]->getName();
-  histogramManager.addSet("NuDyn");
 
   for (unsigned int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {
@@ -139,7 +141,6 @@ void NuDynAnalyzer::importHistograms(TFile & inputFile)
     }
   partFilterName = particleFilters[0]->getName();
   partFilterName += particleFilters[1]->getName();
-  histogramManager.addSet("NuDyn");
 
   for (unsigned int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {
@@ -220,7 +221,6 @@ void NuDynAnalyzer::createDerivedHistograms()
     printItem("nParticleFilters", int(nParticleFilters));
     cout << endl;
     }
-  histogramManager.addSet("NuDynDerived");
   NuDynDerivedHistos * histos;
   for (unsigned int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {

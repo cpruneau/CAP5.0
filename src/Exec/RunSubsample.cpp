@@ -44,8 +44,6 @@ Task(_name, _configuration)
   //  String includeBasePath = getenv("CAP_SRC");
   appendClassName("RunSubsample");
   setInstanceName(_name);
-  setDefaultConfiguration();
-  setConfiguration(_configuration);
 }
 
 
@@ -63,7 +61,7 @@ void RunSubsample::setDefaultConfiguration()
   addParameter("RecoLabel",            TString("Reco"));
   addParameter("Severity",             TString("DEBUG"));
   addParameter("Subsample",            YES);
-  addParameter("SubsampleBase",        YES);
+  addParameter("SubsampleBase",        NO);
   addParameter("SubsampleDerived",     NO);
   addParameter("SubsampleBalFct",      NO);
   addParameter("HistogramsImportPath", TString("./"));
@@ -90,7 +88,7 @@ void RunSubsample::addBaseSubSampleTask(const String & basePath,
       {
       String inputPathName  = TString(Form("%s/%s%02d/%s",basePath.Data(),bunchLabel.Data(),k,subPath.Data()));
       String outputPathName = TString(Form("%s/%s%02d/",basePath.Data(),bunchLabel.Data(),k));
-      Configuration & subConfig = * new Configuration();
+      Configuration & subConfig = * new Configuration(configuration);
       subConfig.addParameter(TString("Run:")+taskType+TString(":HistogramsImportPath"),inputPathName);
       subConfig.addParameter(TString("Run:")+taskType+TString(":HistogramsExportPath"),outputPathName);
       subConfig.addParameter(TString("Run:")+taskType+TString(":IncludedPattern0"),TString("Gen"));
@@ -99,7 +97,7 @@ void RunSubsample::addBaseSubSampleTask(const String & basePath,
       subConfig.addParameter(TString("Run:")+taskType+TString(":ExcludedPattern2"),TString("BalFct"));
       subConfig.addParameter(TString("Run:")+taskType+TString(":ExcludedPattern3"),TString("Sum"));
       subConfig.addParameter(TString("Run:")+taskType+TString(":AppendedString"),TString("Sum"));
-      subConfig.addParameter(TString("Run:")+taskType+TString(":MaximumDepth"),2); //maximumDepth);
+     // subConfig.addParameter(TString("Run:")+taskType+TString(":MaximumDepth"), maximumDepth);
       //subConfig.printConfiguration(cout);
       addSubTask( new SubSampleStatCalculator(taskType,subConfig));
       }
@@ -108,7 +106,7 @@ void RunSubsample::addBaseSubSampleTask(const String & basePath,
     {
     String inputPathName  = TString(Form("%s/",basePath.Data()));
     String outputPathName = inputPathName;
-    Configuration & subConfig = * new Configuration();
+    Configuration & subConfig = * new Configuration(configuration);
     subConfig.addParameter(TString("Run:")+taskType+TString(":HistogramsImportPath"),inputPathName);
     subConfig.addParameter(TString("Run:")+taskType+TString(":HistogramsExportPath"),outputPathName);
     subConfig.addParameter(TString("Run:")+taskType+TString(":IncludedPattern0"),TString("Gen"));
@@ -134,9 +132,9 @@ void RunSubsample::addDerivedSubSampleTask(const String & basePath,
     {
     for (int k=1;k<=nBunches; k++)
       {
-      String inputPathName  = TString(Form("%s/%s%02d/",basePath.Data(),bunchLabel.Data(),k));
-      String outputPathName = TString(Form("%s/%s%02d/",basePath.Data(),bunchLabel.Data(),k));
-      Configuration & subConfig = * new Configuration();
+      String inputPathName  = basePath;  //TString(Form("%s/%s%02d/",basePath.Data(),bunchLabel.Data(),k));
+      String outputPathName = basePath;  //.Data(); // TString(Form("%s/%s%02d/",,"",k));
+      Configuration & subConfig = * new Configuration(configuration);
       subConfig.addParameter(TString("Run:")+taskType+TString(":HistogramsImportPath"),inputPathName);
       subConfig.addParameter(TString("Run:")+taskType+TString(":HistogramsExportPath"),outputPathName);
       subConfig.addParameter(TString("Run:")+taskType+TString(":IncludedPattern0"),TString("Gen"));
@@ -144,7 +142,8 @@ void RunSubsample::addDerivedSubSampleTask(const String & basePath,
       subConfig.addParameter(TString("Run:")+taskType+TString(":ExcludedPattern0"),TString("Reco"));
       subConfig.addParameter(TString("Run:")+taskType+TString(":ExcludedPattern1"),TString("BalFct"));
       subConfig.addParameter(TString("Run:")+taskType+TString(":AppendedString"),TString("DerivedSum"));
-      subConfig.addParameter(TString("Run:")+taskType+TString(":MaximumDepth"),maximumDepth);
+      subConfig.addParameter(TString("Run:")+taskType+TString(":MaximumDepth"),1);
+     // subConfig.addParameter(TString("Run:")+taskType+TString(":MaximumDepth"),maximumDepth);
       subConfig.printConfiguration(cout);
       addSubTask( new SubSampleStatCalculator(taskType,subConfig));
       }
@@ -153,7 +152,7 @@ void RunSubsample::addDerivedSubSampleTask(const String & basePath,
     {
     String inputPathName  = TString(Form("%s/",basePath.Data()));
     String outputPathName = inputPathName;
-    Configuration & subConfig = * new Configuration();
+    Configuration & subConfig = * new Configuration(configuration);
     subConfig.addParameter(TString("Run:")+taskType+TString(":HistogramsImportPath"),inputPathName);
     subConfig.addParameter(TString("Run:")+taskType+TString(":HistogramsExportPath"),outputPathName);
     subConfig.addParameter(TString("Run:")+taskType+TString(":IncludedPattern0"),TString("Gen"));
@@ -161,7 +160,7 @@ void RunSubsample::addDerivedSubSampleTask(const String & basePath,
     subConfig.addParameter(TString("Run:")+taskType+TString(":ExcludedPattern0"),TString("Reco"));
     subConfig.addParameter(TString("Run:")+taskType+TString(":ExcludedPattern1"),TString("BalFct"));
     subConfig.addParameter(TString("Run:")+taskType+TString(":AppendedString"),TString("DerivedSum"));
-    subConfig.addParameter(TString("Run:")+taskType+TString(":MaximumDepth"),maximumDepth);
+    subConfig.addParameter(TString("Run:")+taskType+TString(":MaximumDepth"),1);
     subConfig.printConfiguration(cout);
     addSubTask( new SubSampleStatCalculator(taskType,subConfig));
     }
@@ -224,15 +223,15 @@ void RunSubsample::configure()
   String GenLabel         = getValueString("GenLabel");
   String RecoLabel        = getValueString("RecoLabel");
 
-  bool    RunGlobalAnalysisGen     = getValueBool("RunGlobalAnalysisGen");
-  bool    RunSpherocityAnalysisGen = getValueBool("RunSpherocityAnalysisGen");
-  bool    RunPartSingleAnalysisGen = getValueBool("RunPartSingleAnalysisGen");
-  bool    RunPartPairAnalysisGen   = getValueBool("RunPartPairAnalysisGen");
-  bool    RunNuDynAnalysisGen      = getValueBool("RunNuDynAnalysisGen");
+  bool    RunGlobalAnalysis     = getValueBool("RunGlobalAnalysis");
+  bool    RunSpherocityAnalysis = getValueBool("RunSpherocityAnalysis");
+  bool    RunPartSingleAnalysis = getValueBool("RunPartSingleAnalysis");
+  bool    RunPartPairAnalysis   = getValueBool("RunPartPairAnalysis");
+  bool    RunNuDynAnalysis      = getValueBool("RunNuDynAnalysis");
 
   bool    RunSubsampleBase     = getValueBool(  "SubsampleBase");
-  bool    RunSubsampleDerived  = getValueBool(  "SubsampleDerivedGen");
-  bool    RunSubsampleBalFct   = getValueBool(  "SubsampleBalFctGen");
+  bool    RunSubsampleDerived  = getValueBool(  "SubsampleDerived");
+  bool    RunSubsampleBalFct   = getValueBool(  "SubsampleBalFct");
   String  inputPathName        = getValueString("HistogramsImportPath");
   String  outputPathName       = getValueString("HistogramsExportPath");
   bool    bunched              = getValueBool(  "Bunched");
@@ -240,7 +239,6 @@ void RunSubsample::configure()
   String  bunchLabel           = getValueString("BunchLabel");
   String  subPathLabel         = getValueString("SubPathLabel");
   int     maximumDepth         = getValueInt(   "MaximumDepth");
-
 
   if (reportInfo(__FUNCTION__))
     {
@@ -260,25 +258,26 @@ void RunSubsample::configure()
     printItem("BunchLabel",               bunchLabel);
     printItem("SubPathLabel",             subPathLabel);
     printItem("MaximumDepth",             maximumDepth);
-    printItem("RunGlobalAnalysisGen",     RunGlobalAnalysisGen);
-    printItem("RunSpherocityAnalysisGen", RunSpherocityAnalysisGen);
-    printItem("RunPartSingleAnalysisGen", RunPartSingleAnalysisGen);
-    printItem("RunPartPairAnalysisGen",   RunPartPairAnalysisGen);
-    printItem("RunNuDynAnalysisGen",      RunNuDynAnalysisGen);
+    printItem("RunGlobalAnalysis",        RunGlobalAnalysis);
+    printItem("RunSpherocityAnalysis",    RunSpherocityAnalysis);
+    printItem("RunPartSingleAnalysis",    RunPartSingleAnalysis);
+    printItem("RunPartPairAnalysis",      RunPartPairAnalysis);
+    printItem("RunNuDynAnalysis",         RunNuDynAnalysis);
     }
 
-  if (RunSubsampleBase && RunGlobalAnalysisGen)     addBaseSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,GlobalLabel+GenLabel);
-  if (RunSubsampleBase && RunSpherocityAnalysisGen) addBaseSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,SpherocityLabel+GenLabel);
-  if (RunSubsampleBase && RunPartSingleAnalysisGen) addBaseSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,SingleLabel+GenLabel);
-  if (RunSubsampleBase && RunPartPairAnalysisGen)   addBaseSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,PairLabel+GenLabel);
-  if (RunSubsampleBase && RunNuDynAnalysisGen)      addBaseSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,NuDynLabel+GenLabel);
 
-  if (RunSubsampleDerived && RunGlobalAnalysisGen)     addDerivedSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,GlobalLabel+GenLabel);
-  if (RunSubsampleDerived && RunSpherocityAnalysisGen) addDerivedSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,SpherocityLabel+GenLabel);
-  if (RunSubsampleDerived && RunPartSingleAnalysisGen) addDerivedSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,SingleLabel+GenLabel);
-  if (RunSubsampleDerived && RunPartPairAnalysisGen)   addDerivedSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,PairLabel+GenLabel);
-  if (RunSubsampleDerived && RunNuDynAnalysisGen)      addDerivedSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,NuDynLabel+GenLabel);
-  if (RunSubsampleBalFct  && RunPartPairAnalysisGen)   addBalFctSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,PairLabel+GenLabel);
+  if (RunSubsampleBase && RunGlobalAnalysis)     addBaseSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,GlobalLabel+GenLabel);
+  if (RunSubsampleBase && RunSpherocityAnalysis) addBaseSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,SpherocityLabel+GenLabel);
+  if (RunSubsampleBase && RunPartSingleAnalysis) addBaseSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,SingleLabel+GenLabel);
+  if (RunSubsampleBase && RunPartPairAnalysis)   addBaseSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,PairLabel+GenLabel);
+  if (RunSubsampleBase && RunNuDynAnalysis)      addBaseSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,NuDynLabel+GenLabel);
+
+  if (RunSubsampleDerived && RunGlobalAnalysis)     addDerivedSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,GlobalLabel+GenLabel);
+  if (RunSubsampleDerived && RunSpherocityAnalysis) addDerivedSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,SpherocityLabel+GenLabel);
+  if (RunSubsampleDerived && RunPartSingleAnalysis) addDerivedSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,SingleLabel+GenLabel);
+  if (RunSubsampleDerived && RunPartPairAnalysis)   addDerivedSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,PairLabel+GenLabel);
+  if (RunSubsampleDerived && RunNuDynAnalysis)      addDerivedSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,NuDynLabel+GenLabel);
+  if (RunSubsampleBalFct  && RunPartPairAnalysis)   addBalFctSubSampleTask(inputPathName,bunchLabel,nBunches,subPathLabel,maximumDepth,PairLabel+GenLabel);
 
   if (reportInfo(__FUNCTION__))
     {

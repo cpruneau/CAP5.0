@@ -162,7 +162,7 @@ double factorial(int  n)
 //    if (impatience>tolerance)
 //      {
 //      cout << "invertFunc: " << "Max number of iterations reached." << endl;
-//      exit(-1);
+//      ex it(-1);
 //      }
 //
 //    } // <=> absolute(XX2-XX1)>accuracy

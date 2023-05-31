@@ -138,8 +138,22 @@ void HistogramException::print()
 }
 
 
+ConfigurationException::ConfigurationException(const String & _keyword, const String & _message, const String & _source)
+:
+Exception(_message,_source),
+keyword(_keyword)
+{   }
 
-
+void ConfigurationException::print()
+{
+  cout << "========================================================" << endl;
+  cout << "ConfigurationException" << endl;
+  cout << "========================================================" << endl;
+  cout << "source............: " << source  << endl;
+  cout << "message...........: " << message << endl;
+  cout << "keyword...........: " << keyword << endl;
+  cout << "========================================================" << endl;
+}
 
 } // namespace CAP
 

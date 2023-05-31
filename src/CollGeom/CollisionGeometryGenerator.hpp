@@ -40,9 +40,7 @@ public:
   //! @param _reportLevel Message log level to be used by this task.
   //!
   CollisionGeometryGenerator(const String & _name,
-                             const Configuration & _configuration,
-                             vector<EventFilter*> & _eventFilters,
-                             vector<ParticleFilter*>& _particleFilters);
+                             const Configuration & _configuration);
   
   //!
   //! DTOR
@@ -53,6 +51,7 @@ public:
   //! Sets the default  values of the configuration parameters used by this task
   //!
   virtual void setDefaultConfiguration();
+  virtual void configure();
 
   //!
   //! Initialize this task based on the configuration and class variable specified at construction

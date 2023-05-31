@@ -42,9 +42,7 @@ public:
   //! @param _reportLevel Message log level to be used by this task.
   //!
   BalanceFunctionCalculator(const TString & _name,
-                            const Configuration & _configuration,
-                            vector<EventFilter*> & _eventFilters,
-                            vector<ParticleFilter*> & _particleFilters);
+                            const Configuration & _configuration);
   //!
   //! DTOR
   //!
@@ -54,8 +52,12 @@ public:
   //! Sets the default  values of the configuration parameters used by this task
   //!
   virtual void setDefaultConfiguration();
-  
-  
+
+  virtual void configure();
+
+
+  virtual void initialize();
+
   //!
   //! Execute this task based on the configuration and class variable specified at construction
   //!
@@ -216,6 +218,16 @@ protected:
   //! Array containing the names of the pair observables involved in the balance function calculation
   //!
   vector<TString> pObservableNames;
+
+  vector<TString> allFilesToAnalyze;
+
+  String appendedString;
+  bool calculateCI;
+  bool calculateCD;
+  bool calculateBFv1;
+  bool calculateDiffs;
+  bool calculateBFv2;
+
 
   ClassDef(BalanceFunctionCalculator,0)
 };

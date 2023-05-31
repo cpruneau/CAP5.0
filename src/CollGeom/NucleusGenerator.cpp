@@ -175,10 +175,8 @@ void NucleusGenerator::generate(Nucleus & nucleus, double xShift)
         sanityCheck++;
         if (sanityCheck>200)
           {
-          cout << "Nucleon rejected > 200 times" << endl;
-          exit(1);
+          throw TaskException("Nucleon rejected > 200 times","NucleusGenerator::generate(Nucleus & nucleus, double xShift)");
           }
-        //cout << "reject  sanityCheck:" << sanityCheck << endl;
         continue;
         }
       }

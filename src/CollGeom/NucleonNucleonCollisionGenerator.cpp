@@ -10,17 +10,17 @@
  *
  * *********************************************************************/
 #include "NucleonNucleonCollisionGenerator.hpp"
-#include "TDatabasePDG.h"
-using CAP::NucleonNucleonCollisionGenerator;
 
-ClassImp(NucleonNucleonCollisionGenerator);
+ClassImp(CAP::NucleonNucleonCollisionGenerator);
+
+namespace CAP
+{
+
 
 NucleonNucleonCollisionGenerator::NucleonNucleonCollisionGenerator(const String & _name,
-                                                                   const Configuration & _configuration,
-                                                                   vector<EventFilter*>& _eventFilters,
-                                                                   vector<ParticleFilter*>&_particleFilters)
+                                                                   const Configuration & _configuration)
 :
-EventTask(_name, _configuration, _eventFilters, _particleFilters)
+EventTask(_name, _configuration)
 {
   appendClassName("NucleonNucleonCollisionGenerator");
 }
@@ -30,3 +30,4 @@ void NucleonNucleonCollisionGenerator::generate(Particle * parent)
   incrementTaskExecuted();
 }
 
+}  // namespace CAP

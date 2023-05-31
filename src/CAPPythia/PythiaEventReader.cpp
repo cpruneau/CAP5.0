@@ -16,12 +16,14 @@ ClassImp(PythiaEventReader);
 
 
 PythiaEventReader::PythiaEventReader(const String & _name,
-                                     const Configuration &   _configuration,
-                                     vector<EventFilter*>&   _eventFilters,
-                                     vector<ParticleFilter*>&_particleFilters)
+                                     const Configuration &   _configuration)
 :
-RootTreeReader(_name, _configuration, _eventFilters, _particleFilters)
+RootTreeReader(_name, _configuration)
+{ }
+
+void PythiaEventReader::configure()
 {
+  RootTreeReader::configure();
 }
 
 

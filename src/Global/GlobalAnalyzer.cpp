@@ -20,11 +20,9 @@ using CAP::GlobalDerivedHistos;
 ClassImp(GlobalAnalyzer);
 
 GlobalAnalyzer::GlobalAnalyzer(const String & _name,
-                               const Configuration & _configuration,
-                               vector<EventFilter*> & _eventFilters,
-                               vector<ParticleFilter*> & _particleFilters)
+                               const Configuration & _configuration)
 :
-EventTask(_name,_configuration,_eventFilters,_particleFilters),
+EventTask(_name,_configuration),
 setEvent(false),
 n(),
 e(),
@@ -40,10 +38,11 @@ ptSum()
 //!
 void GlobalAnalyzer::setDefaultConfiguration()
 {
-  addParameter("HistogramsCreate",  true);
-  addParameter("HistogramsExport",    true);
-  addParameter("EventsUseStream0",   true);
-  addParameter("EventsUseStream1",   false);
+  EventTask::setDefaultConfiguration();
+  addParameter("HistogramsCreate",     true);
+  addParameter("HistogramsExport",     true);
+  addParameter("EventsUseStream0",     true);
+  addParameter("EventsUseStream1",     false);
   addParameter("SetEvent",             true);
   addParameter("FillCorrelationHistos",false);
   addParameter("Fill2D",               false);
@@ -128,6 +127,11 @@ void GlobalAnalyzer::configure()
     }
 }
 
+void GlobalAnalyzer::initializeHistogramManager()
+{
+  histogramManager.addSet("global");
+  histogramManager.addSet("derived");
+}
 
 void GlobalAnalyzer::initialize()
 {
@@ -156,7 +160,6 @@ void GlobalAnalyzer::createHistograms()
     printItem("nEventFilters"              ,nEventFilters);
     printItem("nParticleFilters"           ,nParticleFilters);
     }
-  histogramManager.addSet("Global");
   for (int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {
     String efn = eventFilters[iEventFilter]->getName();
@@ -187,7 +190,6 @@ void GlobalAnalyzer::importHistograms(TFile & inputFile)
     cout << "nEventFilters................ : " << nEventFilters << endl;
     cout << "nParticleFilters............. : " << nParticleFilters << endl;
     }
-  histogramManager.addSet("Global");
   for (int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {
     String efn = eventFilters[iEventFilter]->getName();
@@ -270,7 +272,6 @@ void GlobalAnalyzer::createDerivedHistograms()
     cout << "nEventFilters............... : " << nEventFilters << endl;
     cout << "nParticleFilters............ : " << nParticleFilters << endl;
     }
-  histogramManager.addSet("GlobalDerived");
   for (int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {
     String efn = eventFilters[iEventFilter]->getName();

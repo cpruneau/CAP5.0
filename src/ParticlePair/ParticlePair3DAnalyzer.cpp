@@ -15,11 +15,9 @@
 ClassImp(ParticlePair3DAnalyzer);
 
 ParticlePair3DAnalyzer::ParticlePair3DAnalyzer(const TString & _name,
-                                               const Configuration & _configuration,
-                                               vector<EventFilter*> & _eventFilters,
-                                               vector<ParticleFilter*> &_particleFilters)
+                                               const Configuration & _configuration)
 :
-EventTask(_name, _configuration, _eventFilters, _particleFilters),
+EventTask(_name, _configuration),
 fillEta(true),
 fillY(false),
 fillP2(false)
@@ -34,7 +32,7 @@ fillP2(false)
 
 void ParticlePair3DAnalyzer::setDefaultConfiguration()
 {
-  //Task::setDefaultConfiguration();
+  Task::setDefaultConfiguration();
   addParameter("UseParticles",      true);
   addParameter("HistogramsCreate",  true);
   addParameter("HistogramsExport",    true);

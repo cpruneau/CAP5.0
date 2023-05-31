@@ -12,26 +12,22 @@
 #include "ParticleSingleAnalyzer.hpp"
 #include "ParticleSingleHistos.hpp"
 #include "ParticleSingleDerivedHistos.hpp"
-using CAP::ParticleSingleAnalyzer;
 
-ClassImp(ParticleSingleAnalyzer);
+ClassImp(CAP::ParticleSingleAnalyzer);
+
+namespace CAP
+{
+
 
 ParticleSingleAnalyzer::ParticleSingleAnalyzer(const String & _name,
-                                   const Configuration & _configuration,
-                                   vector<EventFilter*> & _eventFilters,
-                                   vector<ParticleFilter*> & _particleFilters)
+                                               const Configuration & _configuration)
 :
-EventTask(_name,_configuration,_eventFilters,_particleFilters),
+EventTask(_name,_configuration),
 fillEta(true),
 fillY(false),
 fillP2(false)
 {
   appendClassName("ParticleSingleAnalyzer");
-  for (unsigned int k=0; k<particleFilters.size(); k++)
-    {
-    vector<ParticleDigit*> list;
-    filteredParticles.push_back(list);
-    }
 }
 
 void ParticleSingleAnalyzer::setDefaultConfiguration()
@@ -119,6 +115,22 @@ void ParticleSingleAnalyzer::configure()
     }
 }
 
+void ParticleSingleAnalyzer::initialize()
+{
+  EventTask::initialize();
+  for (unsigned int k=0; k<particleFilters.size(); k++)
+    {
+    vector<ParticleDigit*> list;
+    filteredParticles.push_back(list);
+    }
+}
+
+void ParticleSingleAnalyzer::initializeHistogramManager()
+{
+  histogramManager.addSet("single");
+  histogramManager.addSet("derived");
+}
+
 void ParticleSingleAnalyzer::createHistograms()
 {
   if (reportInfo(__FUNCTION__))
@@ -129,8 +141,8 @@ void ParticleSingleAnalyzer::createHistograms()
     printItem("nParticleFilters",int(nParticleFilters));
     cout << endl;
     }
-
-  histogramManager.addSet("Single");
+  if (nEventFilters<1) throw TaskException("nEventFilters<1","ParticleSingleAnalyzer::createHistograms()");
+  if (nParticleFilters<1) throw TaskException("nParticleFilters<1","ParticleSingleAnalyzer::createHistograms()");
   for (int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {
     String efn = eventFilters[iEventFilter]->getName();
@@ -159,14 +171,20 @@ void ParticleSingleAnalyzer::importHistograms(TFile & inputFile)
     printItem("nParticleFilters",int(nParticleFilters));
     cout << endl;
     }
-  histogramManager.addSet("Single");
+  if (nEventFilters<1) throw TaskException("nEventFilters<1","ParticleSingleAnalyzer::importHistograms(TFile & inputFile)");
+  if (nParticleFilters<1) throw TaskException("nParticleFilters<1","ParticleSingleAnalyzer::importHistograms(TFile & inputFile)");
   for (int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {
-    String efn = * eventFilters[iEventFilter]->getName();
+    String efn = eventFilters[iEventFilter]->getName();
+    //    cout << efn << endl;
     for (int iParticleFilter=0; iParticleFilter<nParticleFilters; iParticleFilter++ )
       {
-      String pfn = * particleFilters[iParticleFilter]->getName();
-      ParticleSingleHistos * histos = new ParticleSingleHistos(this,createName(getName(),efn,pfn),configuration);
+      String pfn = particleFilters[iParticleFilter]->getName();
+      String baseName = createName(getName(),efn,pfn);
+      //      cout << pfn << endl;
+      //      cout << baseName << endl;
+      
+      ParticleSingleHistos * histos = new ParticleSingleHistos(this,baseName,configuration);
       histos->importHistograms(inputFile);
       histogramManager.addGroupInSet(0,histos);
       }
@@ -177,6 +195,9 @@ void ParticleSingleAnalyzer::importHistograms(TFile & inputFile)
 
 void ParticleSingleAnalyzer::analyzeEvent()
 {
+//  if (eventStreams.size() < 1) throw TaskException("eventStreams.size() < 1","ParticleSingleAnalyzer::analyzeEvent()");
+//  if (!eventStreams[0])  throw TaskException("!eventStreams[0]","ParticleSingleAnalyzer::analyzeEvent()");
+//  if (nEventFilters<1)   throw TaskException("nEventFilters<1","ParticleSingleAnalyzer::analyzeEvent()");
   Event & event = *eventStreams[0];
   //Is this event accepted by this task's event filters?
   bool analyzeThisEvent = false;
@@ -184,6 +205,8 @@ void ParticleSingleAnalyzer::analyzeEvent()
   vector<unsigned int> eventFilterPassed;
   for (int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {
+    if (eventFilters.size()<1) throw TaskException("eventFilters.size()<1","ParticleSingleAnalyzer::analyzeEvent()");
+    if (!eventFilters[iEventFilter]) throw TaskException("!eventFilters[iEventFilter]","ParticleSingleAnalyzer::analyzeEvent()");
     if (!eventFilters[iEventFilter]->accept(event)) continue;
     incrementNEventsAccepted(iEventFilter);
     eventFilterPassed.push_back(iEventFilter);
@@ -211,8 +234,8 @@ void ParticleSingleAnalyzer::analyzeEvent()
     factory->reset();
     int index;
     int iEventFilter = 0;
-//    float pt,e;
-//    int iPt, iPhi, iEta, iY;
+    //    float pt,e;
+    //    int iPt, iPhi, iEta, iY;
     ParticleSingleHistos * histos = (ParticleSingleHistos *) histogramManager.getGroup(0,iEventFilter);
     for (int iParticleFilter=0; iParticleFilter<nParticleFilters; iParticleFilter++ ) filteredParticles[iParticleFilter].clear();
 
@@ -271,13 +294,14 @@ void ParticleSingleAnalyzer::analyzeEvent()
     }
   else
     {
+
     // 1 event filter and 1 particle filter: just scan the particles..
     // no need for sublists.
     int iParticleFilter = 0;
     int iEventFilter = eventFilterPassed[0];
     int index = iParticleFilter+iEventFilter*nParticleFilters;
-    ParticleSingleHistos * histos = (ParticleSingleHistos *) histogramManager.getGroup(0,index);
-    for (unsigned int iParticle=0; iParticle<nParticles; iParticle++)
+   ParticleSingleHistos * histos = (ParticleSingleHistos *) histogramManager.getGroup(0,index);
+   for (unsigned int iParticle=0; iParticle<nParticles; iParticle++)
       {
       Particle & particle = * event.getParticleAt(iParticle);
       //particle.printProperties();
@@ -291,7 +315,7 @@ void ParticleSingleAnalyzer::analyzeEvent()
       }
     histos->fillMultiplicity(nAccepted[iParticleFilter],totalEnergy[iParticleFilter],1.0);
     }
-// all done with this event..
+  // all done with this event..
 }
 
 void ParticleSingleAnalyzer::createDerivedHistograms()
@@ -302,13 +326,14 @@ void ParticleSingleAnalyzer::createDerivedHistograms()
   if (reportDebug(__FUNCTION__))
     {
     cout << endl;
-    printItem("Creatting derived Histogram(s)", "");
+    printItem("Creating derived Histogram(s)", "");
     printItem("nEventFilters",   int(nEventFilters));
     printItem("nParticleFilters",int(nParticleFilters));
     cout << endl;
     }
+  if (nEventFilters<1) throw TaskException("nEventFilters<1","ParticleSingleAnalyzer::createDerivedHistograms()");
+  if (nParticleFilters<1) throw TaskException("nParticleFilters<1","ParticleSingleAnalyzer::createDerivedHistograms()");
   ParticleSingleDerivedHistos * histos;
-  histogramManager.addSet("SingleDerived");
   for (int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {
     String efn = eventFilters[iEventFilter]->getName();
@@ -345,6 +370,9 @@ void ParticleSingleAnalyzer::calculateDerivedHistograms()
     printItem("nParticleFilters",int(nParticleFilters));
     cout << endl;
     }
+  if (nEventFilters<1) throw TaskException("nEventFilters<1","ParticleSingleAnalyzer::calculateDerivedHistograms()");
+  if (nParticleFilters<1) throw TaskException("nParticleFilters<1","ParticleSingleAnalyzer::calculateDerivedHistograms()");
+
   ParticleSingleHistos        * baseHistos;
   ParticleSingleDerivedHistos * derivedHistos;
   unsigned index;
@@ -358,6 +386,8 @@ void ParticleSingleAnalyzer::calculateDerivedHistograms()
       index = iEventFilter*nParticleFilters + iParticleFilter;
       baseHistos    = (ParticleSingleHistos *)  histogramManager.getGroup(0,index);
       derivedHistos = (ParticleSingleDerivedHistos *)  histogramManager.getGroup(1,index);
+      if (!baseHistos) throw TaskException("!baseHistos","ParticleSingleAnalyzer::calculateDerivedHistograms()");
+      if (!derivedHistos) throw TaskException("!derivedHistos","ParticleSingleAnalyzer::calculateDerivedHistograms()");
       derivedHistos->calculateDerivedHistograms(baseHistos);
       }
     }
@@ -395,3 +425,5 @@ void ParticleSingleAnalyzer::scaleHistograms()
   if (reportEnd(__FUNCTION__))
     ;
 }
+
+} // namespace CAP

@@ -4111,12 +4111,12 @@ void HistogramCollection::reduce_n1EtaPhiN1EtaPhiOntoN1N1DetaDphi(const TH2 * h_
           if (index<0)
             {
             cout << "<F> HistogramCollection::reduce_n1EtaPhiN1EtaPhiOntoN1N1DetaDphi() index<0" << endl;
-            exit(1);
+            throw HistogramException("LOGIC","index<0","HistogramCollection::reduce_n1EtaPhiN1EtaPhiOntoN1N1DetaDphi()");
             }
           if (index>=nDeta*nDphi)
             {
             cout << "<F> HistogramCollection::reduce_n1EtaPhiN1EtaPhiOntoN1N1DetaDphi() index>nDeta*nDphi" << endl;
-            exit(1);
+            throw HistogramException("LOGIC","index>=nDeta*nDphi","HistogramCollection::reduce_n1EtaPhiN1EtaPhiOntoN1N1DetaDphi()");
             }
           numerator[index]    += v;
           denominator[index]  += 1.0;
@@ -4198,7 +4198,7 @@ void HistogramCollection::reduce_n2xEtaPhi_n2EtaEta(const TH1 * source, TH2 * ta
         if (reportFatal(__FUNCTION__))
           {
           cout << "<F> HistogramCollection::reduce_n2xEtaPhi_n2EtaEta() v2<=0" << endl;
-          exit(1);
+          throw HistogramException("LOGIC","v2<=0","HistogramCollection::reduce_n1EtaPhiN1EtaPhiOntoN1N1DetaDphi() index>nDeta*nDphi");
           }
       target->SetBinContent(iEta+1,jEta+1,v1/v2);
       target->SetBinError(iEta+1,jEta+1,ev1/v2);

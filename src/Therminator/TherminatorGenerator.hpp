@@ -65,9 +65,7 @@ class TherminatorGenerator: public EventTask
 public:
 
   TherminatorGenerator(const TString & _name,
-                       const Configuration & _configuration,
-                       vector<EventFilter*>&   _eventFilters,
-                       vector<ParticleFilter*>&_particleFilters);
+                       const Configuration & _configuration);
 
   virtual  ~TherminatorGenerator(){};
 
@@ -124,6 +122,9 @@ protected:
   String multiplicitiesInputFile;
   String multiplicitiesOutputPath;
   String multiplicitiesOutputFile;
+  double multiplicitiesFractionMin;
+  double multiplicitiesFractionMax;
+  double multiplicitiesFractionRange;
 
  // int eventsExportMaxPerFile;
   bool   disablePhotons;

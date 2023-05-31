@@ -11,13 +11,13 @@
  * *********************************************************************/
 #include "EventTask.hpp"
 ClassImp(CAP::EventTask);
+#include "FilterCreator.hpp"
 
 namespace CAP
 {
 
 //!
-//! Default constructor. It allocates resources but DOES NOT initialize the EventTask. EventTask initialization can be performed by a call to the initializationEventTask() and/or
-//!  initialization() methods.
+//! Default constructor.
 //!
 EventTask::EventTask()
 :
@@ -43,6 +43,8 @@ eventsUseStream1         (false),
 eventsUseStream2         (false),
 eventsUseStream3         (false),
 eventsAnalyze            (false),
+filtersUseModel          (false),
+filtersUseAnalysis       (true),
 calibsCreate             (false),
 calibsReset              (false),
 calibsClear              (false),
@@ -72,8 +74,7 @@ nParticlesAcceptedTotal()
 }
 
 //!
-//! Long constructor. It allocates resources but DOES NOT initialize the EventTask. EventTask initialization can be performed by a call to the initializationEventTask() and/or
-//!  initialization() methods.
+//! Long constructor. 
 //!
 EventTask::EventTask(const String & _name,
                      const Configuration & _configuration)
@@ -100,6 +101,8 @@ eventsUseStream1         (false),
 eventsUseStream2         (false),
 eventsUseStream3         (false),
 eventsAnalyze            (false),
+filtersUseModel          (false),
+filtersUseAnalysis       (true),
 calibsCreate             (false),
 calibsReset              (false),
 calibsClear              (false),
@@ -128,64 +131,6 @@ nParticlesAcceptedTotal()
   appendClassName("EventTask");
 }
 
-//!
-//! Longer constructor. It allocates resources but DOES NOT initialize the EventTask. EventTask initialization can be performed by a call to the initializationEventTask() and/or
-//!  initialization() methods.
-//!
-EventTask::EventTask(const String & _name,
-                     const Configuration & _configuration,
-                     vector<EventFilter*> &   _eventFilters,
-                     vector<ParticleFilter*>& _particleFilters)
-:
-Task(_name,_configuration),
-eventsCreate             (false),
-eventsRequested          (false),
-eventsConvertToCAP       (false),
-eventsImport             (false),
-eventsImportTree         (""),
-eventsImportPath         (""),
-eventsImportFile         (""),
-eventsImportFileMinIndex (0),
-eventsImportFileMaxIndex (1),
-eventsExport             (false),
-eventsExportPath         (""),
-eventsExportFile         (""),
-eventsExportTree         (""),
-eventsExportNative       (false),
-eventsExportCAP          (false),
-eventsExportMaxPerFile   (false),
-eventsUseStream0         (false),
-eventsUseStream1         (false),
-eventsUseStream2         (false),
-eventsUseStream3         (false),
-eventsAnalyze            (false),
-calibsCreate             (false),
-calibsReset              (false),
-calibsClear              (false),
-calibsForceRewrite       (false),
-calibsImport             (false),
-calibsImportPath         (""),
-calibsImportFile         (""),
-calibsExport             (false),
-calibsExportAsRoot       (false),
-calibsExportAsText       (false),
-calibsExportPath         (""),
-calibsExportFile         (""),
-particleDb(nullptr),
-particleFactory(nullptr),
-eventStreams(),
-nEventFilters(_eventFilters.size()),
-nParticleFilters(_particleFilters.size()),
-eventFilters(_eventFilters),
-particleFilters(_particleFilters),
-nEventsAccepted(),
-nEventsAcceptedTotal(),
-nParticlesAcceptedEvent(),
-nParticlesAccepted(),
-nParticlesAcceptedTotal()
-{
-  appendClassName("EventTask");
-}
 
 //!
 //! Initialize the configuration parameter of the EventTask to their default value;
@@ -214,7 +159,8 @@ void EventTask::setDefaultConfiguration()
   addParameter("EventsUseStream2",            eventsUseStream2);
   addParameter("EventsUseStream3",            eventsUseStream3);
   addParameter("EventsAnalyze",               eventsAnalyze);
-
+  addParameter("FiltersUseModel",             filtersUseModel);
+  addParameter("FiltersUseAnalysis",          filtersUseAnalysis);
   addParameter("CalibrationsCreate",          calibsCreate);
   addParameter("CalibrationsReset",           calibsReset);
   addParameter("CalibrationsClear",           calibsClear);
@@ -257,6 +203,8 @@ void EventTask::configure()
   eventsUseStream2         = getValueBool("EventsUseStream2");
   eventsUseStream3         = getValueBool("EventsUseStream3");
   eventsAnalyze            = getValueBool("EventsAnalyze");
+  filtersUseModel          = getValueBool("FiltersUseModel");
+  filtersUseAnalysis       = getValueBool("FiltersUseAnalysis");
 
   calibsCreate       = getValueBool("CalibrationsCreate");
   calibsReset        = getValueBool("CalibrationsReset");
@@ -274,39 +222,29 @@ void EventTask::configure()
   if (reportDebug(__FUNCTION__))
     {
     cout << endl;
-    cout << "EventsCreate.................: " << eventsCreate<< endl;
-    cout << "EventsRequested..............: " << eventsRequested<< endl;
-    cout << "EventsConvertToCAP...........: " << eventsConvertToCAP<< endl;
-    cout << "EventsImport.................: " << eventsImport<< endl;
-    cout << "EventsImportTree.............: " << eventsImportTree<< endl;
-    cout << "EventsImportPath.............: " << eventsImportPath<< endl;
-    cout << "EventsImportFile.............: " << eventsImportFile<< endl;
-    cout << "EventsImportFileMinIndex.....: " << eventsImportFileMinIndex<< endl;
-    cout << "EventsImportFileMaxIndex.....: " << eventsImportFileMaxIndex<< endl;
-    cout << "EventsExport.................: " << eventsExport<< endl;
-    cout << "EventsExportPath.............: " << eventsExportPath<< endl;
-    cout << "EventsExportFile.............: " << eventsExportFile<< endl;
-    cout << "EventsExportTree.............: " << eventsExportTree<< endl;
-    cout << "EventsExportNative...........: " << eventsExportNative<< endl;
-    cout << "EventsExportCAP..............: " << eventsExportCAP<< endl;
-    cout << "EventsExportMaxPerFile.......: " << eventsExportMaxPerFile<< endl;
-    cout << "EventsUseStream0.............: " << eventsUseStream0<< endl;
-    cout << "EventsUseStream1.............: " << eventsUseStream1<< endl;
-    cout << "EventsUseStream2.............: " << eventsUseStream2<< endl;
-    cout << "EventsUseStream3.............: " << eventsUseStream3<< endl;
-    cout << "EventsAnalyze................: " << eventsAnalyze<< endl;
-    cout << "CalibrationsCreate...........: " << calibsCreate<< endl;
-    cout << "CalibrationsReset............: " << calibsReset<< endl;
-    cout << "CalibrationsClear............: " << calibsClear<< endl;
-    cout << "CalibrationsForceRewrite.....: " << calibsForceRewrite<< endl;
-    cout << "CalibrationsImport...........: " << calibsImport<< endl;
-    cout << "CalibrationsImportPath.......: " << calibsImportPath<< endl;
-    cout << "CalibrationsImportFile.......: " << calibsImportFile<< endl;
-    cout << "CalibrationsExport...........: " << calibsExport<< endl;
-    cout << "CalibrationsExportAsRoot.....: " << calibsExportAsRoot<< endl;
-    cout << "CalibrationsExportAsText.....: " << calibsExportAsText<< endl;
-    cout << "CalibrationsExportPath.......: " << calibsExportPath<< endl;
-    cout << "CalibrationsExportFile.......: " << calibsExportFile<< endl;
+    printItem("EventsCreate",            eventsCreate);
+    printItem("EventsRequested",         eventsRequested);
+    printItem("EventsConvertToCAP",      eventsConvertToCAP);
+    printItem("EventsImport",            eventsImport);
+    printItem("EventsImportTree",        eventsImportTree);
+    printItem("EventsImportPath",        eventsImportPath);
+    printItem("EventsImportFile",        eventsImportFile);
+    printItem("EventsImportFileMinIndex",eventsImportFileMinIndex);
+    printItem("EventsImportFileMaxIndex",eventsImportFileMaxIndex);
+    printItem("EventsExport",            eventsExport);
+    printItem("EventsExportPath",        eventsExportPath);
+    printItem("EventsExportFile",        eventsExportFile);
+    printItem("EventsExportTree",        eventsExportTree);
+    printItem("EventsExportNative",      eventsExportNative);
+    printItem("EventsExportCAP",         eventsExportCAP);
+    printItem("EventsExportMaxPerFile",  eventsExportMaxPerFile);
+    printItem("EventsUseStream0",        eventsUseStream0);
+    printItem("EventsUseStream1",        eventsUseStream1);
+    printItem("EventsUseStream2",        eventsUseStream2);
+    printItem("EventsUseStream3",        eventsUseStream3);
+    printItem("EventsAnalyze",           eventsAnalyze);
+    printItem("FiltersUseModel",         filtersUseModel);
+    printItem("FiltersUseAnalysis",      filtersUseAnalysis);
     }
 }
 
@@ -317,6 +255,38 @@ void EventTask::initializeEventStreams()
   if (eventsUseStream2)  addEventStream(Event::getEventStream(2));
   if (eventsUseStream3)  addEventStream(Event::getEventStream(3));
 }
+
+void EventTask::initializeHistogramManager()
+{
+  // analyzer modules must implement this method
+}
+
+void EventTask::initializeFilters()
+{
+  if (reportInfo(__FUNCTION__)) cout << "Loading filters." << endl;
+  if (filtersUseModel)
+    {
+    if (reportInfo(__FUNCTION__)) cout << "Using model filters." << endl;
+    eventFilters = FilterCreator::getEventFiltersModel();
+    particleFilters  = FilterCreator::getParticleFiltersModel();
+    }
+  if (filtersUseAnalysis)
+    {
+    if (reportInfo(__FUNCTION__)) cout << "Using analysis filters." << endl;
+    eventFilters = FilterCreator::getEventFiltersAnalysis();
+    particleFilters  = FilterCreator::getParticleFiltersAnalysis();
+    }
+  nEventFilters    = eventFilters.size();
+  nParticleFilters = particleFilters.size();
+  if (reportInfo(__FUNCTION__))
+    {
+    cout << endl;
+    printItem("nEventFilters",nEventFilters);
+    printItem("nParticleFilters",nParticleFilters);
+    }
+
+}
+
 
 //void initializeEvent();
 //virtual void initializeEventCAP();
@@ -360,28 +330,24 @@ void EventTask::initialize()
 {
   if (reportStart(__FUNCTION__))
     ;
-  if (nParticleFilters<=0 || nEventFilters<=0)
-    {
-    if (reportWarning(__FUNCTION__))
-      {
-      cout << "nParticleFilters=0 or nEventFilters==0. Abort." << endl;
-      exit(1);
-      }
-    }
   initializeTaskExecuted();
+  initializeParticleDbLink();
+  initializeFilters();
   initializeNEventsAccepted();
   initializeNParticlesAccepted();
   initializeEventStreams();
-  initializeParticleDbLink();
   initializeParticleFactory();
-  if (eventsCreate)  initializeEventGenerator();
-  if (eventsImport)  initializeEventReader();
-  if (eventsExport)  initializeEventWriter();
-  if (histosImport)  importHistograms();
-  if (histosCreate)  createHistograms();
-  if (calibsImport)  importCalibrations();
-  if (calibsCreate)  createCalibrations();
-  if (hasSubTasks()) initializeSubTasks();
+  initializeHistogramManager();
+  if (eventsCreate)         initializeEventGenerator();
+  if (eventsImport)         initializeEventReader();
+  if (eventsExport)         initializeEventWriter();
+  if (histosImport)         importHistograms();
+  if (histosImportDerived)  importDerivedHistograms();
+  if (histosCreate)         createHistograms();
+  if (histosCreateDerived)  createDerivedHistograms();
+  if (calibsImport)         importCalibrations();
+  if (calibsCreate)         createCalibrations();
+  if (hasSubTasks())        initializeSubTasks();
   if (reportEnd(__FUNCTION__))
     ;
 }
@@ -412,8 +378,10 @@ void EventTask::partial(const String & outputPathBase)
     ;
   printEventStatistics();
   histosExportPath = outputPathBase;
-  if (histosScale)   scaleHistograms();
-  if (histosExport)  exportHistograms();
+  if (histosScale)          scaleHistograms();
+  if (histosExport)         exportHistograms();
+  //if (histosExportDerived)  exportHistograms();
+
   if (histosReset)   resetHistograms();
   if (hasSubTasks()) for (unsigned int  iTask=0; iTask<getNSubTasks(); iTask++)  subTasks[iTask]->partial(outputPathBase);
   if (reportEnd(__FUNCTION__))
@@ -430,14 +398,14 @@ void EventTask::finalize()
   if (reportInfo(__FUNCTION__))
     ;
   cout << endl;
-    printEventStatistics();
-    if (eventsCreate)  finalizeEventGenerator();
-    if (eventsImport)  finalizeEventReader();
-    if (eventsExport)  finalizeEventWriter();
-    if (histosScale && !histosExportPartial)  scaleHistograms();
-    if (histosExport&& !histosExportPartial)  exportHistograms();
-    if (calibsExport)  exportCalibrations();
-    if (hasSubTasks()) finalizeSubTasks();
+  if (eventsImport || eventsCreate)  printEventStatistics();
+  if (eventsCreate)  finalizeEventGenerator();
+  if (eventsImport)  finalizeEventReader();
+  if (eventsExport)  finalizeEventWriter();
+  if (histosScale && !histosExportPartial)  scaleHistograms();
+  if (histosExport&& !histosExportPartial)  exportHistograms();
+  if (calibsExport)  exportCalibrations();
+  if (hasSubTasks()) finalizeSubTasks();
   if (reportEnd(__FUNCTION__))
     ;
 }

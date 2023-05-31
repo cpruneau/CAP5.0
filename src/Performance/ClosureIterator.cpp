@@ -99,19 +99,15 @@ void ClosureIterator::execute()
     if (reportInfo(__FUNCTION__))
       {
       cout << endl;
-      cout << " ===========================================================" << endl;
-      cout << " ===========================================================" << endl;
-      cout << " SubTask Name................: " << getName()  << endl;
-      cout << " HistogramsImportPath........: " << histogramsImportPath  << endl;
-      cout << " HistogramsExportPath........: " << histogramsExportPath  << endl;
-      cout << " nFilesToProcess.............: " << nFilesToProcess << endl;
-      cout << " appendedString..............: " << appendedString << endl;
-      cout << " ===========================================================" << endl;
-      cout << " ===========================================================" << endl;
+      cout << "===========================================================" << endl;
+      printItem("SubTask Name",getName());
+      printItem("HistogramsImportPath",histogramsImportPath);
+      printItem("HistogramsExportPath",histogramsExportPath);
+      printItem("nFilesToProcess",nFilesToProcess);
+      printItem("appendedString",appendedString);
+      cout << "===========================================================" << endl;
       }
-    postTaskOk();
-
-    for (int iFile=0; iFile<nFilesToProcess; iFile++)
+      for (int iFile=0; iFile<nFilesToProcess; iFile++)
       {
       String histoGeneratorFileName = removeRootExtension(allFilesToProcess[iFile]);
       String histoDetectorFileName  = substitute(histoGeneratorFileName, "_Gen", "_Reco");
@@ -121,10 +117,10 @@ void ClosureIterator::execute()
         {
         cout << endl;
         cout << " --------------------------------------------------------------------------" << endl;
-        cout << "                iFile: " << iFile << endl;
-        cout << "  Generator File Name: " << histoGeneratorFileName << endl;
-        cout << "   Detector File Name: " << histoDetectorFileName << endl;
-        cout << "    Closure File Name: " << histoClosureFileName << endl;
+        printItem("iFile",iFile);
+        printItem("Generator File Name",histoGeneratorFileName);
+        printItem("Detector File Name",histoDetectorFileName);
+        printItem("Closure File Name",histoClosureFileName);
         }
       Configuration closureConfig;
       closureConfig.addParameter("HistogramsImportPath",   histogramsImportPath);

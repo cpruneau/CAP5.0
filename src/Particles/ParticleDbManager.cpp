@@ -99,6 +99,13 @@ void ParticleDbManager::configure()
 
 void ParticleDbManager::execute()
 {
+
+}
+
+
+
+void ParticleDbManager::initialize()
+{
   if (reportStart(__FUNCTION__))
     ;
   incrementTaskExecuted();
@@ -318,7 +325,7 @@ void ParticleDbManager::importParticleDbNative()
     char   parentName[20], childName1[20], childName2[20], childName3[20], childName4[20];
     istringstream * isss = new istringstream(buff);
     *isss >> parentName >> childName1 >> childName2 >> childName3 >> childName4 >> tBRatio >> CGcoeff;;
-    cout << parentName << "  " << childName1 << "  " << childName2 << "  " << childName3 << "  " <<  childName4 <<"  " << tBRatio << "  " <<CGcoeff <<  endl;;
+    //cout << parentName << "  " << childName1 << "  " << childName2 << "  " << childName3 << "  " <<  childName4 <<"  " << tBRatio << "  " <<CGcoeff <<  endl;;
     delete isss;
 
     ParticleType * parentType = nullptr;
@@ -444,7 +451,7 @@ void ParticleDbManager::importParticleDbNative()
     cout << "Total index of particles read: " <<  particleDb->getNumberOfTypes() << endl;
   inputFileDecays.close();
   particleDb->setupDecayGenerator();
-  if (reportDebug(__FUNCTION__)) particleDb->printProperties(cout);
+  //if (reportDebug(__FUNCTION__)) particleDb->printProperties(cout);
 }
 
 void ParticleDbManager::initializeParticleDb()

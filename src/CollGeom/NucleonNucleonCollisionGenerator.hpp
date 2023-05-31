@@ -39,9 +39,7 @@ public:
   //! @param _reportLevel Message log level to be used by this task.
   //!
   NucleonNucleonCollisionGenerator(const String & _name,
-                                   const Configuration & _configuration,
-                                   vector<EventFilter*>& _eventFilters,
-                                   vector<ParticleFilter*>&_particleFilters);
+                                   const Configuration & _configuration);
   //!
   //! DTOR
   //!
@@ -55,6 +53,6 @@ public:
   ClassDef(NucleonNucleonCollisionGenerator,0)
 };
 
-}
+}   // namespace CAP
 
 #endif /*CAP__NucleonNucleonCollisionGenerator */

@@ -67,6 +67,7 @@ public:
 
   virtual void printItem(const char * keyword, ostream & output=cout, int size=50, int style=0) const;
   virtual void printItem(const char * keyword, bool   value, ostream & output=cout, int size=50, int style=0) const;
+  virtual void printItem(const char * keyword, unsigned int  value, ostream & output=cout, int size=50, int style=0) const;
   virtual void printItem(const char * keyword, int    value, ostream & output=cout, int size=50, int style=0) const;
   virtual void printItem(const char * keyword, long   value, ostream & output=cout, int size=50, int style=0) const;
   virtual void printItem(const char * keyword, double value, ostream & output=cout, int size=50, int style=0) const;

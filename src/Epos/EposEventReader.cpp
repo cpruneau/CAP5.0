@@ -15,11 +15,9 @@ using CAP::EposEventReader;
 ClassImp(EposEventReader);
 
 EposEventReader::EposEventReader(const String & _name,
-                                 const Configuration & _configuration,
-                                 vector<EventFilter*> & _eventFilters,
-                                 vector<ParticleFilter*> & _particleFilters)
+                                 const Configuration & _configuration)
 :
-RootTreeReader(_name, _configuration, _eventFilters, _particleFilters)
+RootTreeReader(_name, _configuration)
 {
   appendClassName("EposEventReader");
 }
@@ -27,6 +25,11 @@ RootTreeReader(_name, _configuration, _eventFilters, _particleFilters)
 void EposEventReader::setDefaultConfiguration()
 {
   RootTreeReader::setDefaultConfiguration();
+}
+
+void EposEventReader::configure()
+{
+  RootTreeReader::configure();
 }
 
 void EposEventReader::importEvent()
@@ -54,12 +57,9 @@ void EposEventReader::importEvent()
   nBytes += nb;
   if (nParticles > arraySize)
     {
-    if (reportError(__FUNCTION__))
-      cout<< "nParticles: " << nParticles << "  exceeds capacity " << arraySize << endl;
-    postTaskFatal();
-    exit(1);
+    if (reportError(__FUNCTION__)) cout<< "nParticles: " << nParticles << "  exceeds capacity " << arraySize << endl;
+    throw TaskException("nParticles > arraySize","EposEventReader::importEvent()");
     }
-  
   double eventPhi;
   double cosPhi;
   double sinPhi;

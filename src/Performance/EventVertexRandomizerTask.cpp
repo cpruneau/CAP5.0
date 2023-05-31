@@ -15,11 +15,9 @@ using CAP::EventVertexRandomizerTask;
 ClassImp(EventVertexRandomizerTask);
 
 EventVertexRandomizerTask::EventVertexRandomizerTask(const String & _name,
-                                                     const Configuration & _configuration,
-                                                     vector<EventFilter*> & _eventFilters,
-                                                     vector<ParticleFilter*>& _particleFilters)
+                                                     const Configuration & _configuration)
   :
-EventTask(_name,_configuration,_eventFilters,_particleFilters),
+EventTask(_name,_configuration),
 rConversion(0), tConversion(0),
 xAvg(0), yAvg(0), zAvg(0), tAvg(0),
 xRms(0), yRms(0), zRms(0), tRms(0)

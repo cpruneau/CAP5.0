@@ -23,7 +23,7 @@ using CAP::ThermalGasModel;
 ClassImp(ThermalGasModel);
 
 ThermalGasModel::ThermalGasModel(const String & _name,
-                                         const Configuration & _configuration)
+                                 const Configuration & _configuration)
 :
 EventTask(_name,_configuration),
 particleTypes(nullptr),
@@ -90,7 +90,7 @@ void ThermalGasModel::initialize()
   nStableSpecies  = int(stableParticleTypes->size());
   addParameter("nThermalSpecies", nThermalSpecies);
   addParameter("nStableSpecies",  nStableSpecies);
-
+  
   for (int k=0;k<nThermalSpecies; k++)
     {
     String key = "Species";
@@ -103,7 +103,7 @@ void ThermalGasModel::initialize()
     key += k;
     addParameter(key,stableParticleTypes->getParticleType(k)->getTitle());
     }
-
+  
   modelName             = getValueString("HistoModelName");
   nChemicalTemp         = configuration.getValueInt(getName(),"nChemicalTemp");
   minChemicalTemp       = configuration.getValueDouble(getName(),"MinChemicalTemp");
@@ -115,7 +115,7 @@ void ThermalGasModel::initialize()
     }
   else
     stepTemp = (maxChemicalTemp - minChemicalTemp)/(nChemicalTemp-1);
-
+  
   nMuB                  = configuration.getValueInt(getName(),"nMuB");
   minMuB                = configuration.getValueDouble(getName(),"MinMuB");
   maxMuB                = configuration.getValueDouble(getName(),"MaxMuB");
@@ -126,7 +126,7 @@ void ThermalGasModel::initialize()
     }
   else
     stepMuB = (maxMuB - minMuB)/double(nMuB-1);
-
+  
   nMuS                  = configuration.getValueInt(getName(),"nMuS");
   minMuS                = configuration.getValueDouble(getName(),"MinMuS");
   maxMuS                = configuration.getValueDouble(getName(),"MaxMuS");
@@ -137,7 +137,7 @@ void ThermalGasModel::initialize()
     }
   else
     stepMuS = (maxMuS - minMuS)/double(nMuS-1);
-
+  
   if (reportInfo(__FUNCTION__))
     {
     cout << endl;
@@ -156,7 +156,7 @@ void ThermalGasModel::initialize()
     cout << "          stepMuS:" << stepMuS <<  endl;
     }
   Task::initialize();
-
+  
   if (reportEnd(__FUNCTION__))
     ;
 }
@@ -165,7 +165,7 @@ void ThermalGasModel::execute()
 {
   if (reportStart(__FUNCTION__))
     ;
-
+  
   int count = 0;
   double temperature, muB, muS;
   for (int iTemp=0; iTemp<nChemicalTemp; iTemp++ )
@@ -255,7 +255,7 @@ void ThermalGasModel::importHistograms(TFile & inputFile)
   histogramManager.addSet("ThermalGasHistograms");
   String bn = getValueString("HistoBaseName");
   bool doTempDependentHistos = getValueBool("DoTempDependentHistos");
-
+  
   HistogramGroup * histos;
   for (int iTemp=0; iTemp<nChemicalTemp; iTemp++ )
     {

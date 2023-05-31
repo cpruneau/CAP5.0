@@ -21,11 +21,9 @@ ClassImp(CollisionGeometryGenerator);
 //! @param _eventFilters  Vector of event filters to be used by this task instance
 //! @param _requiredLevel Debug/report level to be used by this task instance
 CollisionGeometryGenerator::CollisionGeometryGenerator(const String & _name,
-                                                       const Configuration & _configuration,
-                                                       vector<EventFilter*> & _eventFilters,
-                                                       vector<ParticleFilter*>& _particleFilters)
+                                                       const Configuration & _configuration)
 :
-EventTask(_name,_configuration,_eventFilters, _particleFilters),
+EventTask(_name,_configuration),
 minB(0), minBSq(0.0), maxB(10.0), maxBSq(100.0),
 nnCrossSection(0.0),
 maxNNDistanceSq(0.)
@@ -40,6 +38,7 @@ CollisionGeometryGenerator::~CollisionGeometryGenerator()
 
 void CollisionGeometryGenerator::setDefaultConfiguration()
 {
+  EventTask::setDefaultConfiguration();
   addParameter("aNucleusZ", 0);
   addParameter("aNucleusA", 0);
   addParameter("aGeneratorType",    0);
@@ -71,6 +70,11 @@ void CollisionGeometryGenerator::setDefaultConfiguration()
   addParameter("EventsUseStream0",     true);
 }
 
+
+void CollisionGeometryGenerator::configure()
+{
+  EventTask::configure();
+}
 
 void CollisionGeometryGenerator::initialize()
 {

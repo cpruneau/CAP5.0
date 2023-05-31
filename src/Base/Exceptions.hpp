@@ -79,6 +79,17 @@ protected:
   const TString  histogramName;
 };
 
+class ConfigurationException : public Exception
+{
+public:
+  ConfigurationException(const TString  & _histogramName, const TString  & _message, const TString  & _source);
+  virtual ~ConfigurationException() {}
+  virtual void print();
+protected:
+  const TString  keyword;
+};
+
+
 
 
 

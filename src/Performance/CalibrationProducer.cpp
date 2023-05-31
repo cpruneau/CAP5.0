@@ -87,8 +87,6 @@ void CalibrationProducer::execute()
     case 1:
     break;
   }
-
-  //if (!isTaskOk()) return;
   outputCollection->exportHistograms(closureFile);
   generatorFile->Close();
   detectorFile->Close();

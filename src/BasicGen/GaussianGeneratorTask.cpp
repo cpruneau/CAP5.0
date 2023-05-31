@@ -42,8 +42,7 @@ void GaussianGeneratorTask::setDefaultConfiguration()
 
 void GaussianGeneratorTask::initialize()
 {
-  if (reportStart(__FUNCTION__))
-    ;
+  EventTask::initialize();
   double amplitude = getValueDouble("amplitude");
   double gammaeta  = getValueDouble("gammaeta");
   double gammaphi  = getValueDouble("gammaphi");

@@ -66,6 +66,7 @@ public:
   virtual void setDefaultConfiguration();
 
   virtual void configure();
+  virtual void initialize();
 
   //!
   //! Execute the calculation for all registered tasks and all the files they select.

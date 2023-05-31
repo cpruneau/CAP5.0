@@ -74,56 +74,16 @@ void FileTaskIterator::execute()
       cout << "                named:" << selectedFileNames[currentFileIndex] << endl;
       }
     initializeSubTasks();
-    if (!isTaskOk())
-      {
-      if (reportWarning(__FUNCTION__))
-        {
-        cout << "Initialization failed for file index:" << currentFileIndex << endl;
-        cout << "                               named:" << selectedFileNames[currentFileIndex] << endl;
-        cout << "ABORT!" << endl << endl;
-        }
-      return;
-      }
     executeSubTasks();
-    if (!isTaskOk())
-      {
-      if (reportWarning(__FUNCTION__))
-        {
-        cout << "     Execution failed for file index:" << currentFileIndex << endl;
-        cout << "                               named:" << selectedFileNames[currentFileIndex] << endl;
-        cout << "ABORT!" << endl << endl;
-        }
-      return;
-      }
     finalizeSubTasks();
-    if (!isTaskOk())
-      {
-      if (reportWarning(__FUNCTION__))
-        {
-        cout << "      Finalize failed for file index:" << currentFileIndex << endl;
-        cout << "                               named:" << selectedFileNames[currentFileIndex] << endl;
-        cout << "ABORT!" << endl << endl;
-        }
-      return;
-      }
     clearSubTasks();
-    if (!isTaskOk())
-      {
-      if (reportWarning(__FUNCTION__))
-        {
-        cout << "      Finalize failed for file index:" << currentFileIndex << endl;
-        cout << "                               named:" << selectedFileNames[currentFileIndex] << endl;
-        cout << "ABORT!" << endl << endl;
-        }
-      return;
-      }
     currentFileIndex++;
     }
   timer.stop();
   if (reportInfo(__FUNCTION__))
     {
     cout << endl;
-    cout << "  Completed with status : " << getStateName() << endl;
+    printItem("Completed with status",getStateName());
     cout << "            "; timer.print(cout);
     cout << endl << endl<< endl << endl;
     }
@@ -232,7 +192,7 @@ void FileTaskIterator::addFileNames(const String pathName,
           name.Remove(dot,len-dot);
           }
       String check = pathName+name;
-      //cout << " CHECK:::::: " << check << endl;
+      //cout << " CHECK:::: " << check << endl;
         selectedFileNames.push_back(pathName+name);
       }
     }
@@ -242,18 +202,15 @@ void FileTaskIterator::addFileNames(const String pathName,
 
 void FileTaskIterator::initializeSubTasks()
 {
-  
   if (reportStart(__FUNCTION__))
     ;
   unsigned int nSubtasks = getNSubTasks();
   if (nSubtasks>0)
     {
     if (reportDebug(__FUNCTION__)) cout << "Initializing " << nSubtasks << " tasks." << endl;
-
     for (unsigned int  iTask=0; iTask<nSubtasks; iTask++)
       {
       Task * subTask = getSubTaskAt(iTask);
-      if (!isTaskOk()) break;
       if (reportDebug(__FUNCTION__))  cout << "Initializing task:" << subTask->getName() << endl;
       String name = removeRootExtension(selectedFileNames[currentFileIndex]);
       subTask->setHistogramFileNames(name,name+appendedString);

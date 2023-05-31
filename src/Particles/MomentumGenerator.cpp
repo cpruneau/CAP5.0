@@ -133,7 +133,7 @@ histograms()
     cout << "            particleType: " << particleType->getName() << endl;
     cout << "       parameters.size(): " << parameters.size()       << endl;
     cout << "                ABORT!!!! " << endl;
-    exit(1);
+    throw MathException("invalidSetup","MomentumGenerator::MomentumGenerator(...)");
     }
 }
 

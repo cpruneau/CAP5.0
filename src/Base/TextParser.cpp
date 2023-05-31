@@ -35,8 +35,7 @@ int  TextParser::read(Configuration & _configuration,
                       const String  & _extension)
 {
   std::ifstream & inputFile = openInputFile(_inputPath,_inputFileName,_extension,"");;
-  if (reportInfo(__FUNCTION__))
-    cout << "Parsing file "<< _inputPath + _inputFileName << endl;
+  if (reportInfo(__FUNCTION__)) cout << "Parsing file "<< _inputPath + _inputFileName << endl;
 
   //Parameter    parameter;
   TString      aString;

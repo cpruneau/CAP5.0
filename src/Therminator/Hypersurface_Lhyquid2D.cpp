@@ -36,6 +36,7 @@ using namespace TMath;
 using CAP::Configuration;
 using CAP::XmlParser;
 using CAP::XmlVectorField;
+using CAP::TaskException;
 
 ClassImp(Hypersurface_Lhyquid2D);
 
@@ -195,7 +196,7 @@ void   Hypersurface_Lhyquid2D::readFromXmlFile(const char * _inputPath,
     cout << "Did not find one of the necessary parameters in the XML file." << endl;
     cout << "Aborting execution." << endl;
     }
-  exit(exceptionIndex);
+  throw TaskException("I/O Error","Hypersurface_Lhyquid2D::readFromXmlFile(const char * _inputPath,const char * _inputFileName)");
   }
   thermodynamics->setTemperature(temperature);  // [GeV]
   thermodynamics->setChemistry(muB,muI,muS,muC);

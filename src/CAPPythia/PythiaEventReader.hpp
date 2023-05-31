@@ -36,15 +36,15 @@ public:
   //! @param _reportLevel Message log level to be used by this task.
   //!
   PythiaEventReader(const String & _name,
-                    const Configuration & _configuration,
-                    vector<EventFilter*>&   _eventFilters,
-                    vector<ParticleFilter*>&_particleFilters);
+                    const Configuration & _configuration);
   
   //!
   //! DTOR
   //!
   virtual ~PythiaEventReader() {}
-  
+
+  virtual void configure();
+
   //!
   //! Sets the default  values of the configuration parameters used by this task
   //!

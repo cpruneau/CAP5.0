@@ -77,8 +77,6 @@ void ClosureCalculator::execute()
       case 0: closureCollection->differenceCollection(*detectorCollection,*generatorCollection,true); break;
       case 1: closureCollection->ratioCollection(*detectorCollection,*generatorCollection,true); break;
     }
-
-  //if (!isTaskOk()) return;
   closureCollection->exportHistograms(closureFile);
   generatorFile.Close();
   detectorFile.Close();

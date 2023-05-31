@@ -10,19 +10,15 @@
  *
  * *********************************************************************/
 #include "RunAnalysis.hpp"
+#include "ParticleDbManager.hpp"
+#include "FilterCreator.hpp"
 #include "TaskIterator.hpp"
 #include "DerivedHistoIterator.hpp"
 #include "BalanceFunctionCalculator.hpp"
 #include "SubSampleStatCalculator.hpp"
 #include "ClosureIterator.hpp"
-#include "ParticleDbManager.hpp"
-//#include "PythiaEventReader.hpp"
 #include "PythiaEventGenerator.hpp"
-//#include "HerwigEventReader.hpp"
 #include "AmptEventReader.hpp"
-//#include "EposEventReader.hpp"
-//#include "UrqmdEventReader.hpp"
-//#include "HijingEventReader.hpp"
 #include "TherminatorGenerator.hpp"
 #include "ResonanceGenerator.hpp"
 #include "MeasurementPerformanceSimulator.hpp"
@@ -32,14 +28,46 @@
 #include "ParticleSingleAnalyzer.hpp"
 #include "ParticlePairAnalyzer.hpp"
 #include "NuDynAnalyzer.hpp"
-using CAP::RunAnalysis;  
+//#include "PythiaEventReader.hpp"
+//#include "HerwigEventReader.hpp"
+//#include "EposEventReader.hpp"
+//#include "UrqmdEventReader.hpp"
+//#include "HijingEventReader.hpp"
 
-ClassImp(RunAnalysis);
 
+ClassImp(CAP::RunAnalysis);
+
+namespace CAP
+{
 RunAnalysis::RunAnalysis(const String & _name,
                          const Configuration & _configuration)
 :
-EventTask(_name, _configuration)
+Task(_name, _configuration),
+labelParticleDb("ParticleDb"),
+labelFilterCreator("Filter"),
+labelBunch("Bunch"),
+labelSubBunch(""),
+labelGlobal("Global"),
+labelSpherocity("Spherocity"),
+labelSingle("Single"),
+labelPair("Pair"),
+labelNuDyn("NuDyn"),
+labelSimAna("SimAna"),
+labelDerived("Derived"),
+labelSum("Sum"),
+labelBalFct("BalFct"),
+labelClosure("Closure"),
+labelGenerator("Gen"),
+labelReconstruction("Reco"),
+labelPythia("Pythia"),
+labelHerwig("Herwig"),
+labelHijing("Hijing"),
+labelAmpt("Ampt"),
+labelEpos("Epos"),
+labelUrqmd("Urqmd"),
+labelTherminator("Therminator"),
+labelResonance("Resonance"),
+labelPerformance("Performance")
 {
   appendClassName("RunAnalysis");
 }
@@ -47,47 +75,66 @@ EventTask(_name, _configuration)
 
 void RunAnalysis::setDefaultConfiguration()
 {
-  EventTask::setDefaultConfiguration();
+  Task::setDefaultConfiguration();
   bool YES = true;
   bool NO  = false;
-  addParameter("GlobalLabel",     TString("G"));
-  addParameter("SpherocityLabel", TString("S"));
-  addParameter("SingleLabel",     TString("Single"));
-  addParameter("PairLabel",       TString("Pair"));
-  addParameter("NuDynLabel",      TString("NuDyn"));
-  addParameter("SimAnaLabel",     TString("SimAna"));
-  addParameter("RootExt",         TString(".root"));
-  addParameter("DerivedLabel",    TString("Derived"));
-  addParameter("SumLabel",        TString("Sum"));
-  addParameter("BalFctLabel",     TString("BalFct"));
-  addParameter("ClosureLabel",    TString("Closure"));
-  addParameter("GenLabel",        TString("Gen"));
-  addParameter("RecoLabel",       TString("Reco"));
-  addParameter("PythiaLabel",     TString("PYTHIA"));
-  addParameter("HerwigLabel",     TString("HERWIG"));
-  addParameter("HijingLabel",     TString("HIJING"));
-  addParameter("AmptLabel",       TString("AMPT"));
-  addParameter("EposLabel",       TString("EPOST"));
-  addParameter("UrqmdLabel",      TString("URQMD"));
-  addParameter("TherminatorLabel",TString("Therminator"));
-  addParameter("ResoLabel",       TString("RESO"));
-  addParameter("PerformLabel",    TString("Perform"));
+  addParameter("labelParticleDb",     labelParticleDb);
+  addParameter("labelFilterCreator",  labelFilterCreator);
+  addParameter("labelBunch",          labelBunch);
+  addParameter("labelSubBunch",       labelSubBunch);
+  addParameter("labelGlobal",         labelGlobal);
+  addParameter("labelSpherocity",     labelSpherocity);
+  addParameter("labelSingle",         labelSingle);
+  addParameter("labelPair",           labelPair);
+  addParameter("labelNuDyn",          labelNuDyn);
+  addParameter("labelSimAna",         labelSimAna);
+  addParameter("labelDerived",        labelDerived);
+  addParameter("labelSum",            labelSum);
+  addParameter("labelBalFct",         labelBalFct);
+  addParameter("labelClosure",        labelClosure);
+  addParameter("labelGenerator",      labelGenerator);
+  addParameter("labelReconstruction", labelReconstruction);
+  addParameter("labelPythia",         labelPythia);
+  addParameter("labelHerwig",         labelHerwig);
+  addParameter("labelHijing",         labelHijing);
+  addParameter("labelAmpt",           labelAmpt);
+  addParameter("labelEpos",           labelEpos);
+  addParameter("labelUrqmd",          labelUrqmd);
+  addParameter("labelTherminator",    labelTherminator);
+  addParameter("labelResonance",      labelResonance);
+  addParameter("labelPerformance",    labelPerformance);
 
-  //  addParameter("histoModelDataName",      TString("none"));
-  //  addParameter("histoAnalyzerName",       TString("none"));
-  //  addParameter("histoBaseName",           TString("none"));
   addParameter("Severity",                   TString("Info"));
   addParameter("RunParticleDbManager",       YES);
+  addParameter("RunFilterCreator",           YES);
+
   addParameter("RunEventAnalysis",           YES);
   addParameter("RunEventAnalysisGen",        YES);
   addParameter("RunEventAnalysisReco",       NO);
+
+  addParameter("RunDerived",                 NO);
   addParameter("RunDerivedGen",              NO);
   addParameter("RunDerivedReco",             NO);
+
+  addParameter("RunBalFct",                  NO);
   addParameter("RunBalFctGen",               NO);
   addParameter("RunBalFctReco",              NO);
+
+  addParameter("RunSubsample",               NO);
+  addParameter("RunSubsampleBase",           NO);
+  addParameter("RunSubsampleBaseGen",        NO);
+  addParameter("RunSubsampleBaseReco",       NO);
+  addParameter("RunSubsampleDerived",        NO);
+  addParameter("RunSubsampleDerivedGen",     NO);
+  addParameter("RunSubsampleDerivedReco",    NO);
+  addParameter("RunSubsampleBalFct",         NO);
+  addParameter("RunSubsampleBalFctGen",      NO);
+  addParameter("RunSubsampleBalFctReco",     NO);
+
   addParameter("RunPerformanceSim",          NO);
   addParameter("RunPerformanceAna",          NO);
   addParameter("RunClosure",                 NO);
+
   addParameter("RunPythiaGenerator",         NO);
   addParameter("RunPythiaReader",            NO);
   addParameter("RunHerwigGenerator",         NO);
@@ -110,119 +157,117 @@ void RunAnalysis::setDefaultConfiguration()
   addParameter("RunPartPairAnalysisReco",    NO);
   addParameter("RunNuDynAnalysisGen",        NO);
   addParameter("RunNuDynAnalysisReco",       NO);
-  addParameter("RunFillEta",                 NO);
-  addParameter("RunFillY",                   YES);
-  addParameter("nEventsPerSubbunch",      long(100));
-  addParameter("nSubbunchesPerBunch",     int(10));
-  addParameter("nBunches",                int(10));
-  addParameter("BunchLabel",              "Bunch");
-  addParameter("SubbunchLabel",           "");
-  addParameter("EventsUseStream0",         true);
-  addParameter("EventsUseStream1",         false);
-  addParameter("SetSeed",                 true);
-  addParameter("SeedValue",               long(121212121));
 
-  addParameter("Analysis:EventFilterModelOption",     TString("All"));
-  addParameter("Analysis:EventFilterModelNValues",    0);
-  addParameter("Analysis:EventFilterModelValue0",     0.0);
-  addParameter("Analysis:EventFilterModelValue1",     0.0);
-  addParameter("Analysis:EventFilterModelValue2",     0.0);
-  addParameter("Analysis:EventFilterModelValue3",     0.0);
-  addParameter("Analysis:EventFilterModelValue4",     0.0);
-  addParameter("Analysis:EventFilterModelValue5",     0.0);
-  addParameter("Analysis:EventFilterModelValue6",     0.0);
-  addParameter("Analysis:EventFilterModelValue7",     0.0);
-  addParameter("Analysis:EventFilterModelValue8",     0.0);
-  addParameter("Analysis:EventFilterModelValue9",     0.0);
-  addParameter("Analysis:EventFilterModelValue10",    0.0);
-  addParameter("Analysis:EventFilterModelValue11",    0.0);
-  addParameter("Analysis:EventFilterModelValue12",    0.0);
+//  addParameter("nEventsPerSubbunch",         long(100));
+//  addParameter("nSubbunchesPerBunch",        int(10));
+  addParameter("nBunches",                   int(10));
+//
+//  addParameter("EventsUseStream0",           true);
+//  addParameter("EventsUseStream1",           false);
+//  addParameter("EventsUseStream2",           false);
+//  addParameter("EventsUseStream3",           false);
 
-  addParameter("Analysis:EventFilterAnaOption",      TString("All"));
-  addParameter("Analysis:EventFilterAnaNValues",     0);
-  addParameter("Analysis:EventFilterAnaValue0",      0.0);
-  addParameter("Analysis:EventFilterAnaValue1",      0.0);
-  addParameter("Analysis:EventFilterAnaValue2",      0.0);
-  addParameter("Analysis:EventFilterAnaValue3",      0.0);
-  addParameter("Analysis:EventFilterAnaValue4",      0.0);
-  addParameter("Analysis:EventFilterAnaValue5",      0.0);
-  addParameter("Analysis:EventFilterAnaValue6",      0.0);
-  addParameter("Analysis:EventFilterAnaValue7",      0.0);
-  addParameter("Analysis:EventFilterAnaValue8",      0.0);
-  addParameter("Analysis:EventFilterAnaValue9",      0.0);
-  addParameter("Analysis:EventFilterAnaValue10",     0.0);
-  addParameter("Analysis:EventFilterAnaValue11",     0.0);
-  addParameter("Analysis:EventFilterAnaValue12",     0.0);
-
-  addParameter("Analysis:PartFilterModelOption",     TString("All"));
-  addParameter("Analysis:PartFilterModelPt",         false);
-  addParameter("Analysis:PartFilterModelMinPt",      0.2);
-  addParameter("Analysis:PartFilterModelMaxPt",      2.0);
-  addParameter("Analysis:PartFilterModelEta",        false);
-  addParameter("Analysis:PartFilterModelMinEta",     -4.0);
-  addParameter("Analysis:PartFilterModelMaxEta",     4.0);
-  addParameter("Analysis:PartFilterModelY",          false);
-  addParameter("Analysis:PartFilterModelMinY",       -4.0);
-  addParameter("Analysis:PartFilterModelMaxY",       4.0);
-
-  addParameter("Analysis:PartFilterAnaOption",       TString("All"));
-  addParameter("Analysis:PartFilterAnaFilterPt",     false);
-  addParameter("Analysis:PartFilterAnaMinPt",        0.0);
-  addParameter("Analysis:PartFilterAnaMaxPt",        2.0);
-  addParameter("Analysis:PartFilterAnaEta",          false);
-  addParameter("Analysis:PartFilterAnaMinEta",       -4.0);
-  addParameter("Analysis:PartFilterAnaMaxEta",       4.0);
-  addParameter("Analysis:PartFilterAnaY",            false);
-  addParameter("Analysis:PartFilterAnaMinY",         -4.0);
-  addParameter("Analysis:PartFilterAnaMaxY",         4.0);
+//  addParameter("SetSeed",                    true);
+//  addParameter("SeedValue",                  long(121212121));
 }
 
+
+void RunAnalysis::configureLabels()
+{
+  labelParticleDb     = getValueString("labelParticleDb");
+  labelFilterCreator  = getValueString("labelFilterCreator");
+  labelBunch          = getValueString("labelBunch");
+  labelSubBunch       = getValueString("labelSubBunch");
+  labelGlobal         = getValueString("labelGlobal");
+  labelSpherocity     = getValueString("labelSpherocity");
+  labelSingle         = getValueString("labelSingle");
+  labelPair           = getValueString("labelPair");
+  labelNuDyn          = getValueString("labelNuDyn");
+  labelSimAna         = getValueString("labelSimAna");
+  labelDerived        = getValueString("labelDerived");
+  labelSum            = getValueString("labelSum");
+  labelBalFct         = getValueString("labelBalFct");
+  labelClosure        = getValueString("labelClosure");
+  labelGenerator      = getValueString("labelGenerator");
+  labelReconstruction = getValueString("labelReconstruction");
+  labelPythia         = getValueString("labelPythia");
+  labelHerwig         = getValueString("labelHerwig");
+  labelHijing         = getValueString("labelHijing");
+  labelAmpt           = getValueString("labelAmpt");
+  labelEpos           = getValueString("labelEpos");
+  labelUrqmd          = getValueString("labelUrqmd");
+  labelTherminator    = getValueString("labelTherminator");
+  labelResonance      = getValueString("labelResonance");
+  labelPerformance    = getValueString("labelPerformance");
+
+  if (reportDebug(__FUNCTION__))
+    {
+    cout << endl;
+    printItem("labelParticleDb",    labelParticleDb);
+    printItem("labelFilterCreator", labelFilterCreator);
+    printItem("labelBunch",         labelBunch);
+    printItem("labelSubBunch",      labelSubBunch);
+    printItem("labelGlobal",        labelGlobal);
+    printItem("labelSpherocity",    labelSpherocity);
+    printItem("labelSingle",        labelSingle);
+    printItem("labelPair",          labelPair);
+    printItem("labelNuDyn",         labelNuDyn);
+    printItem("labelSimAna",        labelSimAna);
+    printItem("labelDerived",       labelDerived);
+    printItem("labelSum",           labelSum);
+    printItem("labelBalFct",        labelBalFct);
+    printItem("labelClosure",       labelClosure);
+    printItem("labelGenerator",     labelGenerator);
+    printItem("labelReconstruction",labelReconstruction);
+    printItem("labelPythia",        labelPythia);
+    printItem("labelHerwig",        labelHerwig);
+    printItem("labelHijing",        labelHijing);
+    printItem("labelAmpt",          labelAmpt);
+    printItem("labelEpos",          labelEpos);
+    printItem("labelUrqmd",         labelUrqmd);
+    printItem("labelTherminator",   labelTherminator);
+    printItem("labelResonance",     labelResonance);
+    printItem("labelPerformance",   labelPerformance);
+    }
+}
 
 void RunAnalysis::configure()
 {
   if (reportStart(__FUNCTION__))
     ;
-  EventTask::configure();
+  Task::configure();
   setSeverity();
-  // assemble the task from here...
-  TaskIterator            * eventAnalysis = nullptr;
-  String GlobalLabel      = getValueString("GlobalLabel");
-  String SpherocityLabel  = getValueString("SpherocityLabel");
-  String SingleLabel      = getValueString("SingleLabel");
-  String PairLabel        = getValueString("PairLabel");
-  String NuDynLabel       = getValueString("NuDynLabel");
-  String SimAnaLabel      = getValueString("SimAnaLabel");
-  String RootExt          = getValueString("RootExt");
-  String DerivedLabel     = getValueString("DerivedLabel");
-  String SumLabel         = getValueString("SumLabel");
-  String BalFctLabel      = getValueString("BalFctLabel");
-  String ClosureLabel     = getValueString("ClosureLabel");
-  String GenLabel         = getValueString("GenLabel");
-  String RecoLabel        = getValueString("RecoLabel");
-  String PythiaLabel      = getValueString("PythiaLabel");
-  String HerwigLabel      = getValueString("HerwigLabel");
-  String HijingLabel      = getValueString("HijingLabel");
-  String AmptLabel        = getValueString("AmptLabel");
-  String EposLabel        = getValueString("EposLabel");
-  String UrqmdLabel       = getValueString("UrqmdLabel");
-  String TherminatorLabel = getValueString("TherminatorLabel");
-  String ResoLabel        = getValueString("ResoLabel");
-  String PerformLabel     = getValueString("PerformLabel");
+
+  try
+  {
+
+  configureLabels();
+ // configuration.printConfiguration(cout); ex it(1);
   bool    runParticleDbManager            = getValueBool("RunParticleDbManager");
+  bool    runFilterCreator                = getValueBool("RunFilterCreator");
   bool    runEventAnalysis                = getValueBool("RunEventAnalysis");
   bool    runEventAnalysisGen             = getValueBool("RunEventAnalysisGen");
   bool    runEventAnalysisReco            = getValueBool("RunEventAnalysisReco");
+
+  bool    runDerived                      = getValueBool("RunDerived");
   bool    runDerivedGen                   = getValueBool("RunDerivedGen");
   bool    runDerivedReco                  = getValueBool("RunDerivedReco");
+
+  bool    runBalFct                       = getValueBool("RunBalFct");
   bool    runBalFctGen                    = getValueBool("RunBalFctGen");
   bool    runBalFctReco                   = getValueBool("RunBalFctReco");
+
   bool    runSubsample                    = getValueBool("RunSubsample");
-//  bool    runSubsampleBaseGen             = getValueBool("RunSubsampleBaseGen");
-//  bool    runSubsampleBaseReco            = getValueBool("RunSubsampleBaseReco");
-//  bool    runSubsampleDerivedGen          = getValueBool("RunSubsampleDerivedGen");
-//  bool    runSubsampleDerivedReco         = getValueBool("RunSubsampleDerivedReco");
-//  bool    runSubsampleBalFctGen           = getValueBool("RunSubsampleBalFctGen");
-//  bool    runSubsampleBalFctReco          = getValueBool("RunSubsampleBalFctReco");
+  bool    runSubsampleBase                = getValueBool("RunSubsampleBase");
+  bool    runSubsampleBaseGen             = getValueBool("RunSubsampleBaseGen");
+  bool    runSubsampleBaseReco            = getValueBool("RunSubsampleBaseReco");
+  bool    runSubsampleDerived             = getValueBool("RunSubsampleDerived");
+  bool    runSubsampleDerivedGen          = getValueBool("RunSubsampleDerivedGen");
+  bool    runSubsampleDerivedReco         = getValueBool("RunSubsampleDerivedReco");
+  bool    runSubsampleBalFct              = getValueBool("RunSubsampleBalFct");
+  bool    runSubsampleBalFctGen           = getValueBool("RunSubsampleBalFctGen");
+  bool    runSubsampleBalFctReco          = getValueBool("RunSubsampleBalFctReco");
+
   bool    runPerformanceSim               = getValueBool("RunPerformanceSim");
   bool    runPerformanceAna               = getValueBool("RunPerformanceAna");
   bool    runClosure                      = getValueBool("RunClosure");
@@ -248,302 +293,352 @@ void RunAnalysis::configure()
   bool    runPartPairAnalysisReco         = getValueBool("RunPartPairAnalysisReco");
   bool    runNuDynAnalysisGen             = getValueBool("RunNuDynAnalysisGen");
   bool    runNuDynAnalysisReco            = getValueBool("RunNuDynAnalysisReco");
-  bool    runFillEta                      = getValueBool("RunFillEta");
-  bool    runFillY                        = getValueBool("RunFillY");
-  String inputPathName                    = getValueString("HistogramsImportPath");
-  String outputPathName                   = getValueString("HistogramsExportPath");
-
-  String eventFilterModelOption           = getValueString("Analysis:EventFilterModelOption");
-  String eventFilterAnaOption             = getValueString("Analysis:EventFilterAnaOption");
-
-  String partFilterModelOption            = getValueString("Analysis:PartFilterModelOption");
-  double partFilterModelPt                = getValueBool(  "Analysis:PartFilterModelPt");
-  double partFilterModelMinPt             = getValueDouble("Analysis:PartFilterModelMinPt");
-  double partFilterModelMaxPt             = getValueDouble("Analysis:PartFilterModelMaxPt");
-  bool   partFilterModelEta               = getValueBool(  "Analysis:PartFilterModelEta");
-  double partFilterModelMinEta            = getValueDouble("Analysis:PartFilterModelMinEta");
-  double partFilterModelMaxEta            = getValueDouble("Analysis:PartFilterModelMaxEta");
-  bool   partFilterModelY                 = getValueBool(  "Analysis:PartFilterModelY");
-  double partFilterModelMinY              = getValueDouble("Analysis:PartFilterModelMinY");
-  double partFilterModelMaxY              = getValueDouble("Analysis:PartFilterModelMaxY");
-  String partFilterAnaOption              = getValueString("Analysis:PartFilterAnaOption");
-  double partFilterAnaFilterPt            = getValueBool(  "Analysis:PartFilterAnaFilterPt");
-  double partFilterAnaMinPt               = getValueDouble("Analysis:PartFilterAnaMinPt");
-  double partFilterAnaMaxPt               = getValueDouble("Analysis:PartFilterAnaMaxPt");
-  bool   partFilterAnaEta                 = getValueBool(  "Analysis:PartFilterAnaEta");
-  double partFilterAnaMinEta              = getValueDouble("Analysis:PartFilterAnaMinEta");
-  double partFilterAnaMaxEta              = getValueDouble("Analysis:PartFilterAnaMaxEta");
-  bool   partFilterAnaY                   = getValueBool(  "Analysis:PartFilterAnaY");
-  double partFilterAnaMinY                = getValueDouble("Analysis:PartFilterAnaMinY");
-  double partFilterAnaMaxY                = getValueDouble("Analysis:PartFilterAnaMaxY");
-  bool   setSeed                          = getValueBool(  "SetSeed");
-  long   seedValue                        = getValueLong(  "SeedValue");
-
-//  if (reportDebug(__FUNCTION__)) printConfiguration(cout);
+  int     nBunches                        = getValueInt ("nBunches");
+  String importPathName                   = getValueString("HistogramsImportPath");
+  String exportPathName                   = getValueString("HistogramsExportPath");
+//  bool   setSeed                          = getValueBool(  "SetSeed");
+//  long   seedValue                        = getValueLong(  "SeedValue");
 
   if (reportInfo(__FUNCTION__))
     {
     cout << endl;
-    printItem("GlobalLabel",GlobalLabel);
-    printItem("SpherocityLabel",SpherocityLabel);
-    printItem("SingleLabel",SingleLabel);
-    printItem("PairLabel",PairLabel);
-    printItem("NuDynLabel",NuDynLabel);
-    printItem("SimAnaLabel",SimAnaLabel);
-    printItem("RootExt",RootExt);
-    printItem("DerivedLabel",DerivedLabel);
-    printItem("SumLabel",SumLabel);
-    printItem("BalFctLabel",BalFctLabel);
-    printItem("ClosureLabel",ClosureLabel);
-    printItem("GenLabel",GenLabel);
-    printItem("RecoLabel",RecoLabel);
-    printItem("PythiaLabel",PythiaLabel);
-    printItem("HerwigLabel",HerwigLabel);
-    printItem("HijingLabel",HijingLabel);
-    printItem("AmptLabel",AmptLabel);
-    printItem("EposLabel",EposLabel);
-    printItem("UrqmdLabel",UrqmdLabel);
-    printItem("TherminatorLabel",TherminatorLabel);
-    printItem("ResoLabel",ResoLabel);
-    printItem("PerformLabel",PerformLabel);
-    printItem("RunParticleDbManager",runParticleDbManager);
-    printItem("RunEventAnalysis",runEventAnalysis);
-    printItem("RunEventAnalysisGen",runEventAnalysisGen);
-    printItem("RunEventAnalysisReco",runEventAnalysisReco);
-    printItem("RunDerivedGen",runDerivedGen);
-    printItem("RunDerivedReco",runDerivedReco);
-    printItem("RunBalFctGen",runBalFctGen);
-    printItem("RunBalFctReco",runBalFctReco);
-    printItem("RunSubsample",runSubsample);
-    printItem("RunPerformanceSim",runPerformanceSim);
-    printItem("RunPerformanceAna",runPerformanceAna);
-    printItem("RunClosure",runClosure);
-    printItem("RunPythiaGenerator",runPythiaGenerator);
-    printItem("RunPythiaReader",runPythiaReader);
-    printItem("RunHerwigGenerator",runHerwigGenerator);
-    printItem("RunHerwigReader",runHerwigReader);
-    printItem("RunAmptGenerator",runAmptGenerator);
-    printItem("RunAmptReader",runAmptReader);
-    printItem("RunEposGenerator",runEposGenerator);
-    printItem("RunEposReader",runEposReader);
-    printItem("RunUrqmdReader",runUrqmdReader);
-    printItem("RunTherminatorGenerator",runTherminatorGenerator);
-    printItem("RunHijingReader",runHijingReader);
-    printItem("RunResonanceGenerator",runResonanceGenerator);
-    printItem("RunGlobalAnalysisGen",runGlobalAnalysisGen);
-    printItem("RunGlobalAnalysisReco",runGlobalAnalysisReco);
-    printItem("RunSpherocityAnalysisGen",runSpherocityAnalysisGen);
+
+    printItem("RunParticleDbManager",  runParticleDbManager);
+    printItem("RunFilterCreator",      runFilterCreator);
+
+    printItem("RunEventAnalysis",      runEventAnalysis);
+    printItem("RunEventAnalysisGen",   runEventAnalysisGen);
+    printItem("RunEventAnalysisReco",  runEventAnalysisReco);
+
+    printItem("RunDerived",            runDerived);
+    printItem("RunDerivedGen",         runDerivedGen);
+    printItem("RunDerivedReco",        runDerivedReco);
+    printItem("RunDerivedGen",         runDerivedGen);
+    printItem("RunDerivedReco",        runDerivedReco);
+
+    printItem("RunBalFct",             runBalFct);
+    printItem("RunBalFctGen",          runBalFctGen);
+    printItem("RunBalFctReco",         runBalFctReco);
+
+    printItem("RunSubsample",            runSubsample);
+    printItem("RunSubsampleBase",        runSubsampleBase);
+    printItem("RunSubsampleBaseGen",     runSubsampleBaseGen);
+    printItem("RunSubsampleBaseReco",    runSubsampleBaseReco);
+    printItem("RunSubsampleDerived",     runSubsampleDerived);
+    printItem("RunSubsampleDerivedGen",  runSubsampleDerivedGen);
+    printItem("RunSubsampleDerivedReco", runSubsampleDerivedReco);
+    printItem("RunSubsampleBalFct",      runSubsampleBalFct);
+    printItem("RunSubsampleBalFctGen",   runSubsampleBalFctGen);
+    printItem("RunSubsampleBalFctReco",  runSubsampleBalFctReco);
+
+
+    printItem("RunPerformanceSim",        runPerformanceSim);
+    printItem("RunPerformanceAna",        runPerformanceAna);
+    printItem("RunClosure",               runClosure);
+    printItem("RunPythiaGenerator",       runPythiaGenerator);
+    printItem("RunPythiaReader",          runPythiaReader);
+    printItem("RunHerwigGenerator",       runHerwigGenerator);
+    printItem("RunHerwigReader",          runHerwigReader);
+    printItem("RunAmptGenerator",         runAmptGenerator);
+    printItem("RunAmptReader",            runAmptReader);
+    printItem("RunEposGenerator",         runEposGenerator);
+    printItem("RunEposReader",            runEposReader);
+    printItem("RunUrqmdReader",           runUrqmdReader);
+    printItem("RunTherminatorGenerator",  runTherminatorGenerator);
+    printItem("RunHijingReader",          runHijingReader);
+    printItem("RunResonanceGenerator",    runResonanceGenerator);
+    printItem("RunGlobalAnalysisGen",     runGlobalAnalysisGen);
+    printItem("RunGlobalAnalysisReco",    runGlobalAnalysisReco);
+    printItem("RunSpherocityAnalysisGen", runSpherocityAnalysisGen);
     printItem("RunSpherocityAnalysisReco",runSpherocityAnalysisReco);
-    printItem("RunPartSingleAnalysisGen",runPartSingleAnalysisGen);
+    printItem("RunPartSingleAnalysisGen", runPartSingleAnalysisGen);
     printItem("RunPartSingleAnalysisReco",runPartSingleAnalysisReco);
-    printItem("RunPartPairAnalysisGen",runPartPairAnalysisGen);
-    printItem("RunPartPairAnalysisReco",runPartPairAnalysisReco);
-    printItem("RunNuDynAnalysisGen",runNuDynAnalysisGen);
-    printItem("RunNuDynAnalysisReco",runNuDynAnalysisReco);
-    printItem("RunFillEta",runFillEta);
-    printItem("RunFillY",runFillY);
-    printItem("HistogramsImportPath",inputPathName);
-    printItem("HistogramsExportPath",outputPathName);
-
-    printItem("EventFilterModelOption",eventFilterModelOption);
-    printItem("EventFilterAnaOption",eventFilterAnaOption);
-
-    printItem("PartFilterModelOption",partFilterModelOption);
-    printItem("PartFilterModelPt",partFilterModelPt);
-    printItem("PartFilterModelMinPt",partFilterModelMinPt);
-    printItem("PartFilterModelMaxPt",partFilterModelMaxPt);
-    printItem("PartFilterModelEta",partFilterModelEta);
-    printItem("PartFilterModelMinEta",partFilterModelMinEta);
-    printItem("PartFilterModelMaxEta",partFilterModelMaxEta);
-    printItem("PartFilterModelY",partFilterModelY);
-    printItem("PartFilterModelMinY",partFilterModelMinY);
-    printItem("PartFilterModelMaxY",partFilterModelMaxY);
-    printItem("PartFilterAnaOption",partFilterAnaOption);
-    printItem("PartFilterAnaFilterPt",partFilterAnaFilterPt);
-    printItem("PartFilterAnaMinPt",partFilterAnaMinPt);
-    printItem("PartFilterAnaMaxPt",partFilterAnaMaxPt);
-    printItem("PartFilterAnaEta",partFilterAnaEta);
-    printItem("PartFilterAnaMinEta",partFilterAnaMinEta);
-    printItem("PartFilterAnaMaxEta",partFilterAnaMaxEta);
-    printItem("PartFilterAnaY",partFilterAnaY);
-    printItem("PartFilterAnaMinY",partFilterAnaMinY);
-    printItem("PartFilterAnaMaxY",partFilterAnaMaxY);
-    printItem("SetSeed",setSeed);
-    printItem("SeedValue",seedValue);
+    printItem("RunPartPairAnalysisGen",   runPartPairAnalysisGen);
+    printItem("RunPartPairAnalysisReco",  runPartPairAnalysisReco);
+    printItem("RunNuDynAnalysisGen",      runNuDynAnalysisGen);
+    printItem("RunNuDynAnalysisReco",     runNuDynAnalysisReco);
+    printItem("HistogramsImportPath",     importPathName);
+    printItem("HistogramsExportPath",     exportPathName);
+    printItem("nBunches",                 nBunches);
+//    printItem("SetSeed",                  setSeed);
+//    printItem("SeedValue",                seedValue);
     cout << endl;
-    }
-
-  vector<EventFilter*>     eventFilterModels;
-  vector<EventFilter*>     eventFilterAnalysis;
-  vector<ParticleFilter*>  particleFiltersModels;
-  vector<ParticleFilter*>  particleFiltersAnalysis;
-
-  // =========================================
-  // Setup all event filters
-  // =========================================
-  vector<double> modelBounds;
-  int n = getValueInt("Analysis:EventFilterModelNValues");
-  for (int k=0; k<n; k++)
-    {
-    String key = "Analysis:EventFilterModelValue";
-    key += k;
-    modelBounds.push_back( getValueBool(key));
-    }
-  if (eventFilterModelOption.EqualTo("All"))                   eventFilterModels = EventFilter::createOpenEventFilter();
-  else if (eventFilterModelOption.EqualTo("AliceMB"))          eventFilterModels = EventFilter::createAliceMBEventFilter();
-  else if (eventFilterModelOption.EqualTo("ImpactParameter"))  eventFilterModels = EventFilter::createImpactParameterFilters(modelBounds);
-  else if (eventFilterModelOption.EqualTo("V0Mult"))           eventFilterModels = EventFilter::createV0MultiplicityFilters(modelBounds);
-  else if (eventFilterModelOption.EqualTo("TpcMult"))          eventFilterModels = EventFilter::createTpcMultiplicityFilters(modelBounds);
-
-  vector<double> anaBounds;
-  n = getValueInt("Analysis:EventFilterAnaNValues");
-  for (int k=0; k<n; k++)
-    {
-    String key = "Analysis:EventFilterAnaValue";
-    key += k;
-    anaBounds.push_back( getValueBool(key));
-    }
-  if (eventFilterAnaOption.EqualTo("All"))                   eventFilterAnalysis = EventFilter::createOpenEventFilter();
-  else if (eventFilterAnaOption.EqualTo("AliceMB"))          eventFilterAnalysis = EventFilter::createAliceMBEventFilter();
-  else if (eventFilterAnaOption.EqualTo("ImpactParameter"))  eventFilterAnalysis = EventFilter::createImpactParameterFilters(anaBounds);
-  else if (eventFilterAnaOption.EqualTo("V0Mult"))           eventFilterAnalysis = EventFilter::createV0MultiplicityFilters(anaBounds);
-  else if (eventFilterAnaOption.EqualTo("TpcMult"))          eventFilterAnalysis = EventFilter::createTpcMultiplicityFilters(anaBounds);
-
-   if (eventFilterAnalysis.size()<1)
-    {
-    if (reportFatal(__FUNCTION__))
-      {
-      cout << endl;
-      cout << "==================================================================================" << std::endl;
-      cout << "No Analysis Event Filter" << std::endl;
-      cout << "==================================================================================" << std::endl;
-      }
-    exit(1);
-    }
-
-  // =========================================
-  // Setup all particle filter
-  // =========================================
-  if (partFilterModelOption.EqualTo("All"))                   particleFiltersModels = ParticleFilter::createOpenParticleFilter();
-  else if (partFilterModelOption.EqualTo("AliceV0"))          particleFiltersModels = ParticleFilter::createAliceV0Filter();
-  else if (partFilterModelOption.EqualTo("Neutral"))          particleFiltersModels = ParticleFilter::createNeutralParticleFilter(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY);
-  else if (partFilterModelOption.EqualTo("Charged"))          particleFiltersModels = ParticleFilter::createChargedParticleFilter(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY);
-  else if (partFilterModelOption.EqualTo("Negative"))         particleFiltersModels = ParticleFilter::createNegativeParticleFilter(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY);
-  else if (partFilterModelOption.EqualTo("Positive"))         particleFiltersModels = ParticleFilter::createPositiveParticleFilter(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY);
-  else if (partFilterModelOption.EqualTo("ChargedHadrons"))   particleFiltersModels = ParticleFilter::createChargedHadronFilters(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY);
-  else if (partFilterModelOption.EqualTo("PlusMinusHadrons")) particleFiltersModels = ParticleFilter::createPlusMinusHadronFilters(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY);
-  else if (partFilterModelOption.EqualTo("StrangeHadrons"))   particleFiltersModels = ParticleFilter::createStrangeHadronFilters(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY);
-  else if (partFilterModelOption.EqualTo("Baryons"))          particleFiltersModels = ParticleFilter::createBaryonFilters(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY);
-  else if (partFilterModelOption.EqualTo("Index"))            particleFiltersModels = ParticleFilter::createIndexFilters(0,381,partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY);
-
-  if (partFilterAnaOption.EqualTo("All"))                   particleFiltersAnalysis = ParticleFilter::createOpenParticleFilter();
-  else if (partFilterAnaOption.EqualTo("AliceV0"))          particleFiltersAnalysis = ParticleFilter::createAliceV0Filter();
-  else if (partFilterAnaOption.EqualTo("Neutral"))          particleFiltersAnalysis = ParticleFilter::createNeutralParticleFilter(partFilterAnaFilterPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY);
-  else if (partFilterAnaOption.EqualTo("Charged"))          particleFiltersAnalysis = ParticleFilter::createChargedParticleFilter(partFilterAnaFilterPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY);
-  else if (partFilterAnaOption.EqualTo("Negative"))         particleFiltersAnalysis = ParticleFilter::createNegativeParticleFilter(partFilterAnaFilterPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY);
-  else if (partFilterAnaOption.EqualTo("Positive"))         particleFiltersAnalysis = ParticleFilter::createPositiveParticleFilter(partFilterAnaFilterPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY);
-  else if (partFilterAnaOption.EqualTo("ChargedHadrons"))   particleFiltersAnalysis = ParticleFilter::createChargedHadronFilters(partFilterAnaFilterPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY);
-  else if (partFilterAnaOption.EqualTo("PlusMinusHadrons")) particleFiltersAnalysis = ParticleFilter::createPlusMinusHadronFilters(partFilterAnaFilterPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY);
-  else if (partFilterAnaOption.EqualTo("StrangeHadrons"))   particleFiltersAnalysis = ParticleFilter::createStrangeHadronFilters(partFilterAnaFilterPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY);
-  else if (partFilterAnaOption.EqualTo("Baryons"))          particleFiltersAnalysis = ParticleFilter::createBaryonFilters(partFilterAnaFilterPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY);
-  else if (partFilterAnaOption.EqualTo("Index"))            particleFiltersAnalysis = ParticleFilter::createIndexFilters(0,381,partFilterAnaFilterPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY);
-
-  if (particleFiltersAnalysis.size()<1)
-    {
-    if (reportFatal(__FUNCTION__))
-      {
-      cout << endl;
-      cout << "==================================================================================" << std::endl;
-      cout << "No Analysis Particle Filter" << std::endl;
-      cout << "==================================================================================" << std::endl;
-      }
-    exit(1);
-    }
-  if (reportInfo(__FUNCTION__))
-    {
-    cout << endl;
-    cout << "  RunAnalysis:Filters" << endl;
-    cout << "  EventFilterModels.size().............: " << eventFilterModels.size() << endl;
-    for (unsigned int k=0; k<eventFilterModels.size(); k++)
-      cout << "    " << k << "   " << eventFilterModels[k]->getName() << endl;
-    cout << "  particleFiltersModels.size()..........: " << particleFiltersModels.size() << endl;
-    for (unsigned int k=0; k<particleFiltersModels.size(); k++)
-      cout << "    " << k << "   " << particleFiltersModels[k]->getName() << endl;
-    cout << "  eventFilterAnalysis.size()..........: " << eventFilterAnalysis.size() << endl;
-    for (unsigned int k=0; k<eventFilterAnalysis.size(); k++)
-      cout << "    " << k << "   " << eventFilterAnalysis[k]->getName() << endl;
-    cout << "  particleFiltersAnalysis.size().......: " << particleFiltersAnalysis.size() << endl;
-    for (unsigned int k=0; k<particleFiltersAnalysis.size(); k++)
-      cout << "    " << k << "   " << particleFiltersAnalysis[k]->getName() << endl;
-    cout << "==================================================================================" << std::endl;
-    cout << "Configuration Completed - Proceed with loading analysis" << std::endl;
-    cout << "==================================================================================" << std::endl;
     }
 
   if (runParticleDbManager)
     {
+    if (reportInfo(__FUNCTION__)) cout << "Setting up ParticleDb" << std::endl;
     ParticleDbManager * particleDbManager = new ParticleDbManager("ParticleDb",*requestedConfiguration);
     addSubTask(particleDbManager);
     }
 
+  if (runFilterCreator)
+    {
+    if (reportInfo(__FUNCTION__)) cout << "Setting up Filters" << std::endl;
+    FilterCreator * filterCreator = new FilterCreator("Filter",*requestedConfiguration);
+    addSubTask(filterCreator);
+    }
 
   if (runEventAnalysis)
     {
-    if (reportInfo(__FUNCTION__))
-      {
-      cout << endl;
-      cout << "==================================================================================" << std::endl;
-      cout << "Setting up event analysis" << std::endl;
-      cout << "==================================================================================" << std::endl;
-      }
-    eventAnalysis = new TaskIterator("Analysis",*requestedConfiguration);
+    if (reportInfo(__FUNCTION__)) cout << "Setting up event analysis" << std::endl;
+    TaskIterator * eventAnalysis = new TaskIterator("Analysis",*requestedConfiguration);
     addSubTask(eventAnalysis);
 
-    //if (runPythiaReader)         eventAnalysis->addSubTask(new PythiaEventReader(PythiaLabel,*requestedConfiguration,eventFilterModels,particleFiltersModels));
-    if (runPythiaGenerator)      eventAnalysis->addSubTask(new PythiaEventGenerator(PythiaLabel,*requestedConfiguration,eventFilterModels,particleFiltersModels));
-//    if (runHerwigReader)         eventAnalysis->addSubTask(new HerwigEventReader(HerwigLabel,*requestedConfiguration,eventFilterModels,particleFiltersModels));
-    if (runAmptReader)           eventAnalysis->addSubTask(new AmptEventReader(AmptLabel,*requestedConfiguration,eventFilterModels,particleFiltersModels));
-//    if (runEposReader)           eventAnalysis->addSubTask(new EposEventReader(EposLabel,*requestedConfiguration,eventFilterModels,particleFiltersModels));
-//    if (runUrqmdReader)          eventAnalysis->addSubTask(new UrqmdEventReader(UrqmdLabel,*requestedConfiguration,eventFilterModels,particleFiltersModels));
-//    if (runHijingReader)         eventAnalysis->addSubTask(new HijingEventReader(HijingLabel,*requestedConfiguration,eventFilterModels,particleFiltersModels));
-    if (runTherminatorGenerator) eventAnalysis->addSubTask(new TherminatorGenerator(TherminatorLabel,*requestedConfiguration,eventFilterModels,particleFiltersModels));
-    if (runResonanceGenerator)   eventAnalysis->addSubTask(new ResonanceGenerator(ResoLabel,*requestedConfiguration,eventFilterModels,particleFiltersModels));
+    //if (runPythiaReader)         eventAnalysis->addSubTask(new PythiaEventReader(labelPythia,*requestedConfiguration));
+    //if (runHerwigReader)         eventAnalysis->addSubTask(new HerwigEventReader(labelHerwig,*requestedConfiguration));
+    //if (runEposReader)           eventAnalysis->addSubTask(new EposEventReader(labelEpos,*requestedConfiguration));
+    //if (runUrqmdReader)          eventAnalysis->addSubTask(new UrqmdEventReader(labelUrqmd,*requestedConfiguration));
+    //if (runHijingReader)         eventAnalysis->addSubTask(new HijingEventReader(labelHijing,*requestedConfiguration));
+    if (runPythiaGenerator)         eventAnalysis->addSubTask(new PythiaEventGenerator(labelPythia,*requestedConfiguration));
+    if (runAmptReader)              eventAnalysis->addSubTask(new AmptEventReader(labelAmpt,*requestedConfiguration));
+    if (runTherminatorGenerator)    eventAnalysis->addSubTask(new TherminatorGenerator(labelTherminator,*requestedConfiguration));
+    if (runResonanceGenerator)      eventAnalysis->addSubTask(new ResonanceGenerator(labelResonance,*requestedConfiguration));
+    if (runPerformanceSim)          eventAnalysis->addSubTask(new MeasurementPerformanceSimulator(labelPerformance,*requestedConfiguration));
 
-    if (runPerformanceSim)       eventAnalysis->addSubTask(new MeasurementPerformanceSimulator(PerformLabel,*requestedConfiguration,eventFilterModels,particleFiltersModels));
+    if (runEventAnalysisGen)
+      {
+      if (runGlobalAnalysisGen)       eventAnalysis->addSubTask(new GlobalAnalyzer(labelGlobal+labelGenerator, *requestedConfiguration));
+      if (runSpherocityAnalysisGen)   eventAnalysis->addSubTask(new TransverseSpherocityAnalyzer(labelSpherocity+labelGenerator, *requestedConfiguration));
+      if (runPartSingleAnalysisGen)   eventAnalysis->addSubTask(new ParticleSingleAnalyzer(labelSingle+labelGenerator, *requestedConfiguration));
+      if (runPartPairAnalysisGen)     eventAnalysis->addSubTask(new ParticlePairAnalyzer(labelPair+labelGenerator, *requestedConfiguration));
+      if (runNuDynAnalysisGen)        eventAnalysis->addSubTask(new NuDynAnalyzer(labelNuDyn+labelGenerator,*requestedConfiguration));
+      }
 
-    if (runGlobalAnalysisGen)       eventAnalysis->addSubTask(new GlobalAnalyzer(GlobalLabel+GenLabel, *requestedConfiguration,eventFilterAnalysis, particleFiltersAnalysis));
-    if (runSpherocityAnalysisGen)   eventAnalysis->addSubTask(new TransverseSpherocityAnalyzer(SpherocityLabel+GenLabel, *requestedConfiguration,eventFilterAnalysis, particleFiltersAnalysis));
-    if (runPartSingleAnalysisGen)   eventAnalysis->addSubTask(new ParticleSingleAnalyzer(SingleLabel+GenLabel, *requestedConfiguration,eventFilterAnalysis, particleFiltersAnalysis));
-    if (runPartPairAnalysisGen)     eventAnalysis->addSubTask(new ParticlePairAnalyzer(PairLabel+GenLabel, *requestedConfiguration,eventFilterAnalysis, particleFiltersAnalysis));
-    if (runNuDynAnalysisGen)        eventAnalysis->addSubTask(new NuDynAnalyzer(NuDynLabel+GenLabel,*requestedConfiguration,eventFilterAnalysis,particleFiltersAnalysis));
+    if (runEventAnalysisReco)
+      {
+      if (runGlobalAnalysisReco)      eventAnalysis->addSubTask(new GlobalAnalyzer(labelGlobal+labelReconstruction,*requestedConfiguration));
+      if (runSpherocityAnalysisReco)  eventAnalysis->addSubTask(new TransverseSpherocityAnalyzer(labelSpherocity+labelReconstruction, *requestedConfiguration));
+      if (runPartSingleAnalysisReco)  eventAnalysis->addSubTask(new ParticleSingleAnalyzer(labelSingle+labelReconstruction, *requestedConfiguration));
+      if (runPartPairAnalysisReco)    eventAnalysis->addSubTask(new ParticlePairAnalyzer(labelPair+labelReconstruction, *requestedConfiguration));
+      if (runNuDynAnalysisReco)       eventAnalysis->addSubTask(new NuDynAnalyzer(labelNuDyn+labelReconstruction,*requestedConfiguration));
+      if (runPerformanceAna)          eventAnalysis->addSubTask(new ParticlePerformanceAnalyzer(labelSimAna,*requestedConfiguration));
+      }
 
-    if (runGlobalAnalysisReco)      eventAnalysis->addSubTask(new GlobalAnalyzer(GlobalLabel+RecoLabel,*requestedConfiguration,eventFilterAnalysis, particleFiltersAnalysis));
-    if (runSpherocityAnalysisReco)  eventAnalysis->addSubTask(new TransverseSpherocityAnalyzer(SpherocityLabel+RecoLabel, *requestedConfiguration,eventFilterAnalysis, particleFiltersAnalysis));
-    if (runPartSingleAnalysisReco)  eventAnalysis->addSubTask(new ParticleSingleAnalyzer(SingleLabel+RecoLabel, *requestedConfiguration,eventFilterAnalysis, particleFiltersAnalysis));
-    if (runPartPairAnalysisReco)    eventAnalysis->addSubTask(new ParticlePairAnalyzer(PairLabel+RecoLabel, *requestedConfiguration,eventFilterAnalysis, particleFiltersAnalysis));
-    if (runNuDynAnalysisReco)       eventAnalysis->addSubTask(new NuDynAnalyzer(NuDynLabel+RecoLabel,*requestedConfiguration,eventFilterAnalysis,particleFiltersAnalysis));
-    if (runPerformanceAna)          eventAnalysis->addSubTask(new ParticlePerformanceAnalyzer(SimAnaLabel,*requestedConfiguration,eventFilterAnalysis, particleFiltersAnalysis));
+    if (reportInfo(__FUNCTION__)) cout << "Event Analysis Setup Completed" << std::endl;
     }
 
-  if (reportInfo(__FUNCTION__))
+  if (runDerived)
     {
-    cout << endl;
-    cout << "==================================================================================" << std::endl;
-    cout << "Configuration Completed; Run Analysis" << std::endl;
-    cout << "==================================================================================" << std::endl;
+    if (reportInfo(__FUNCTION__)) cout << "Setting up derived calculation" << std::endl;
+    TString taskName;
+    TString configBasePath;
+    TString configPath = "Run:Analysis";
+    TString subTaskName;
+    TString subConfigBasePath;
+    TString subConfigPath;
+
+    if (runDerivedGen)
+      {
+      if (reportInfo(__FUNCTION__)) cout << "Setting up DerivedGen" << std::endl;
+      Configuration & dConfig = * new Configuration(configuration);
+      taskName       = "Analysis";
+      configBasePath = "Run:";
+      configPath     = configBasePath + taskName;  configPath += ":";
+      dConfig.addParameter(configPath+"HistogramsImportPath",histosImportPath);
+      dConfig.addParameter(configPath+"HistogramsExportPath",histosExportPath);
+      dConfig.addParameter(configPath+"IncludedPattern0",TString("Sum"));
+      dConfig.addParameter(configPath+"ExcludedPattern0",TString("Reco"));
+      dConfig.addParameter(configPath+"ExcludedPattern1",TString("BalFct"));
+      dConfig.addParameter(configPath+"ExcludedPattern2",TString("Derived"));
+      DerivedHistoIterator * derived = new DerivedHistoIterator(taskName,dConfig);
+      addSubTask(derived);
+
+      //    if (runGlobalAnalysisGen)          derived->addSubTask(new GlobalAnalyzer(labelGlobal+labelGenerator, configuration));
+      //    if (runSpherocityAnalysisGen)      derived->addSubTask(new TransverseSpherocityAnalyzer(labelSpherocity+labelGenerator, configuration));
+
+      if (runPartSingleAnalysisGen)
+        {
+        Configuration & subConfig = * new Configuration(configuration);
+        subTaskName       = labelSingle+labelGenerator;
+        subConfigBasePath = configPath;
+        subConfigPath     = subConfigBasePath + subTaskName;  subConfigPath += ":";
+
+        subConfig.addParameter(subConfigPath+"HistogramsCreate",         false);
+        subConfig.addParameter(subConfigPath+"HistogramsCreateDerived",  true);
+        subConfig.addParameter(subConfigPath+"HistogramsReset",          false);
+        subConfig.addParameter(subConfigPath+"HistogramsClear",          true);
+        subConfig.addParameter(subConfigPath+"HistogramsScale",          false);
+        subConfig.addParameter(subConfigPath+"HistogramsForceRewrite",   true);
+        subConfig.addParameter(subConfigPath+"HistogramsImportPath",histosImportPath);
+        subConfig.addParameter(subConfigPath+"HistogramsExportPath",histosExportPath);
+        subConfig.addParameter(subConfigPath+"IncludedPattern0",TString(subTaskName));
+        subConfig.addParameter(subConfigPath+"IncludedPattern1",TString("Sum"));
+        subConfig.addParameter(subConfigPath+"ExcludedPattern0",TString("Reco"));
+        subConfig.addParameter(subConfigPath+"ExcludedPattern2",TString("Derived"));
+        subConfig.addParameter(subConfigPath+"ExcludedPattern1",TString("BalFct"));
+        derived->addSubTask(new ParticleSingleAnalyzer(subTaskName, subConfig));
+        }
+
+      if (runPartPairAnalysisGen)
+        {
+        Configuration & subConfig = * new Configuration(dConfig);
+        subTaskName       = labelPair+labelGenerator;
+        subConfigBasePath = configPath;
+        subConfigPath     = subConfigBasePath + subTaskName;  subConfigBasePath += ":";
+        subConfig.addParameter(subConfigPath+"HistogramsImportPath",histosImportPath);
+        subConfig.addParameter(subConfigPath+"HistogramsExportPath",histosExportPath);
+        subConfig.addParameter(subConfigPath+"IncludedPattern0",TString("Sum"));
+        subConfig.addParameter(subConfigPath+"ExcludedPattern0",TString("Reco"));
+        subConfig.addParameter(subConfigPath+"ExcludedPattern1",TString("BalFct"));
+        subConfig.addParameter(subConfigPath+"ExcludedPattern2",TString("Derived"));
+        derived->addSubTask(new ParticlePairAnalyzer(subTaskName, subConfig));
+        }
+
+      //    if (runNuDynAnalysisGen)           derived->addSubTask(new NuDynAnalyzer(labelNuDyn+labelGenerator,configuration));
+      //    if (runGlobalAnalysisReco)         derived->addSubTask(new GlobalAnalyzer(labelGlobal+labelReconstruction, configuration));
+      //    if (runSpherocityAnalysisReco)     derived->addSubTask(new TransverseSpherocityAnalyzer(labelSpherocity+labelReconstruction, configuration));
+      //    if (runPartSingleAnalysisReco)     derived->addSubTask(new ParticleSingleAnalyzer(labelSingle+labelReconstruction, configuration));
+      //    if (runPartPairAnalysisReco)       derived->addSubTask(new ParticlePairAnalyzer(labelPair+labelReconstruction, configuration));
+      //    if (runNuDynAnalysisReco)          derived->addSubTask(new NuDynAnalyzer(labelNuDyn+labelReconstruction,configuration));
+      if (reportInfo(__FUNCTION__)) cout << "DerivedGen Setup Completed" << std::endl;
+      }
+
+    if (runDerivedReco)
+      {
+      // to be implemented
+      }
+
+    if (runBalFct)
+      {
+      if (reportInfo(__FUNCTION__)) cout << "Setting up BalFct" << std::endl;
+
+      if (runBalFctGen && runPartPairAnalysisGen)
+        {
+        Configuration & dConfig = * new Configuration(configuration);
+        taskName       = "PairGen";
+        configBasePath = "Run:";
+        configPath     = configBasePath + taskName;  configPath += ":";
+        dConfig.addParameter(configPath+"HistogramsImportPath",histosImportPath);
+        dConfig.addParameter(configPath+"HistogramsExportPath",histosExportPath);
+        dConfig.addParameter(configPath+"IncludedPattern0",TString("Sum"));
+        dConfig.addParameter(configPath+"IncludedPattern1",TString("Derived"));
+        dConfig.addParameter(configPath+"IncludedPattern2",TString("Gen"));
+        dConfig.addParameter(configPath+"ExcludedPattern0",TString("Reco"));
+        dConfig.addParameter(configPath+"ExcludedPattern1",TString("BalFct"));
+        dConfig.addParameter(configPath+"ExcludedPattern2",TString("Single"));
+        dConfig.addParameter(configPath+"AppendedString",  TString("BalFct"));
+        dConfig.printConfiguration(cout);
+        addSubTask(new BalanceFunctionCalculator(taskName,dConfig));
+        }
+      if (runBalFctReco && runPartPairAnalysisReco)
+        {
+        // to be implmented
+        }
+      if (reportInfo(__FUNCTION__)) cout << "BalFct Setup Completed" << std::endl;
+
+      }
+    if (reportInfo(__FUNCTION__)) cout << "Derived calculation Setup Completed" << std::endl;
     }
-  gSystem->mkdir(outputPathName,1);
+
+  int maximumDepth= 1;
+
+  if (runSubsample)
+    {
+    if (reportInfo(__FUNCTION__)) cout << "Setting up Subsample calculation" << std::endl;
+    if (runSubsampleBase)
+      {
+      maximumDepth = 2;
+      if (runSubsampleBaseGen)
+        {
+        if (runGlobalAnalysisGen)     addBaseSubSampleTask(importPathName,labelBunch,nBunches,labelSubBunch,maximumDepth,labelGlobal+labelGenerator);
+        if (runSpherocityAnalysisGen) addBaseSubSampleTask(importPathName,labelBunch,nBunches,labelSubBunch,maximumDepth,labelSpherocity+labelGenerator);
+        if (runPartSingleAnalysisGen) addBaseSubSampleTask(importPathName,labelBunch,nBunches,labelSubBunch,maximumDepth,labelSingle+labelGenerator);
+        if (runPartPairAnalysisGen)   addBaseSubSampleTask(importPathName,labelBunch,nBunches,labelSubBunch,maximumDepth,labelPair+labelGenerator);
+        if (runNuDynAnalysisGen)      addBaseSubSampleTask(importPathName,labelBunch,nBunches,labelSubBunch,maximumDepth,labelNuDyn+labelGenerator);
+        }
+      if (runSubsampleBaseReco)
+        {
+        if (runGlobalAnalysisReco)     addBaseSubSampleTask(importPathName,labelBunch,nBunches,labelSubBunch,maximumDepth,labelGlobal+labelReconstruction);
+        if (runSpherocityAnalysisReco) addBaseSubSampleTask(importPathName,labelBunch,nBunches,labelSubBunch,maximumDepth,labelSpherocity+labelReconstruction);
+        if (runPartSingleAnalysisReco) addBaseSubSampleTask(importPathName,labelBunch,nBunches,labelSubBunch,maximumDepth,labelSingle+labelReconstruction);
+        if (runPartPairAnalysisReco)   addBaseSubSampleTask(importPathName,labelBunch,nBunches,labelSubBunch,maximumDepth,labelPair+labelReconstruction);
+        if (runNuDynAnalysisReco)      addBaseSubSampleTask(importPathName,labelBunch,nBunches,labelSubBunch,maximumDepth,labelNuDyn+labelReconstruction);
+        }
+      }
+    if (runSubsampleDerived)
+      {
+      maximumDepth = 1;
+      if (runSubsampleDerivedGen)
+        {
+        if (runGlobalAnalysisGen)     addDerivedSubSampleTask(importPathName,labelBunch,nBunches,labelSubBunch,maximumDepth,labelGlobal+labelGenerator);
+        if (runSpherocityAnalysisGen) addDerivedSubSampleTask(importPathName,labelBunch,nBunches,labelSubBunch,maximumDepth,labelSpherocity+labelGenerator);
+        if (runPartSingleAnalysisGen) addDerivedSubSampleTask(importPathName,labelBunch,nBunches,labelSubBunch,maximumDepth,labelSingle+labelGenerator);
+        if (runPartPairAnalysisGen)   addDerivedSubSampleTask(importPathName,labelBunch,nBunches,labelSubBunch,maximumDepth,labelPair+labelGenerator);
+        if (runNuDynAnalysisGen)      addDerivedSubSampleTask(importPathName,labelBunch,nBunches,labelSubBunch,maximumDepth,labelNuDyn+labelGenerator);
+        }
+      if (runSubsampleDerivedReco)
+        {
+        if (runGlobalAnalysisReco)     addDerivedSubSampleTask(importPathName,labelBunch,nBunches,labelSubBunch,maximumDepth,labelGlobal+labelReconstruction);
+        if (runSpherocityAnalysisReco) addDerivedSubSampleTask(importPathName,labelBunch,nBunches,labelSubBunch,maximumDepth,labelSpherocity+labelReconstruction);
+        if (runPartSingleAnalysisReco) addDerivedSubSampleTask(importPathName,labelBunch,nBunches,labelSubBunch,maximumDepth,labelSingle+labelReconstruction);
+        if (runPartPairAnalysisReco)   addDerivedSubSampleTask(importPathName,labelBunch,nBunches,labelSubBunch,maximumDepth,labelPair+labelReconstruction);
+        if (runNuDynAnalysisReco)      addDerivedSubSampleTask(importPathName,labelBunch,nBunches,labelSubBunch,maximumDepth,labelNuDyn+labelReconstruction);
+        }
+      }
+    if (runSubsampleBalFct)
+      {
+      maximumDepth = 1;
+      if (runSubsampleBalFctGen)
+        {
+        if (runPartPairAnalysisGen)   addBalFctSubSampleTask(importPathName,labelBunch,nBunches,labelSubBunch,maximumDepth,labelPair+labelGenerator);
+        }
+      if (runSubsampleBalFctReco)
+        {
+        if (runPartPairAnalysisReco)  addBalFctSubSampleTask(importPathName,labelBunch,nBunches,labelSubBunch,maximumDepth,labelPair+labelReconstruction);
+        }
+      }
+    if (reportInfo(__FUNCTION__)) cout << "Subsample calculation Setup Completed" << std::endl;
+    }
+
+  gSystem->mkdir(exportPathName,1);
   if (hasSubTasks())
     for (unsigned int  iTask=0; iTask<subTasks.size(); iTask++)
       {
       subTasks[iTask]->configure();
       }
+  }
+  catch (TaskException te)
+  {
+  te.print(); exit(1);
+  }
+  catch (ConfigurationException ce)
+  {
+  ce.print(); exit(1);
+  }
+  catch (MathException me)
+  {
+  me.print(); exit(1);
+  }
+  catch (FileException fe)
+  {
+  fe.print(); exit(1);
+  }
+  catch (MemoryException mme)
+  {
+  mme.print(); exit(1);
+  }
+  catch (HistogramException he)
+  {
+  he.print(); exit(1);
+  }
+  catch (FactoryException ffe)
+  {
+  ffe.print(); exit(1);
+  }
+  catch (Exception e)
+  {
+  e.print(); exit(1);
+  }
+
   if (reportEnd(__FUNCTION__))
     ;
 }
 
 void RunAnalysis::execute()
 {
+  try
+  {
   if (reportInfo(__FUNCTION__))
     {
     cout << endl;
@@ -551,9 +646,14 @@ void RunAnalysis::execute()
     cout << "Analysis Started" << std::endl;
     cout << "==================================================================================" << std::endl;
     }
-  //initializeSubTasks();
-  executeSubTasks();
 
+//  int n = subTasks.size();
+//  cout << "Number of subtasks: " << n << endl;;
+//  for (int k=0; k<n; k++ )
+//    cout << " sub taskName: " << subTasks[k]->getName()<< endl;
+//  exit(1);
+  initializeSubTasks();
+  executeSubTasks();
   if (reportInfo(__FUNCTION__))
     {
     cout << endl;
@@ -561,5 +661,180 @@ void RunAnalysis::execute()
     cout << "Analysis Completed" << std::endl;
     cout << "==================================================================================" << std::endl;
     }
+  }
+
+  catch (TaskException te)
+  {
+  te.print(); exit(1);
+  }
+  catch (ConfigurationException ce)
+  {
+  ce.print(); exit(1);
+  }
+  catch (MathException me)
+  {
+  me.print(); exit(1);
+  }
+  catch (FileException fe)
+  {
+  fe.print(); exit(1);
+  }
+  catch (MemoryException mme)
+  {
+  mme.print(); exit(1);
+  }
+  catch (HistogramException he)
+  {
+  he.print(); exit(1);
+  }
+  catch (FactoryException ffe)
+  {
+  ffe.print(); exit(1);
+  }
+  catch (Exception e)
+  {
+  e.print(); exit(1);
+  }
+
+
+
 }
 
+void RunAnalysis::addBaseSubSampleTask(const String & basePath,
+                                        const String & labelBunch,
+                                        int   nBunches,
+                                        const String & subPath,
+                                        int   maximumDepth,
+                                        const String & taskType)
+{
+
+
+  if (nBunches>0)
+    {
+    for (int k=1;k<=nBunches; k++)
+      {
+      String inputPathName  = TString(Form("%s/%s%02d/%s",basePath.Data(),labelBunch.Data(),k,subPath.Data()));
+      String outputPathName = TString(Form("%s/%s%02d/",basePath.Data(),labelBunch.Data(),k));
+      Configuration & subConfig = * new Configuration(configuration);
+      subConfig.addParameter(TString("Run:")+taskType+TString(":HistogramsImportPath"),inputPathName);
+      subConfig.addParameter(TString("Run:")+taskType+TString(":HistogramsExportPath"),outputPathName);
+      subConfig.addParameter(TString("Run:")+taskType+TString(":IncludedPattern0"),TString("Gen"));
+      subConfig.addParameter(TString("Run:")+taskType+TString(":ExcludedPattern0"),TString("Reco"));
+      subConfig.addParameter(TString("Run:")+taskType+TString(":ExcludedPattern1"),TString("Derived"));
+      subConfig.addParameter(TString("Run:")+taskType+TString(":ExcludedPattern2"),TString("BalFct"));
+      subConfig.addParameter(TString("Run:")+taskType+TString(":ExcludedPattern3"),TString("Sum"));
+      subConfig.addParameter(TString("Run:")+taskType+TString(":AppendedString"),TString("Sum"));
+      // subConfig.addParameter(TString("Run:")+taskType+TString(":MaximumDepth"), maximumDepth);
+      //subConfig.printConfiguration(cout);
+      addSubTask( new SubSampleStatCalculator(taskType,subConfig));
+      }
+    }
+  else // not bunched
+    {
+    String inputPathName  = TString(Form("%s/",basePath.Data()));
+    String outputPathName = inputPathName;
+    Configuration & subConfig = * new Configuration(configuration);
+    subConfig.addParameter(TString("Run:")+taskType+TString(":HistogramsImportPath"),inputPathName);
+    subConfig.addParameter(TString("Run:")+taskType+TString(":HistogramsExportPath"),outputPathName);
+    subConfig.addParameter(TString("Run:")+taskType+TString(":IncludedPattern0"),TString("Gen"));
+    subConfig.addParameter(TString("Run:")+taskType+TString(":ExcludedPattern0"),TString("Reco"));
+    subConfig.addParameter(TString("Run:")+taskType+TString(":ExcludedPattern1"),TString("Derived"));
+    subConfig.addParameter(TString("Run:")+taskType+TString(":ExcludedPattern2"),TString("BalFct"));
+    subConfig.addParameter(TString("Run:")+taskType+TString(":ExcludedPattern3"),TString("Sum"));
+    subConfig.addParameter(TString("Run:")+taskType+TString(":AppendedString"),TString("Sum"));
+    subConfig.addParameter(TString("Run:")+taskType+TString(":MaximumDepth"),maximumDepth);
+    subConfig.printConfiguration(cout);
+    addSubTask( new SubSampleStatCalculator(taskType,subConfig));
+    }
+}
+
+void RunAnalysis::addDerivedSubSampleTask(const String & basePath,
+                                           const String & labelBunch,
+                                           int   nBunches,
+                                           const String & subPath __attribute__((unused)),
+                                           int   maximumDepth,
+                                           const String & taskType)
+{
+  if (nBunches>0)
+    {
+    for (int k=1;k<=nBunches; k++)
+      {
+      String inputPathName  = basePath;  //TString(Form("%s/%s%02d/",basePath.Data(),labelBunch.Data(),k));
+      String outputPathName = basePath;  //.Data(); // TString(Form("%s/%s%02d/",,"",k));
+      Configuration & subConfig = * new Configuration(configuration);
+      subConfig.addParameter(TString("Run:")+taskType+TString(":HistogramsImportPath"),inputPathName);
+      subConfig.addParameter(TString("Run:")+taskType+TString(":HistogramsExportPath"),outputPathName);
+      subConfig.addParameter(TString("Run:")+taskType+TString(":IncludedPattern0"),TString("Gen"));
+      subConfig.addParameter(TString("Run:")+taskType+TString(":IncludedPattern1"),TString("Derived"));
+      subConfig.addParameter(TString("Run:")+taskType+TString(":ExcludedPattern0"),TString("Reco"));
+      subConfig.addParameter(TString("Run:")+taskType+TString(":ExcludedPattern1"),TString("BalFct"));
+      subConfig.addParameter(TString("Run:")+taskType+TString(":AppendedString"),TString("DerivedSum"));
+      subConfig.addParameter(TString("Run:")+taskType+TString(":MaximumDepth"),1);
+      // subConfig.addParameter(TString("Run:")+taskType+TString(":MaximumDepth"),maximumDepth);
+      //subConfig.printConfiguration(cout);
+      addSubTask( new SubSampleStatCalculator(taskType,subConfig));
+      }
+    }
+  else // not bunched
+    {
+    String inputPathName  = TString(Form("%s/",basePath.Data()));
+    String outputPathName = inputPathName;
+    Configuration & subConfig = * new Configuration(configuration);
+    subConfig.addParameter(TString("Run:")+taskType+TString(":HistogramsImportPath"),inputPathName);
+    subConfig.addParameter(TString("Run:")+taskType+TString(":HistogramsExportPath"),outputPathName);
+    subConfig.addParameter(TString("Run:")+taskType+TString(":IncludedPattern0"),TString("Gen"));
+    subConfig.addParameter(TString("Run:")+taskType+TString(":IncludedPattern1"),TString("Derived"));
+    subConfig.addParameter(TString("Run:")+taskType+TString(":ExcludedPattern0"),TString("Reco"));
+    subConfig.addParameter(TString("Run:")+taskType+TString(":ExcludedPattern1"),TString("BalFct"));
+    subConfig.addParameter(TString("Run:")+taskType+TString(":AppendedString"),TString("DerivedSum"));
+    subConfig.addParameter(TString("Run:")+taskType+TString(":MaximumDepth"),1);
+    subConfig.printConfiguration(cout);
+    addSubTask( new SubSampleStatCalculator(taskType,subConfig));
+    }
+}
+
+void RunAnalysis::addBalFctSubSampleTask(const String & basePath,
+                                          const String & labelBunch,
+                                          int   nBunches,
+                                          const String & subPath __attribute__((unused)),
+                                          int   maximumDepth,
+                                          const String & taskType)
+{
+  if (nBunches>0)
+    {
+    for (int k=1;k<=nBunches; k++)
+      {
+      String inputPathName  = TString(Form("%s/%s%02d/",basePath.Data(),labelBunch.Data(),k));
+      String outputPathName = TString(Form("%s/%s%02d/",basePath.Data(),labelBunch.Data(),k));
+      Configuration & subConfig = * new Configuration();
+      subConfig.addParameter(TString("Run:")+taskType+TString(":HistogramsImportPath"),inputPathName);
+      subConfig.addParameter(TString("Run:")+taskType+TString(":HistogramsExportPath"),outputPathName);
+      subConfig.addParameter(TString("Run:")+taskType+TString(":IncludedPattern0"),TString("RunPartPairAnalysisReco"));
+      subConfig.addParameter(TString("Run:")+taskType+TString(":IncludedPattern1"),TString("BalFct"));
+      subConfig.addParameter(TString("Run:")+taskType+TString(":ExcludedPattern0"),TString("Derived"));
+      subConfig.addParameter(TString("Run:")+taskType+TString(":ExcludedPattern1"),TString("Reco"));
+      subConfig.addParameter(TString("Run:")+taskType+TString(":AppendedString"),TString("BalFctSum"));
+      subConfig.addParameter(TString("Run:")+taskType+TString(":MaximumDepth"),maximumDepth);
+      subConfig.printConfiguration(cout);
+      addSubTask( new SubSampleStatCalculator(taskType,subConfig));
+      }
+    }
+  else // not bunched
+    {
+    String inputPathName  = TString(Form("%s/",basePath.Data()));
+    String outputPathName = inputPathName;
+    Configuration & subConfig = * new Configuration();
+    subConfig.addParameter(TString("Run:")+taskType+TString(":HistogramsImportPath"),inputPathName);
+    subConfig.addParameter(TString("Run:")+taskType+TString(":HistogramsExportPath"),outputPathName);
+    subConfig.addParameter(TString("Run:")+taskType+TString(":IncludedPattern0"),TString("RunPartPairAnalysisReco"));
+    subConfig.addParameter(TString("Run:")+taskType+TString(":IncludedPattern1"),TString("BalFct"));
+    subConfig.addParameter(TString("Run:")+taskType+TString(":ExcludedPattern0"),TString("Derived"));
+    subConfig.addParameter(TString("Run:")+taskType+TString(":ExcludedPattern1"),TString("Reco"));
+    subConfig.addParameter(TString("Run:")+taskType+TString(":AppendedString"),TString("BalFctSum"));
+    subConfig.addParameter(TString("Run:")+taskType+TString(":MaximumDepth"),maximumDepth);
+    subConfig.printConfiguration(cout);
+    addSubTask( new SubSampleStatCalculator(taskType,subConfig));
+    }
+}
+
+} // namespace CAP

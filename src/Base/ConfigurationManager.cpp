@@ -284,6 +284,17 @@ void CAP::ConfigurationManager::printItem(const char * keyword, int    value, os
     }
 }
 
+
+void CAP::ConfigurationManager::printItem(const char * keyword, unsigned int value, ostream & output, int size, int style)  const
+{
+  switch (style)
+    {
+      case 0: output <<  left << setw(size) << setfill('.')<< keyword << " : " << value << setfill(' ') << endl; break;
+      case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << value << endl; break;
+    }
+}
+
+
 void CAP::ConfigurationManager::printItem(const char * keyword, long   value, ostream & output, int size, int style)  const
 {
   switch (style)

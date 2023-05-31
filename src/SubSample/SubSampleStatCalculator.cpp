@@ -64,8 +64,8 @@ void SubSampleStatCalculator::configure()
   histosExportFile    = getName();
   defaultGroupSize    = getValueInt(   "DefaultGroupSize");
   appendedString      = getValueString("AppendedString");
-  maximumDepth        = getValueInt("MaximumDepth");
-  defaultGroupSize    = getValueInt("DefaultGroupSize");
+  maximumDepth        = getValueInt(   "MaximumDepth");
+  defaultGroupSize    = getValueInt(   "DefaultGroupSize");
 
   if (reportInfo(__FUNCTION__))
     {
@@ -80,6 +80,7 @@ void SubSampleStatCalculator::configure()
     printItem("MaximumDepth",        maximumDepth);
     cout << endl;
     }
+  //ex it(1);
 }
 
 void SubSampleStatCalculator::execute()
@@ -120,6 +121,7 @@ void SubSampleStatCalculator::execute()
       cout << "========================================================================"  << endl;
       cout << "========================================================================"  << endl;
       }
+    throw TaskException("nFilesToSum<1","SubSampleStatCalculator::execute()");
     return;
     }
   if (reportInfo(__FUNCTION__))
@@ -135,7 +137,6 @@ void SubSampleStatCalculator::execute()
     printItem("HistogramsExportFile", histosExportFile);
     cout << endl;
     }
-  postTaskOk();
   
   for (int iGroup =0; iGroup<nGroups; iGroup++  )
     {

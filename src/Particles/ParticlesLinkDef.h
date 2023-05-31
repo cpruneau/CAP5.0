@@ -28,4 +28,5 @@
 #pragma link C++ class CAP::Filter<CAP::Particle>+;
 #pragma link C++ class CAP::Collection<CAP::ParticleType>+;
 #pragma link C++ class CAP::EventTask+;
+#pragma link C++ class CAP::FilterCreator+;
 #endif

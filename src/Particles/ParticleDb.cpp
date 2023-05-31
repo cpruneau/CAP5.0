@@ -45,7 +45,7 @@ Collection<ParticleType>()
 //  if (!inputFile.is_open())
 //    {
 //    cout << "<E> ParticleDb::readFromFile() File not found:" <<  inputFileName << endl;
-//    exit(1);
+//    e xit(1);
 //    }
 //  int pdgCode;
 //  string name;

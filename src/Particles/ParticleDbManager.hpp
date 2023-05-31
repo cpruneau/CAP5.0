@@ -65,7 +65,7 @@ public:
   //!
   virtual void setDefaultConfiguration();
   virtual void configure();
-
+  virtual void initialize();
   //!
   //! Read or write a particle type data file as specificied by the configuration parameters.
   //!

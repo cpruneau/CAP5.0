@@ -11,14 +11,17 @@
  * *********************************************************************/
 #ifndef CAP__RunAnalysis
 #define CAP__RunAnalysis
-#include "EventTask.hpp"
-#include "Event.hpp"
-#include "Particle.hpp"
-#include "ParticleType.hpp"
+#include <vector>
+#include "Task.hpp"
+//#include "EventTask.hpp"
+//#include "Event.hpp"
+//#include "Particle.hpp"
+//#include "ParticleType.hpp"
+using std::vector;
 
 namespace CAP
 {
-class RunAnalysis : public EventTask
+class RunAnalysis : public Task
 {
 public:
   
@@ -35,15 +38,69 @@ public:
   //!
   virtual void setDefaultConfiguration();
 
+  virtual void configureLabels();
+
   //!
   //! Configure  this analysis task
   //!
-  void configure();
+  virtual void configure();
 
   //!
   //! Execute this task
   //!
   void execute();
+
+  void addBaseSubSampleTask(const String & basePath,
+                            const String & bunchLabel,
+                            int   nBunches,
+                            const String & subPath,
+                            int   maximumDepth,
+                            const String & taskType);
+
+  void addDerivedSubSampleTask(const String & basePath,
+                               const String & bunchLabel,
+                               int   nBunches,
+                               const String & subPath,
+                               int   maximumDepth,
+                               const String & taskType);
+
+  void addBalFctSubSampleTask(const String & basePath,
+                              const String & bunchLabel,
+                              int   nBunches,
+                              const String & subPath,
+                              int   maximumDepth,
+                              const String & taskType);
+
+
+
+
+protected:
+
+  String labelParticleDb;
+  String labelFilterCreator;
+  String labelBunch;
+  String labelSubBunch;
+  String labelGlobal;
+  String labelSpherocity;
+  String labelSingle;
+  String labelPair;
+  String labelNuDyn;
+  String labelSimAna;
+  String labelDerived;
+  String labelSum;
+  String labelBalFct;
+  String labelClosure;
+  String labelGenerator;
+  String labelReconstruction;
+  String labelPythia;
+  String labelHerwig;
+  String labelHijing;
+  String labelAmpt;
+  String labelEpos;
+  String labelUrqmd;
+  String labelTherminator;
+  String labelResonance;
+  String labelPerformance;
 
   ClassDef(RunAnalysis,0)
 };

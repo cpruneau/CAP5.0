@@ -67,9 +67,7 @@ void ParticleDecayMode::resolveTypes(ParticleDb & particleDb)
       }
     else
       {
-      cout << "ParticleDecayMode::resolveTypes(ParticleDb * particleDb) Invalid particleType." << endl;
-      cout << "ParticleDecayMode::resolveTypes(ParticleDb * particleDb) Abort." << endl;
-      exit(1);
+      throw Exception("Unknown particle type","ParticleDecayMode::resolveTypes(ParticleDb & particleDb)");
       }
     }
 }

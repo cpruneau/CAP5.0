@@ -15,11 +15,9 @@ using CAP::MeasurementPerformanceSimulator;
 ClassImp(MeasurementPerformanceSimulator);
 
 MeasurementPerformanceSimulator::MeasurementPerformanceSimulator(const String & _name,
-                                                                 const Configuration & _configuration,
-                                                                 vector<EventFilter*> & _eventFilters,
-                                                                 vector<ParticleFilter*>& _particleFilters)
+                                                                 const Configuration & _configuration)
 :
-EventTask(_name,_configuration,_eventFilters,_particleFilters),
+EventTask(_name,_configuration),
 allEventsUseSameFilters(true)
 {
   appendClassName("MeasurementPerformanceSimulator");
@@ -99,8 +97,7 @@ void MeasurementPerformanceSimulator::initialize()
       cout << "               nParticleFilters: " << nParticleFilters << endl;
       cout << " nParticleFilters%nEventFilters: " << nParticleFilters%nEventFilters << endl;
       }
-    postTaskError();
-    return;
+    throw TaskException("!allEventsUseSameFilters && nParticleFilters%nEventFilters","MeasurementPerformanceSimulator::initialize()");
     }
   else
     {
@@ -181,8 +178,7 @@ void MeasurementPerformanceSimulator::createEvent()
   //if (reportInfo(__FUNCTION__)) cout << " BEFORE PERFORM SIM: RECO EVENT Particle Count: " << nRunPartSingleAnalysisReco << endl;
   if (nRunPartSingleAnalysisReco>nRunPartSingleAnalysisGen)
     {
-    if (reportInfo(__FUNCTION__))cout << " nParticles>nRunPartSingleAnalysisGen   ABORT NOW!!!!!" << endl;
-    exit(1);
+    throw Exception("nRunPartSingleAnalysisReco>nRunPartSingleAnalysisGen","MeasurementPerformanceSimulator::createEvent()");
     }
 
   unsigned int nParticles = genEvent.getNParticles();
@@ -231,12 +227,10 @@ void MeasurementPerformanceSimulator::createEvent()
 
   nRunPartSingleAnalysisGen   = genEvent.getParticleCount();
   nRunPartSingleAnalysisReco  = recoEvent.getParticleCount();
-  //if (reportInfo(__FUNCTION__)) cout << " AFTER PERFORM SIM:   GEN EVENT Particle Count: " << nRunPartSingleAnalysisGen << endl;
-  //if (reportInfo(__FUNCTION__)) cout << " AFTER PERFORM SIM:  RECO EVENT Particle Count: " << nRunPartSingleAnalysisReco << endl;
   if (nRunPartSingleAnalysisReco>nRunPartSingleAnalysisGen)
     {
     if (reportInfo(__FUNCTION__))cout << " nParticles>nRunPartSingleAnalysisGen   ABORT NOW!!!!!" << endl;
-    exit(1);
+    throw Exception("nRunPartSingleAnalysisReco>nRunPartSingleAnalysisGen (2nd check)","MeasurementPerformanceSimulator::createEvent()");
     }
 
 }

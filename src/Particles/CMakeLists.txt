@@ -6,7 +6,7 @@
 #include_directories(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS})
 #add_definitions(${ROOT_CXX_FLAGS})
 
-ROOT_GENERATE_DICTIONARY(G__Particles  Event.hpp EventProperties.hpp EventFilter.hpp EventCountHistos.hpp  EventTask.hpp    Particle.hpp ParticleDecayMode.hpp ParticleDecayer.hpp ParticleDecayerTask.hpp  ParticleType.hpp  ParticleDb.hpp ParticleDbManager.hpp ParticleFilter.hpp   ParticlePairFilter.hpp     Nucleus.hpp  NucleusType.hpp   MomentumGenerator.hpp ParticleDigit.hpp  RootTreeReader.hpp
+ROOT_GENERATE_DICTIONARY(G__Particles  Event.hpp EventProperties.hpp EventFilter.hpp EventCountHistos.hpp  EventTask.hpp    Particle.hpp ParticleDecayMode.hpp ParticleDecayer.hpp ParticleDecayerTask.hpp  ParticleType.hpp  ParticleDb.hpp ParticleDbManager.hpp ParticleFilter.hpp   ParticlePairFilter.hpp     Nucleus.hpp  NucleusType.hpp   MomentumGenerator.hpp ParticleDigit.hpp  RootTreeReader.hpp FilterCreator.hpp
 LINKDEF ParticlesLinkDef.h)
 
 
@@ -14,7 +14,7 @@ LINKDEF ParticlesLinkDef.h)
 # Create a shared library with geneated dictionary
 ################################################################################################
 add_compile_options(-Wall -Wextra -pedantic)
-add_library(Particles SHARED  Event.cpp EventProperties.cpp EventFilter.cpp EventCountHistos.cpp   EventTask.cpp     Particle.cpp ParticleDecayMode.cpp ParticleDecayer.cpp ParticleDecayerTask.cpp  ParticleType.cpp  ParticleDb.cpp ParticleDbManager.cpp ParticleFilter.cpp   ParticlePairFilter.cpp
+add_library(Particles SHARED  Event.cpp EventProperties.cpp EventFilter.cpp EventCountHistos.cpp   EventTask.cpp     Particle.cpp ParticleDecayMode.cpp ParticleDecayer.cpp ParticleDecayerTask.cpp  ParticleType.cpp  ParticleDb.cpp ParticleDbManager.cpp ParticleFilter.cpp   ParticlePairFilter.cpp  FilterCreator.cpp
 Nucleus.cpp  NucleusType.cpp   MomentumGenerator.cpp ParticleDigit.cpp  RootTreeReader.cpp EventTask.cpp
  G__Particles.cxx)
 
