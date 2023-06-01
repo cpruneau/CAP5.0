@@ -243,12 +243,15 @@ void TherminatorGenerator::createEvent()
       throw TaskException("averageMultiplicities.size() < 1","TherminatorGenerator::createEvent()");
       }
     }
-
+//  printItem("multiplicitiesFractionMin",multiplicitiesFractionMin);
+//  printItem("multiplicitiesFractionMax",multiplicitiesFractionMax);
+//  printItem("multiplicitiesFractionRange",multiplicitiesFractionRange);
   double multiplicitiesFraction = 1.0;
   if (multiplicitiesFractionRange>0 || multiplicitiesFractionMin<1)
     {
     multiplicitiesFraction = multiplicitiesFractionMin + multiplicitiesFractionRange*gRandom->Rndm();
     }
+ // printItem("multiplicitiesFraction",multiplicitiesFraction);
 
   switch (multiplicitiesFluctType)
     {
