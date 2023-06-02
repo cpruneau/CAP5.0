@@ -394,16 +394,31 @@ void ParticlePairAnalyzer::analyzeEvent()
       for (unsigned int iParticle1=0; iParticle1<nParticles; iParticle1++)
         {
         Particle & particle1 = *(particles[iParticle1]);
+        //bool accepted = false;
         for (int iParticleFilter1=0; iParticleFilter1<nParticleFilters; iParticleFilter1++ )
           {
+
           if (particleFilters[iParticleFilter1]->accept(particle1))
             {
+            //cout << " ACCEPTED" << endl;
             incrementNParticlesAccepted(iEventFilter,iParticleFilter1);
             index = baseSingle + iParticleFilter1;
             ParticleSingleHistos * histos = (ParticleSingleHistos *)  histogramManager.getGroup(0,index);
             histos->fill(particle1,1.0);
+            //accepted = true;
+            break; // mutually exclusive tests...
             }
           }
+//        cout << "Accepted:" << accepted << endl;
+//        LorentzVector & momentum1 = particle1.getMomentum();
+//        double pt1   = momentum1.Pt();
+//        //double e1    = momentum1.E();
+//        double phi1  = momentum1.Phi();
+//        double eta1  = momentum1.Eta();
+//        double y1    = momentum1.Rapidity();
+//        cout << "particle code: " << particle1.getType().getPdgCode() << " name: " << particle1.getType().getName() << "  y1: " << y1 << "  phi1: " << phi1 << " pt1: " << pt1 << endl;
+//        cout << endl;
+//        continue; // ZZZZZZZ
         for (unsigned int iParticle2=0; iParticle2<nParticles; iParticle2++)
           {
           if (iParticle1==iParticle2) continue;

@@ -12,6 +12,7 @@
 #ifndef CAP__Filter
 #define CAP__Filter
 #include "Aliases.hpp"
+#include "Exceptions.hpp"
 #include <ostream>
 using CAP::String;
 
@@ -64,7 +65,32 @@ public:
 
   inline bool accept(double value)
   {
-  return (value>=minimum && value<=maximum);
+  switch (filterType)
+    {
+      default:
+      throw Exception("Logic Error","Condition::accept(double value)");
+
+      case 2:
+      case 3:
+      return std::fabs(value - filterSubtype)<0.1; // select by PDG or USER type
+      case 5:
+      return (value>=minimum && value<=maximum); // select if within range
+    }
+  }
+
+  inline bool accept(int  value)
+  {
+  switch (filterType)
+    {
+      default:
+      throw Exception("Logic Error","Condition::accept(double value)");
+
+      case 2:
+      case 3:
+      return filterSubtype == value; // select by PDG or USER type
+      case 5:
+      return (value>=minimum && value<=maximum); // select if within range
+    }
   }
 
   virtual void printProperties(std::ostream & os)
