@@ -33,9 +33,9 @@ ClassImp(ParticleType);
 //!
 ParticleType::ParticleType()
 :
-index(),
-name(),
-title(),
+index(0),
+name(""),
+title(""),
 privateCode(0),
 pdgCode(0),
 mass(0.0),
@@ -61,15 +61,17 @@ nat(0),
 leptonElectron(0),
 leptonMuon(0),
 leptonTau(0),
-stable(1),
-weakStable(1),
+stable(0),
+weakStable(0),
 decayModes(),
 decayRndmSelector(),
 spinFactor(1.0),
 isospinFactor(1.0),
 statistics(-1.0),
 setupDone(0)
-{}
+{
+  decayModes.clear();
+}
 
 //!
 //! DTOR
@@ -169,6 +171,34 @@ ParticleType & ParticleType::operator=(const ParticleType & source)
   return *this;
 }
 
+
+bool ParticleType::isStable() const
+{
+  return decayModes.size()<1;
+}
+
+bool ParticleType::isWeakStable() const
+{
+  return weakStable;
+}
+
+int ParticleType::getNDecayModes() const
+{
+  return decayModes.size();
+}
+
+bool  ParticleType::hasDecayModes() const
+{
+  return decayModes.size()>0;
+}
+
+ParticleDecayMode & ParticleType::getDecayMode(int index)
+{
+  return decayModes[index];
+}
+
+
+
 //!
 //! Add a decay mode to this particle type based on the given branching fraction (branching ratio) and the given array of children
 //! @param branchingRatio : fraction of all decays of this particle type into the given children
@@ -205,14 +235,11 @@ void ParticleType::addDecayMode(ParticleDecayMode &decayMode)
     }
 }
 
-int ParticleType::getNDecayModes() const
-{
-  return decayModes.size();
-}
-
 void ParticleType::setupDecayGenerator()
 {
   int nDecayModes = decayModes.size();
+  if (nDecayModes<1)
+    throw Exception("nDecayModes<1","ParticleType::setupDecayGenerator()");
   vector<double> decayBranchingRatios;
   //cout << " ParticleType::setupDecayGenerator() nDecayModes : " << nDecayModes << endl;
   for (int k=0; k<nDecayModes; k++)
@@ -242,8 +269,13 @@ ParticleDecayMode & ParticleType::generateDecayMode()
     }
   else if (index>= int(decayModes.size()))
     {
-    index = decayModes.size()-1;
-    }
+    cout << "<F> ParticleType::generateDecayMode() index: " << index << endl;
+    cout << "<F> ParticleType::generateDecayMode() particle name: " << name << endl;
+    cout << "<F> ParticleType::generateDecayMode()        stable: " << stable << endl;
+    cout << "<F> ParticleType::generateDecayMode()         width: " << width << endl;
+    cout << "<F> ParticleType::generateDecayMode()       n modes: " << decayModes.size()  << endl;
+    throw Exception("index<0","ParticleType::generateDecayMode()");
+   }
   return decayModes[index];
 }
 
@@ -1040,7 +1072,7 @@ void   ParticleType::setweakStable(bool value) { weakStable = value; }
 
 
 
-std::vector<ParticleDecayMode> ParticleType::getDecayModes() const
+std::vector<ParticleDecayMode> & ParticleType::getDecayModes()
 {
   return decayModes; //!<Array of decay modes
 }

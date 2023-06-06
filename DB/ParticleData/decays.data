@@ -1835,10 +1835,13 @@ Sg1189plb   ne0939zrb   pi0139min    none      none    0.48    0
 h11170zer   rho770plu   pi0139min    none      none    1.0     1
 h11170zer   rho770min   pi0139plu    none      none    1.0     1
 h11170zer   rho770zer   pi0135zer    none      none    1.0     1
-Lm1115zer   pr0938plu   pi0139min    none      none    0.64    0
-Lm1115zer   ne0939zer   pi0135zer    none      none    0.36    0
-Lm1115zrb   pr0938plb   pi0139plu    none      none    0.64    0
-Lm1115zrb   ne0939zrb   pi0135zer    none      none    0.36    0
+# #
+# All Lambda decays excluded
+# #
+#Lm1115zer   pr0938plu   pi0139min    none      none    0.64    0
+#Lm1115zer   ne0939zer   pi0135zer    none      none    0.36    0
+#Lm1115zrb   pr0938plb   pi0139plu    none      none    0.64    0
+#Lm1115zrb   ne0939zrb   pi0135zer    none      none    0.36    0
 ph1020zer   Ka0492plu   Ka0492min    none      none    0.49    0
 ph1020zer   Ka0492zer   Ka0492zrb    none      none    0.34    0
 ph1020zer   rho770plu   pi0139min    none      none    0.08    1
@@ -1867,9 +1870,9 @@ Ka0892zrb   pi0135zer   Ka0492zrb    none      none    1.0     1
 om0782zer   pi0135zer   gam000zer    none      none    0.087   0
 om0782zer   pi0139plu   pi0139min    none      none    0.017   0
 om0782zer   pi0139plu   pi0139min    pi0135zer none    0.891   0
-#rho770zer   pi0139plu   pi0139min   none      none    1.0     1
-#rho770plu   pi0139plu   pi0135zer    none      none    1.0    1
-#rho770min   pi0139min   pi0135zer    none      none    1.0    1
+rho770zer   pi0139plu   pi0139min   none      none    1.0     1
+rho770plu   pi0139plu   pi0135zer    none      none    1.0    1
+rho770min   pi0139min   pi0135zer    none      none    1.0    1
 rho770zer   pi0139plu   pi0139min    none      none    1.0     1
 rho770plu   pi0139plu   pi0135zer    none      none    1.0     1
 rho770min   pi0139min   pi0135zer    none      none    1.0     1
@@ -1880,13 +1883,13 @@ eta547zer   pi0135zer   pi0135zer    pi0135zer none    0.3251   0
 eta547zer   pi0139plu   pi0139min    pi0135zer none    0.226    0
 eta547zer   pi0139plu   pi0139min    gam000zer none    0.0468   0
 # #
-# K_short decays included, no K_long decays
+# All K_short decays excluded
 # #
-Ka0492zer   pi0139plu   pi0139min    none      none    0.343    0
-Ka0492zer   pi0135zer   pi0135zer    none      none    0.157    0
+#Ka0492zer   pi0139plu   pi0139min    none      none    0.343    0
+#Ka0492zer   pi0135zer   pi0135zer    none      none    0.157    0
 #Ka0492zer   pi0139plu   pi0139min   pi0135zer none    0.105    0
 #Ka0492zer   pi0135zer   pi0135zer   pi0135zer none    0.063    0
-Ka0492zrb   pi0139plu   pi0139min    none      none    0.343    0
-Ka0492zrb   pi0135zer   pi0135zer    none      none    0.157    0
+#Ka0492zrb   pi0139plu   pi0139min    none      none    0.343    0
+#Ka0492zrb   pi0135zer   pi0135zer    none      none    0.157    0
 #Ka0492zrb   pi0139plu   pi0139min   pi0135zer none    0.105    0
 #Ka0492zrb   pi0135zer   pi0135zer   pi0135zer none    0.063    0

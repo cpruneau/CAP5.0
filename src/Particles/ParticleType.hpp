@@ -399,10 +399,6 @@ public:
   return statistics;
   }
 
-  //!
-  //! Return the number of distinct decay modes of this particle
-  //!
-  int getNDecayModes() const;
 
   void setIndex(int _index);
   void setName(const String & _name);
@@ -506,26 +502,27 @@ public:
   //!
   //! Return true if this particle is 'stable'
   //!
-  inline bool isStable() const
-  {
-  return stable;
-  }
+  bool isStable() const;
 
   //!
   //! Return true if this particle decays by weak decay
   //!
-  inline bool isWeakStable() const
-  {
-  return weakStable;
-  }
+  bool isWeakStable() const;
 
   void addDecayMode(double branchingRatio, std::vector<int> children);
   void addDecayMode(ParticleDecayMode &decayMode);
-  ParticleDecayMode & getDecayMode(int index) { return decayModes[index];}
+
+  //!
+  //! Return the number of distinct decay modes of this particle
+  //!
+  int getNDecayModes() const;
+  bool  hasDecayModes() const;
+
+  ParticleDecayMode & getDecayMode(int index);
   ParticleDecayMode & generateDecayMode();
   void   setStable(bool value);
   void   setweakStable(bool value);
-  std::vector<ParticleDecayMode> getDecayModes() const;
+  std::vector<ParticleDecayMode> & getDecayModes();
   ostream & printProperties(ostream & os);
   ostream & printDecayProperties(ostream & os);
 

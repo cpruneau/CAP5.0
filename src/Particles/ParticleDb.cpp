@@ -192,6 +192,8 @@ void ParticleDb::sortByMass()
 
 void ParticleDb::resolveTypes()
 {
+  cout << " LOGIC ERROR" << endl;
+  if (true) throw Exception("LOGIC ERROR","ParticleDb::resolveTypes()");
   int nPart = size();
   cout << "<D> ParticleDb::resolveTypes()  Collection size:"
   << nPart << endl;
@@ -212,11 +214,10 @@ void ParticleDb::setupDecayGenerator()
   // setup the decay montecarlo probabilities...
   for (unsigned int k=0; k<size(); k++)
     {
-    ParticleType & particleType = *getParticleType(k);
-    int nDecayModes = particleType.getNDecayModes();
-    if (nDecayModes>0)
+    ParticleType * particleType = getParticleType(k);
+    if (particleType->hasDecayModes())
       {
-        particleType.setupDecayGenerator();
+        particleType->setupDecayGenerator();
       }
     }
 }

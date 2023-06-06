@@ -309,6 +309,17 @@ void ParticleDbManager::importParticleDbNative()
   ifstream & inputFileDecays = openInputAsciiFile(particleDbImportPath,particleDbImportDecaysFile,".data");
   double tBRatio, tRatio;
   int    CGcoeff; // complete branching ratio by Clebsch-Gordan coefficient: 0-no 1-yes
+  ParticleType * parentType = nullptr;
+  ParticleType * childType1 = nullptr;
+  ParticleType * childType2 = nullptr;
+  ParticleType * childType3 = nullptr;
+  ParticleType * childType4 = nullptr;
+  double mass0 = 0;
+  double mass1 = 0;
+  double mass2 = 0;
+  double mass3 = 0;
+  double mass4 = 0;
+
   while (!inputFileDecays.eof())
     {
     //cout << " BUG 0" << endl;
@@ -328,64 +339,66 @@ void ParticleDbManager::importParticleDbNative()
     //cout << parentName << "  " << childName1 << "  " << childName2 << "  " << childName3 << "  " <<  childName4 <<"  " << tBRatio << "  " <<CGcoeff <<  endl;;
     delete isss;
 
-    ParticleType * parentType = nullptr;
-    ParticleType * childType1 = nullptr;
-    ParticleType * childType2 = nullptr;
-    ParticleType * childType3 = nullptr;
-    ParticleType * childType4 = nullptr;
-    double mass0 = 0;
-    double mass1 = 0;
-    double mass2 = 0;
-    double mass3 = 0;
-    double mass4 = 0;
+    parentType = nullptr;
+    childType1 = nullptr;
+    childType2 = nullptr;
+    childType3 = nullptr;
+    childType4 = nullptr;
+    mass0 = 0;
+    mass1 = 0;
+    mass2 = 0;
+    mass3 = 0;
+    mass4 = 0;
 
     parentType = particleDb->getParticleType(parentName);
     if (!parentType)
       {
-      if (reportError(__FUNCTION__))
-        {
-        cout << "Did not find the father particle named: " << parentName << endl;
-        }
-      continue;
+      String s("Did not find the father particle named: ");
+      s += parentName;
+      throw FileException(particleDbImportPath,particleDbImportDecaysFile,s,"ParticleDbManager::importParticleDbNative()");
       }
+
+//    int pdg = std::fabs(parentType->getPdgCode());
+//    bool flag = false;
+//    if (pdg==3112 || pdg==3212)
+//      {
+//      cout << "Inserting decay pdg:" << pdg << endl;
+//      flag = true;
+//      }
+
+
     mass0 = parentType->getMass();
-    //cout << "Parent:" << parentType->getName() << endl;
+    //if (flag) cout << "Parent:" << parentType->getName() << endl;
     childType1 = particleDb->getParticleType(childName1);
     if (!childType1)
       {
-      if (reportError(__FUNCTION__))
-        {
-        cout << "Did not find child 1 named: " << childName1 << endl;
-        }
-      continue;
+      String s("Did not find child1 named: ");
+      s += childName1;
+      throw FileException(particleDbImportPath,particleDbImportDecaysFile,s,"ParticleDbManager::importParticleDbNative()");
       }
     mass1 = childType1->getMass();
-    //cout << "Child1:" << childType1->getName() << endl;
+    //if (flag)  cout << "Child1:" << childType1->getName() << endl;
     childType2 = particleDb->getParticleType(childName2);
     if (!childType2)
       {
-      if (reportError(__FUNCTION__))
-        {
-        cout << "Did not find child 2 named: " << childName2 << endl;
-        }
-      continue;
+      String s("Did not find child2 named: ");
+      s += childName2;
+      throw FileException(particleDbImportPath,particleDbImportDecaysFile,s,"ParticleDbManager::importParticleDbNative()");
       }
     mass2 = childType2->getMass();
-    //cout << "Child2:" << childType2->getName() << endl;
+    //if (flag)  cout << "Child2:" << childType2->getName() << endl;
     String name3(childName3);
     if (!name3.EqualTo("none"))
       {
       childType3 = particleDb->getParticleType(childName3);
       if (!childType3)
         {
-        if (reportError(__FUNCTION__))
-          {
-          cout << "Did not find child 3 named: " << childName3 << endl;
-          }
-        continue;
+        String s("Did not find child3 named: ");
+        s += childName3;
+        throw FileException(particleDbImportPath,particleDbImportDecaysFile,s,"ParticleDbManager::importParticleDbNative()");
         }
       mass3 = childType3->getMass();
-      //cout << "Child3:" << childType3->getName() << endl;
+      //if (flag)  cout << "Child3:" << childType3->getName() << endl;
       }
     String name4(childName4);
     if (!name4.EqualTo("none"))
@@ -393,11 +406,9 @@ void ParticleDbManager::importParticleDbNative()
       childType4 = particleDb->getParticleType(childName4);
       if (!childType4)
         {
-        if (reportError(__FUNCTION__))
-          {
-          cout << "Did not find child 4 named: " << childName4 << endl;
-          }
-        continue;
+        String s("Did not find child4 named: ");
+        s += childName4;
+        throw FileException(particleDbImportPath,particleDbImportDecaysFile,s,"ParticleDbManager::importParticleDbNative()");
         }
       mass4 = childType4->getMass();
       //cout << "Child4:" << childType4->getName() << endl;
@@ -405,7 +416,7 @@ void ParticleDbManager::importParticleDbNative()
     double massDiff = mass1+mass2+mass3+mass4-mass0;
     if (massDiff>0)
       {
-      if (reportDebug(__FUNCTION__))
+       if (reportInfo(__FUNCTION__))
         {
         cout << "Mass exception for " << parentName << "->" <<  childName1 <<"+"<< childName2 <<"+"<< childName3 <<"+"<< childName4 << " with Mass Diff=" << massDiff << endl;
         }
@@ -438,6 +449,7 @@ void ParticleDbManager::importParticleDbNative()
       {
       tRatio = tBRatio;
       }
+    //if (flag) cout << "Creating decay mode" << endl;
 
     ParticleDecayMode decayMode;
     decayMode.setBranchingRatio(tRatio);
@@ -451,6 +463,9 @@ void ParticleDbManager::importParticleDbNative()
     cout << "Total index of particles read: " <<  particleDb->getNumberOfTypes() << endl;
   inputFileDecays.close();
   particleDb->setupDecayGenerator();
+
+  ///exit(1);
+
   //if (reportDebug(__FUNCTION__)) particleDb->printProperties(cout);
 }
 

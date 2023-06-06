@@ -804,12 +804,13 @@ void RunAnalysis::addBalFctSubSampleTask(const String & basePath,
     {
     for (int k=1;k<=nBunches; k++)
       {
-      String inputPathName  = TString(Form("%s/%s%02d/",basePath.Data(),labelBunch.Data(),k));
-      String outputPathName = TString(Form("%s/%s%02d/",basePath.Data(),labelBunch.Data(),k));
+      String inputPathName  = basePath;  //TString(Form("%s/%s%02d/",basePath.Data(),labelBunch.Data(),k));
+      String outputPathName = basePath;  //.Data(); // TString(Form("%s/%s%02d/",,"",k));
       Configuration & subConfig = * new Configuration();
+      subConfig.addParameter(TString("Run:")+taskType+TString(":Severity"),TString("Info"));
       subConfig.addParameter(TString("Run:")+taskType+TString(":HistogramsImportPath"),inputPathName);
       subConfig.addParameter(TString("Run:")+taskType+TString(":HistogramsExportPath"),outputPathName);
-      subConfig.addParameter(TString("Run:")+taskType+TString(":IncludedPattern0"),TString("RunPartPairAnalysisReco"));
+      subConfig.addParameter(TString("Run:")+taskType+TString(":IncludedPattern0"),TString("PairGen"));
       subConfig.addParameter(TString("Run:")+taskType+TString(":IncludedPattern1"),TString("BalFct"));
       subConfig.addParameter(TString("Run:")+taskType+TString(":ExcludedPattern0"),TString("Derived"));
       subConfig.addParameter(TString("Run:")+taskType+TString(":ExcludedPattern1"),TString("Reco"));

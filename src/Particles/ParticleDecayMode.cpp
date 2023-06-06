@@ -25,7 +25,10 @@ ParticleDecayMode::ParticleDecayMode()
 branchingRatio(1.0),
 childrenPdgCodes(),
 childrenTypes()
-{  }
+{
+  childrenPdgCodes.clear();
+  childrenTypes.clear();
+}
 
 ParticleDecayMode::ParticleDecayMode(const ParticleDecayMode & source)
 :

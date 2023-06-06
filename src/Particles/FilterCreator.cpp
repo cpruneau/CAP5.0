@@ -172,6 +172,7 @@ void FilterCreator::initialize()
      cout << endl;
     }
 
+  initializeParticleDbLink();
   // =========================================
   // Setup all event filters
   // =========================================
@@ -251,7 +252,12 @@ void FilterCreator::initialize()
   else if (partFilterModelOption.EqualTo("PlusMinusHadrons")) FilterCreator::addParticleFiltersModel(createPlusMinusHadronFilters(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY));
   else if (partFilterModelOption.EqualTo("StrangeHadrons"))   FilterCreator::addParticleFiltersModel(createStrangeHadronFilters(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY));
   else if (partFilterModelOption.EqualTo("Baryons"))          FilterCreator::addParticleFiltersModel(createBaryonFilters(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY));
-  else if (partFilterModelOption.EqualTo("Index"))            FilterCreator::addParticleFiltersModel(createIndexFilters(0,381,partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY));
+  else if (partFilterModelOption.EqualTo("Index"))
+    {
+    if (!particleDb)
+      throw TaskException("particleDb==nullptr","FilterCreator::initialize()");
+    FilterCreator::addParticleFiltersAnalysis(createIndexFilters(*particleDb,partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY));
+    }
   else
     if (reportWarning(__FUNCTION__)) cout << "PartFilterModelOption is unknown:" << partFilterModelOption  << endl;
 
@@ -266,7 +272,12 @@ void FilterCreator::initialize()
   else if (partFilterAnaOption.EqualTo("PlusMinusHadrons"))   FilterCreator::addParticleFiltersAnalysis(createPlusMinusHadronFilters(partFilterAnaFilterPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY));
   else if (partFilterAnaOption.EqualTo("StrangeHadrons"))     FilterCreator::addParticleFiltersAnalysis(createStrangeHadronFilters(partFilterAnaFilterPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY));
   else if (partFilterAnaOption.EqualTo("Baryons"))            FilterCreator::addParticleFiltersAnalysis(createBaryonFilters(partFilterAnaFilterPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY));
-  else if (partFilterAnaOption.EqualTo("Index"))              FilterCreator::addParticleFiltersAnalysis(createIndexFilters(0,381,partFilterAnaFilterPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY));
+  else if (partFilterAnaOption.EqualTo("Index"))
+    {
+    if (!particleDb)
+      throw TaskException("particleDb==nullptr","FilterCreator::initialize()");
+    FilterCreator::addParticleFiltersAnalysis(createIndexFilters(*particleDb,partFilterAnaFilterPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY));
+    }
   else
     if (reportWarning(__FUNCTION__)) cout << "PartFilterAnaOption is unknown:" << partFilterAnaOption  << endl;
 
@@ -281,7 +292,7 @@ void FilterCreator::initialize()
       }
     throw TaskException("particleFiltersAnalysis->size()<1","FilterCreator::execute()");
     }
-  if (reportInfo(__FUNCTION__))
+  if (reportDebug(__FUNCTION__))
     {
     cout << endl;
     cout << "==================================================================================" << std::endl;
@@ -667,7 +678,7 @@ ParticleFilter *  FilterCreator::createHadronFilter(int pdg, const String & name
   return filter;
 }
 
-ParticleFilter *  FilterCreator::createIndexFilter(int index, const String & name, const String  & title,
+ParticleFilter *  FilterCreator::createIndexFilter(int pdgCode, const String & name, const String  & title,
                                                     bool filteringOnPt,  double minPt,  double maxPt,
                                                     bool filteringOnEta, double minEta, double maxEta,
                                                     bool filteringOnY,   double minY,   double maxY)
@@ -678,29 +689,37 @@ ParticleFilter *  FilterCreator::createIndexFilter(int index, const String & nam
   filter->setTitle(title);
   filter->setLongTitle(title);
   filter->addCondition(0, 1,  0.0, 0.0);  // live particles only
-  filter->addCondition(3, index,  double(index), double(index));   // accept particles w/ given index
+  filter->addCondition(2, pdgCode,  double(pdgCode), double(pdgCode));   // accept particles w/ given pdg code
   if (filteringOnPt)   filter->addCondition(5, 1, minPt,  maxPt);
   if (filteringOnEta)  filter->addCondition(5, 7, minEta, maxEta);
   if (filteringOnY)    filter->addCondition(5, 8, minY,   maxY);
   return filter;
 }
 
-vector<ParticleFilter*> FilterCreator::createIndexFilters(int minIndex,
-                                                           int maxIndex,
-                                                           bool filteringOnPt,  double minPt,  double maxPt,
-                                                           bool filteringOnEta, double minEta, double maxEta,
-                                                           bool filteringOnY,   double minY,   double maxY)
+vector<ParticleFilter*> FilterCreator::createIndexFilters(ParticleDb & particleDb,
+                                                          bool filteringOnPt,  double minPt,  double maxPt,
+                                                          bool filteringOnEta, double minEta, double maxEta,
+                                                          bool filteringOnY,   double minY,   double maxY)
 {
   vector<ParticleFilter*> filters;
+  int    pdgCode;
   String name;
-  for (int index=minIndex; index<=maxIndex; index++)
+  String title;
+  int nTypes = particleDb.getNumberOfTypes();
+  if (reportDebug(__FUNCTION__)) printItem("particleDb::nTypes",nTypes);
+  for (int k=0; k<nTypes; k++)
     {
-    name = "Part";
-    name += index;
-    filters.push_back(createIndexFilter(index,name,name,
-                                        filteringOnPt,minPt,maxPt,
-                                        filteringOnEta,minEta,maxEta,
-                                        filteringOnY,minY,maxY));
+    ParticleType * particleType = particleDb.getParticleType(k);
+    if (!particleType) throw TaskException("particleType==nullptr","FilterCreator::createIndexFilters(...)");
+    pdgCode = particleType->getPdgCode();
+    name    = particleType->getName();
+    title   = particleType->getTitle();
+    ParticleFilter * filter = createIndexFilter(pdgCode,name,title,
+                                                filteringOnPt,minPt,maxPt,
+                                                filteringOnEta,minEta,maxEta,
+                                                filteringOnY,minY,maxY);
+    if (reportDebug(__FUNCTION__)) printItem("Created index filter named",filter->getName());
+    filters.push_back(filter);
     }
   return filters;
 }

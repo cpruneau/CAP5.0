@@ -304,14 +304,26 @@ void TherminatorGenerator::createEvent()
   double   value;
   double   valueTest;
   CAP::Factory<Particle> * factory = Particle::getFactory();
+  bool flag = false;
   for (unsigned int iType=0; iType<nTypes; iType++)
     {
     ParticleType * particleType = particleDb->getParticleType(iType);
     if (particleType->isPhoton() && disablePhotons) continue;
+
+    int pdg = std::fabs(particleType->getPdgCode());
+    //if (pdg==3112 || pdg==3212 || pdg==3222)
+//    if (pdg==3112 || pdg==3212)
+//      {
+//      cout << "pdg==3112 || pdg==3212:" << pdg << endl;
+//      flag = true;
+//      }
+//     else
+//       flag = false;
+
     maxIntegrand = averageMultiplicities[iType].integral;
     multiplicity = eventMultiplicities[iType];
     //    if (reportInfo(__FUNCTION__))
-    //      cout << " iType: " << iType << " Name:" << particleType->getName() << "  multiplicity:" << multiplicity << endl;
+    //if (flag) cout << " iType: " << iType << " Name:" << particleType->getName() << "  multiplicity:" << multiplicity << endl;
     int iParticle = 0;
     while (iParticle < multiplicity)
       {
@@ -325,12 +337,28 @@ void TherminatorGenerator::createEvent()
         particle->setLive(true);
         model->setParticlePX(*particle);
         iParticle++;
-        if (particleType->isStable() || decayDisabled)
+        if (particleType->isStable() ||  decayDisabled)
           {
+//          if (flag)
+//            {
+//            cout << "    decayDisabled:" << decayDisabled << endl;
+//            cout << "  hasDecayModes() " << particleType->hasDecayModes() << endl;
+//            cout << " getNDecayModes() " << particleType->getNDecayModes()<< endl;
+//            cout << " particle considered stable - WTF?" << endl;
+//            }
           if (accept(*particle)) event.add(particle);
           }
         else
+          {
+//          if (flag)
+//            {
+//            cout << "  hasDecayModes() " << particleType->hasDecayModes() << endl;
+//            cout << " getNDecayModes() " << particleType->getNDecayModes() << endl;
+//            cout <<"  attempting to decay this particle XOXOXOXOXXOXOXOXOXOXOXOXOXOXOXOXXOXOXOXOXOXO" << endl;
+//            }
+//
           decayParticle(event, *particle);
+          }
         }
       }
     }
@@ -359,6 +387,15 @@ void TherminatorGenerator::decayParticle(Event & event, Particle & parent)
 //  cout << " parent stable   : " <<  parentType.isStable() << endl;
 //  cout << " parent n modes  : " <<  parentType.getNDecayModes() << endl;
 
+//  bool flag = false;
+//  int pdg = std::fabs(parentType.getPdgCode());
+  //if (pdg==3112 || pdg==3212 || pdg==3222)
+//    if (pdg==3112 || pdg==3212)
+//    {
+//    cout << "Trying to decay pdg:" << pdg << endl;
+//    flag = true;
+//    }
+
   ParticleDecayMode & decayMode  = parentType.generateDecayMode();
   int nChildren = decayMode.getNChildren();
   if (nChildren<2)  return;
@@ -373,12 +410,13 @@ void TherminatorGenerator::decayParticle(Event & event, Particle & parent)
   switch (nChildren)
     {
       case 1:
+     // if (flag) cout << "---------------------------------1-body decay" << endl;
       if (reportInfo(__FUNCTION__)) cout << "case 1  parentType==" << parent.getName() << endl;
       break;
 
       case 2:
       {
-      //cout << "2-body decay" << endl;
+     // if (flag) cout << "---------------------------------2-body decay" << endl;
       Particle * child1 = particleFactory->getNextObject();
       Particle * child2 = particleFactory->getNextObject();
       ParticleType  & childType1 = decayMode.getChildType(0); child1->setType(&childType1); child1->setLive(true);
@@ -411,7 +449,7 @@ void TherminatorGenerator::decayParticle(Event & event, Particle & parent)
 
       case 3:
       {
-      //cout << "3-body decay" << endl;
+      //if (flag) cout << "3-body decay" << endl;
       Particle * child1 = particleFactory->getNextObject();
       Particle * child2 = particleFactory->getNextObject();
       Particle * child3 = particleFactory->getNextObject();
@@ -666,6 +704,8 @@ void TherminatorGenerator::exportMultiplicities()
     {
     ParticleMultiplicity & pm = averageMultiplicities[iType];
     outputFile << pm.name << "    " << pm.integral << "    " << pm.multiplicity << endl;
+    //3cout  << pm.name << "    " << pm.integral << "    " << pm.multiplicity << endl;
+    //if (iType>10) exit(1);
     }
   outputFile.close();
 }
@@ -687,9 +727,9 @@ void TherminatorGenerator::calculateMultiplicities()
     double multiplicity  = 0.0;
     double integrand     = 0.0;
     ParticleMultiplicity particleMultiplicity;
+    particleMultiplicity.name         = particleType.getName();
     if (particleType.isPhoton() && disablePhotons)
       {
-      particleMultiplicity.name         = particleType.getName();
       particleMultiplicity.integral     = 0.0;
       particleMultiplicity.multiplicity = 0.0;
       }

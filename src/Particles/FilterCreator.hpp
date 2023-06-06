@@ -72,45 +72,45 @@ public:
   //!
   //!  Create an open filter i.e., a filter that accepts all particles considered "live".
   //!
-  static vector<ParticleFilter*> createOpenParticleFilter();
+   vector<ParticleFilter*> createOpenParticleFilter();
 
   //!
   //!  Create a filter that simulates the ALICE min bias V0 trigger.
   //!
-  static vector<ParticleFilter*> createAliceV0Filter();
+   vector<ParticleFilter*> createAliceV0Filter();
 
   //!
   //!  Create a filter accepting all neutral particles
   //!
-  static vector<ParticleFilter*> createNeutralParticleFilter(bool filteringOnPt,  double minPt,  double maxPt,
+   vector<ParticleFilter*> createNeutralParticleFilter(bool filteringOnPt,  double minPt,  double maxPt,
                                                              bool filteringOnEta, double minEta, double maxEta,
                                                              bool filteringOnY,   double minY,   double maxY);
 
   //!
   //!  Create a filter accepting all charged particles
   //!
-  static vector<ParticleFilter*> createChargedParticleFilter(bool filteringOnPt,  double minPt,  double maxPt,
+   vector<ParticleFilter*> createChargedParticleFilter(bool filteringOnPt,  double minPt,  double maxPt,
                                                              bool filteringOnEta, double minEta, double maxEta,
                                                              bool filteringOnY,   double minY,   double maxY);
 
   //!
   //!  Create a filter accepting all negative particles
   //!
-  static vector<ParticleFilter*> createNegativeParticleFilter(bool filteringOnPt,  double minPt,  double maxPt,
+   vector<ParticleFilter*> createNegativeParticleFilter(bool filteringOnPt,  double minPt,  double maxPt,
                                                               bool filteringOnEta, double minEta, double maxEta,
                                                               bool filteringOnY,   double minY,   double maxY);
 
   //!
   //!  Create a filter accepting all positive particles
   //!
-  static vector<ParticleFilter*> createPositiveParticleFilter(bool filteringOnPt,  double minPt,  double maxPt,
+   vector<ParticleFilter*> createPositiveParticleFilter(bool filteringOnPt,  double minPt,  double maxPt,
                                                               bool filteringOnEta, double minEta, double maxEta,
                                                               bool filteringOnY,   double minY,   double maxY);
 
   //!
   //!  Create a filter accepting only the given pdg code with the given kinematical parameters
   //!
-  static  ParticleFilter * createHadronFilter(int pdg, const String & _name, const String  & title,
+    ParticleFilter * createHadronFilter(int pdg, const String & _name, const String  & title,
                                               bool filteringOnPt,  double minPt,  double maxPt,
                                               bool filteringOnEta, double minEta, double maxEta,
                                               bool filteringOnY,   double minY,   double maxY);
@@ -118,7 +118,7 @@ public:
   //!
   //!  Create a filter accepting only the given index code with the given kinematical parameters
   //!
-  static ParticleFilter * createIndexFilter(int index, const String & name, const String  & title,
+   ParticleFilter * createIndexFilter(int index, const String & name, const String  & title,
                                             bool filteringOnPt,  double minPt,  double maxPt,
                                             bool filteringOnEta, double minEta, double maxEta,
                                             bool filteringOnY,   double minY,   double maxY);
@@ -127,8 +127,7 @@ public:
   //!
   //!  Create filters accepting only the given index code range with the given kinematical parameters
   //!
-  static vector<ParticleFilter*> createIndexFilters(int minIndex,
-                                                    int maxIndex,
+   vector<ParticleFilter*> createIndexFilters(ParticleDb & particleDb,
                                                     bool filteringOnPt,  double minPt,  double maxPt,
                                                     bool filteringOnEta, double minEta, double maxEta,
                                                     bool filteringOnY,   double minY,   double maxY);
@@ -137,14 +136,14 @@ public:
   //!
   //!  Create pos and neg hadron  filters with the given kinematical parameters
   //!
-  static vector<ParticleFilter*> createChargedHadronFilters(bool filteringOnPt,  double minPt,  double maxPt,
+   vector<ParticleFilter*> createChargedHadronFilters(bool filteringOnPt,  double minPt,  double maxPt,
                                                             bool filteringOnEta, double minEta, double maxEta,
                                                             bool filteringOnY,   double minY,   double maxY);
 
   //!
   //!  Create pi+, K+, p+, pi-, K-, p- filters with the given kinematical parameters
   //!
-  static vector<ParticleFilter*> createPlusMinusHadronFilters(bool filteringOnPt,  double minPt,  double maxPt,
+   vector<ParticleFilter*> createPlusMinusHadronFilters(bool filteringOnPt,  double minPt,  double maxPt,
                                                               bool filteringOnEta, double minEta, double maxEta,
                                                               bool filteringOnY,   double minY,   double maxY);
 
@@ -161,11 +160,11 @@ public:
   //! XiM     : 3312
   //! Omega-  : 3334
   //!
-  static vector<ParticleFilter*> createBaryonFilters(bool filteringOnPt,  double minPt,  double maxPt,
+   vector<ParticleFilter*> createBaryonFilters(bool filteringOnPt,  double minPt,  double maxPt,
                                                      bool filteringOnEta, double minEta, double maxEta,
                                                      bool filteringOnY,   double minY,   double maxY);
 
-  static vector<ParticleFilter*> createStrangeHadronFilters(bool filteringOnPt,  double minPt,  double maxPt,
+   vector<ParticleFilter*> createStrangeHadronFilters(bool filteringOnPt,  double minPt,  double maxPt,
                                                             bool filteringOnEta, double minEta, double maxEta,
                                                             bool filteringOnY,   double minY,   double maxY);
 
