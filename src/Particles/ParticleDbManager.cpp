@@ -416,7 +416,7 @@ void ParticleDbManager::importParticleDbNative()
     double massDiff = mass1+mass2+mass3+mass4-mass0;
     if (massDiff>0)
       {
-       if (reportInfo(__FUNCTION__))
+       if (reportDebug(__FUNCTION__))
         {
         cout << "Mass exception for " << parentName << "->" <<  childName1 <<"+"<< childName2 <<"+"<< childName3 <<"+"<< childName4 << " with Mass Diff=" << massDiff << endl;
         }
@@ -462,11 +462,9 @@ void ParticleDbManager::importParticleDbNative()
   if (reportDebug(__FUNCTION__))
     cout << "Total index of particles read: " <<  particleDb->getNumberOfTypes() << endl;
   inputFileDecays.close();
+  particleDb->mapAntiParticleIndices();
   particleDb->setupDecayGenerator();
-
-  ///exit(1);
-
-  //if (reportDebug(__FUNCTION__)) particleDb->printProperties(cout);
+  //dbAnalyzer();
 }
 
 void ParticleDbManager::initializeParticleDb()
@@ -575,3 +573,128 @@ double ParticleDbManager::deltaJ(double aJot1, double aJot2, double aJot)
 }
 
 
+void ParticleDbManager::dbAnalyzer()
+{
+  // check for charge, strangeness, and baryon number conservation...
+  ParticleDb * particleDb = ParticleDb::getDefaultParticleDb();
+  if (particleDb==nullptr) throw TaskException("particleDb==nullptr","ParticleDbManager::dbAnalyzer()");
+
+  unsigned int nTypes = particleDb->getParticleTypeCount();
+  // check for double pdg entries
+  int count = 0;
+  for (unsigned int iType=0; iType<nTypes; iType++)
+    {
+
+    ParticleType * particleType = particleDb->getParticleType(iType);
+    int     pdg     = particleType->getPdgCode();
+    double  charge  = particleType->getCharge();
+    double  strange = particleType->getStrangessNumber();
+    double  baryon  = particleType->getBaryonNumber();
+    count = 0;
+    for (unsigned int kType=0; kType<nTypes; kType++)
+      {
+      ParticleType * particleType2 = particleDb->getParticleType(kType);
+      int     pdg2     = particleType2->getPdgCode();
+      double  charge2  = particleType2->getCharge();
+      double  strange2 = particleType2->getStrangessNumber();
+      double  baryon2  = particleType2->getBaryonNumber();
+      if (pdg == pdg2) count++;
+      }
+    if (count>1)
+      {
+      cout << "iType: " << iType << " Count: " << count << endl;
+      cout << " name1: " << particleType->getName() << "   PDG:" <<pdg<< endl;
+      //cout << " name2: " << particleType2->getName() << endl;
+      }
+    }
+
+  for (unsigned int iType=0; iType<nTypes; iType++)
+    {
+    ParticleType * type = particleDb->getParticleType(iType);
+    String  name    = type->getName();
+    int     pdg     = type->getPdgCode();
+    double  charge  = type->getCharge();
+    double  strange = type->getStrangessNumber();
+    double  baryon  = type->getBaryonNumber();
+    bool    stable  = type->isStable();
+    int     nModes  = type->getNDecayModes();
+    if (stable) continue;
+    if (nModes<1) throw TaskException("nModes<1 && !isStable()","ParticleDbManager::dbAnalyzer()");
+
+//    cout << "Analysing particle named: " << name << " PDG Index:" << pdg << endl;
+//    cout << "    Charge: " << charge << endl;
+//    cout << "   Strange: " << strange << endl;
+//    cout << "    Baryon: " << baryon << endl;
+//    cout << "    Stable: " << stable << endl;
+//    cout << "    nModes: " << nModes << endl;
+
+    std::vector<ParticleDecayMode> decayModes =  type->getDecayModes();
+
+    for (int iMode=0; iMode<nModes; iMode++)
+      {
+      ParticleDecayMode & decayMode = decayModes[iMode];
+      int nChildren = decayMode.getNChildren();
+      //cout << "Decay mode: " << iMode << "  nChildren: " << nChildren << endl;
+
+      switch (nChildren)
+        {
+          case 1:
+          {
+          String s = "Single particle decay for ";
+          s += name;
+          throw TaskException(s,"ParticleDbManager::dbAnalyzer()");
+          }
+
+          case 2:
+          {
+          ParticleType  & childType1 = decayMode.getChildType(0);
+          ParticleType  & childType2 = decayMode.getChildType(1);
+          String name1 = childType1.getName();
+          String name2 = childType2.getName();
+          double sumCharge  = childType1.getCharge()          + childType2.getCharge();
+          double sumStrange = childType1.getStrangessNumber() + childType2.getStrangessNumber();
+          double sumBaryon  = childType1.getBaryonNumber()    + childType2.getBaryonNumber();
+          if (charge!=sumCharge || strange!=sumStrange || baryon!=sumBaryon)
+            {
+            cout << "Check sanity!!!" << endl;
+            cout << "Analysing particle named: " << name << " PDG Index:" << pdg << endl;
+            //    cout << "    Charge: " << charge << endl;
+            //    cout << "   Strange: " << strange << endl;
+            //    cout << "    Baryon: " << baryon << endl;
+            //    cout << "    Stable: " << stable << endl;
+            //    cout << "    nModes: " << nModes << endl;
+            cout << name << "  -->  " << name1 << "  +  " << name2 << endl;
+            cout << " Charge: " << charge <<  "    sumCharge: " << sumCharge << endl;
+            cout << "Strange: " << strange << "   sumStrange: " << sumStrange << endl;
+            cout << " Baryon: " << baryon <<  "   sumBaryon: " << sumBaryon << endl;
+            }
+          break;
+          }
+
+          case 3:
+          {
+          ParticleType  & childType1 = decayMode.getChildType(0);
+          ParticleType  & childType2 = decayMode.getChildType(1);
+          ParticleType  & childType3 = decayMode.getChildType(2);
+          String name1 = childType1.getName();
+          String name2 = childType2.getName();
+          String name3 = childType3.getName();
+          double sumCharge  = childType1.getCharge()          + childType2.getCharge()+ childType3.getCharge();
+          double sumStrange = childType1.getStrangessNumber() + childType2.getStrangessNumber()+ childType3.getStrangessNumber();
+          double sumBaryon  = childType1.getBaryonNumber()    + childType2.getBaryonNumber()+ childType3.getBaryonNumber();
+          if (charge!=sumCharge || strange!=sumStrange || baryon!=sumBaryon)
+            {
+            cout << "ERROR!!!!!!!!!!!" << endl;
+            cout << "Analysing particle named: " << name << " PDG Index:" << pdg << endl;
+            cout << name << "  -->  " << name1 << "  +  " << name2 << "  +  " << name3 << endl;
+            cout << " Charge: " << charge <<  "    sumCharge: " << sumCharge << endl;
+            cout << "Strange: " << strange << "   sumStrange: " << sumStrange << endl;
+            cout << " Baryon: " << baryon <<  "   sumBaryon: " << sumBaryon << endl;
+            }
+          break;
+          }
+        }
+
+      }
+    }
+}

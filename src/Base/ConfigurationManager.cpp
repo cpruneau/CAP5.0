@@ -257,70 +257,70 @@ const CAP::String & CAP::ConfigurationManager::getConfigurationPath() const
   return configurationPath;
 }
 
-void CAP::ConfigurationManager::printItem(const char * keyword, ostream & output, int size, int style)  const
-{
-  switch (style)
-    {
-      case 0: output <<  left << setw(size) << setfill('.')<< keyword << " : " << configuration.getParameter(keyword) << setfill(' ') << endl; break;
-      case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << configuration.getParameter(keyword) << endl; break;
-    }
-}
-
-void CAP::ConfigurationManager::printItem(const char * keyword, bool   value, ostream & output, int size, int style)  const
-{
-  switch (style)
-    {
-      case 0: output <<  left << setw(size) << setfill('.')<< keyword << " : " << value << setfill(' ') << endl; break;
-      case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << value << endl; break;
-    }
-}
-
-void CAP::ConfigurationManager::printItem(const char * keyword, int    value, ostream & output, int size, int style)  const
-{
-  switch (style)
-    {
-      case 0: output <<  left << setw(size) << setfill('.')<< keyword << " : " << value << setfill(' ') << endl; break;
-      case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << value << endl; break;
-    }
-}
-
-
-void CAP::ConfigurationManager::printItem(const char * keyword, unsigned int value, ostream & output, int size, int style)  const
-{
-  switch (style)
-    {
-      case 0: output <<  left << setw(size) << setfill('.')<< keyword << " : " << value << setfill(' ') << endl; break;
-      case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << value << endl; break;
-    }
-}
-
-
-void CAP::ConfigurationManager::printItem(const char * keyword, long   value, ostream & output, int size, int style)  const
-{
-  switch (style)
-    {
-      case 0: output <<  left << setw(size) << setfill('.')<< keyword << " : " << value << setfill(' ') << endl; break;
-      case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << value << endl; break;
-    }
-}
-
-void CAP::ConfigurationManager::printItem(const char * keyword, double value, ostream & output, int size, int style)  const
-{
-  switch (style)
-    {
-      case 0: output <<  left << setw(size) << setfill('.')<< keyword << " : " << value << setfill(' ') << endl; break;
-      case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << value << endl; break;
-    }
-}
-
-void CAP::ConfigurationManager::printItem(const char * keyword, const char * value, ostream & output, int size, int style)  const
-{
-  switch (style)
-    {
-      case 0: output <<  left << setw(size) << setfill('.')<< keyword << " : " << value << setfill(' ') << endl; break;
-      case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << value << endl; break;
-    }
-}
-
-
+//void CAP::ConfigurationManager::printItem(const char * keyword, ostream & output, int size, int style)  const
+//{
+//  switch (style)
+//    {
+//      case 0: output <<  left << setw(size) << setfill('.')<< keyword << " : " << configuration.getParameter(keyword) << setfill(' ') << endl; break;
+//      case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << configuration.getParameter(keyword) << endl; break;
+//    }
+//}
+//
+//void CAP::ConfigurationManager::printItem(const char * keyword, bool   value, ostream & output, int size, int style)  const
+//{
+//  switch (style)
+//    {
+//      case 0: output <<  left << setw(size) << setfill('.')<< keyword << " : " << value << setfill(' ') << endl; break;
+//      case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << value << endl; break;
+//    }
+//}
+//
+//void CAP::ConfigurationManager::printItem(const char * keyword, int    value, ostream & output, int size, int style)  const
+//{
+//  switch (style)
+//    {
+//      case 0: output <<  left << setw(size) << setfill('.')<< keyword << " : " << value << setfill(' ') << endl; break;
+//      case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << value << endl; break;
+//    }
+//}
+//
+//
+//void CAP::ConfigurationManager::printItem(const char * keyword, unsigned int value, ostream & output, int size, int style)  const
+//{
+//  switch (style)
+//    {
+//      case 0: output <<  left << setw(size) << setfill('.')<< keyword << " : " << value << setfill(' ') << endl; break;
+//      case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << value << endl; break;
+//    }
+//}
+//
+//
+//void CAP::ConfigurationManager::printItem(const char * keyword, long   value, ostream & output, int size, int style)  const
+//{
+//  switch (style)
+//    {
+//      case 0: output <<  left << setw(size) << setfill('.')<< keyword << " : " << value << setfill(' ') << endl; break;
+//      case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << value << endl; break;
+//    }
+//}
+//
+//void CAP::ConfigurationManager::printItem(const char * keyword, double value, ostream & output, int size, int style)  const
+//{
+//  switch (style)
+//    {
+//      case 0: output <<  left << setw(size) << setfill('.')<< keyword << " : " << value << setfill(' ') << endl; break;
+//      case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << value << endl; break;
+//    }
+//}
+//
+//void CAP::ConfigurationManager::printItem(const char * keyword, const char * value, ostream & output, int size, int style)  const
+//{
+//  switch (style)
+//    {
+//      case 0: output <<  left << setw(size) << setfill('.')<< keyword << " : " << value << setfill(' ') << endl; break;
+//      case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << value << endl; break;
+//    }
+//}
+//
+//
 

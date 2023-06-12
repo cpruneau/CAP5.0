@@ -73,6 +73,7 @@ multiplicitiesOutputFile(),
 multiplicitiesFractionMin(0.5),
 multiplicitiesFractionMax(1.0),
 multiplicitiesFractionRange(0.5),
+multiplicitiesForceZeroNetQ(1),
 disablePhotons(true),
 nSamplesIntegration(10000),
 modelOnlyBackFlow(0),
@@ -112,6 +113,8 @@ void TherminatorGenerator::setDefaultConfiguration()
   addParameter( "MultiplicitiesOutputFile",     multiplicitiesOutputFile);
   addParameter( "MultiplicitiesFractionMin",    multiplicitiesFractionMin);
   addParameter( "MultiplicitiesFractionMax",    multiplicitiesFractionMax);
+  addParameter( "MultiplicitiesForceZeroNetQ",  multiplicitiesForceZeroNetQ);
+
   addParameter( "DisablePhotons",               disablePhotons);
   addParameter( "nSamplesIntegration",          nSamplesIntegration);
   addParameter( "ModelOnlyBackFlow",            modelOnlyBackFlow);
@@ -147,6 +150,8 @@ void TherminatorGenerator::configure()
   multiplicitiesFractionMin   = getValueDouble( "MultiplicitiesFractionMin");
   multiplicitiesFractionMax   = getValueDouble( "MultiplicitiesFractionMax");
   multiplicitiesFractionRange = multiplicitiesFractionMax - multiplicitiesFractionMin;
+  multiplicitiesForceZeroNetQ = getValueBool(   "MultiplicitiesForceZeroNetQ");
+
   disablePhotons              = getValueBool(   "DisablePhotons");
   nSamplesIntegration         = getValueInt(    "nSamplesIntegration");
   modelOnlyBackFlow           = getValueBool(   "ModelOnlyBackFlow");
@@ -181,6 +186,7 @@ void TherminatorGenerator::configure()
     printItem( "MultiplicitiesFractionMin",   multiplicitiesFractionMin);
     printItem( "MultiplicitiesFractionMax",   multiplicitiesFractionMax);
     printItem( "MultiplicitiesFractionRange", multiplicitiesFractionRange);
+    printItem( "MultiplicitiesForceZeroNetQ", multiplicitiesForceZeroNetQ);
     printItem( "DisablePhotons",              disablePhotons);
     printItem( "nSamplesIntegration",         nSamplesIntegration);
     printItem( "ModelOnlyBackFlow",           modelOnlyBackFlow);
@@ -237,99 +243,105 @@ void TherminatorGenerator::createEvent()
   unsigned int nTypes = particleDb->getParticleTypeCount();
   if (averageMultiplicities.size() < 1)
     {
-    if (reportError(__FUNCTION__))
-      {
-      cout << " Array averageMultiplicities is not initialized." << endl;
-      throw TaskException("averageMultiplicities.size() < 1","TherminatorGenerator::createEvent()");
-      }
+      String s = "Array averageMultiplicities is not initialized.";
+      throw TaskException(s,"TherminatorGenerator::createEvent()");
     }
-//  printItem("multiplicitiesFractionMin",multiplicitiesFractionMin);
-//  printItem("multiplicitiesFractionMax",multiplicitiesFractionMax);
-//  printItem("multiplicitiesFractionRange",multiplicitiesFractionRange);
   double multiplicitiesFraction = 1.0;
   if (multiplicitiesFractionRange>0 || multiplicitiesFractionMin<1)
     {
     multiplicitiesFraction = multiplicitiesFractionMin + multiplicitiesFractionRange*gRandom->Rndm();
     }
- // printItem("multiplicitiesFraction",multiplicitiesFraction);
-
-  switch (multiplicitiesFluctType)
+  int    mult  = 0;
+  double mean  = 0;
+  for (unsigned int iType=0; iType<nTypes; iType++)
     {
-      case 0:
-      // Poisson fluctuations
-      for (unsigned int iType=0; iType<nTypes; iType++)
+    switch (multiplicitiesFluctType)
+      {
+        case 0: // Poisson fluctuations
         {
-        double mean  = multiplicitiesFraction * averageMultiplicities[iType].multiplicity;
-        eventMultiplicities[iType] = gRandom->Poisson(mean);
+        mean  = multiplicitiesFraction * averageMultiplicities[iType].multiplicity;
+        mult  = gRandom->Poisson(mean);
         }
-      break;
-      case 1:
-      // Negative Binomial  fluctuations
-      for (unsigned int iType=0; iType<nTypes; iType++)
+        break;
+        case 1: // Negative Binomial  fluctuations
         {
-        eventMultiplicities[iType] = 0; // HOW?
+        mult = 0; // HOW?
         }
-      break;
-      default:
-      case 2:
-      // Gaussian fluctuations
-      for (unsigned int iType=0; iType<nTypes; iType++)
+        break;
+        default:
+        case 2: // Gaussian fluctuations
         {
-        double mean  = multiplicitiesFraction * averageMultiplicities[iType].multiplicity;
-        double sigma = sqrt(mean);
-        eventMultiplicities[iType] = TMath::Max(0, int(gRandom->Gaus(mean,sigma)));
+        mean  = multiplicitiesFraction * averageMultiplicities[iType].multiplicity;
+        mult  = TMath::Max(0, int(gRandom->Gaus(mean,sqrt(mean))));
         }
-      break;
-      case 3:
-      // Poisson or Gaussian fluctuations
-      for (unsigned int iType=0; iType<nTypes; iType++)
+        break;
+        case 3:  // Poisson or Gaussian fluctuations
         {
-        double mean  = multiplicitiesFraction * averageMultiplicities[iType].multiplicity;
+        mean  = multiplicitiesFraction * averageMultiplicities[iType].multiplicity;
         if (mean>20)
-          {
-          double sigma = sqrt(mean);
-          eventMultiplicities[iType] = TMath::Max(0, int(gRandom->Gaus(mean,sigma)));
-          }
+          mult = TMath::Max(0, int(gRandom->Gaus(mean,sqrt(mean))));
         else
-          {
-          eventMultiplicities[iType] = TMath::Max(0, int(gRandom->Poisson(mean)));
-          }
+          mult = TMath::Max(0, int(gRandom->Poisson(mean)));
         }
+      }
+    eventMultiplicities[iType] = mult;
     }
 
-  // generate "m" particles of each specicies
+  if (multiplicitiesForceZeroNetQ)
+    {
+    for (unsigned int iType=0; iType<nTypes; iType++)
+      {
+      ParticleType * particleType = particleDb->getParticleType(iType);
+      int     pdg     = particleType->getPdgCode();
+      double  charge  = particleType->getCharge();
+      double  strange = particleType->getStrangessNumber();
+      double  baryon  = particleType->getBaryonNumber();
+      if (pdg<0) // a particle
+        {
+        int antiTypeIndex = particleType->getAntiParticleIndex();
+        if (antiTypeIndex==iType) continue;
+        if (antiTypeIndex<0) throw TaskException("Charge>0 but antiTypeIndex<0","TherminatorGenerator::createEvent()");
+        eventMultiplicities[antiTypeIndex] = eventMultiplicities[iType];
+        }
+      }
+    }
 
   int      multiplicity;
+  int      antiMultiplicity;
   double   maxIntegrand;
   double   value;
   double   valueTest;
   CAP::Factory<Particle> * factory = Particle::getFactory();
   bool flag = false;
+
+  double totalQ = 0.0;
+  double totalS = 0.0;
+  double totalB = 0.0;
+  double  charge;
+  double  strange;
+  double  baryon;
+
+
   for (unsigned int iType=0; iType<nTypes; iType++)
     {
     ParticleType * particleType = particleDb->getParticleType(iType);
-    if (particleType->isPhoton() && disablePhotons) continue;
-
-    int pdg = std::fabs(particleType->getPdgCode());
-    //if (pdg==3112 || pdg==3212 || pdg==3222)
-//    if (pdg==3112 || pdg==3212)
-//      {
-//      cout << "pdg==3112 || pdg==3212:" << pdg << endl;
-//      flag = true;
-//      }
-//     else
-//       flag = false;
-
+    charge  = particleType->getCharge();
+    strange = particleType->getStrangessNumber();
+    baryon  = particleType->getBaryonNumber();
     maxIntegrand = averageMultiplicities[iType].integral;
     multiplicity = eventMultiplicities[iType];
-    //    if (reportInfo(__FUNCTION__))
-    //if (flag) cout << " iType: " << iType << " Name:" << particleType->getName() << "  multiplicity:" << multiplicity << endl;
+    if (particleType->isPhoton() && disablePhotons) continue;
+
+    totalQ += charge  * double(multiplicity);
+    totalS += strange  * double(multiplicity);
+    totalB += baryon  * double(multiplicity);
+
+
     int iParticle = 0;
     while (iParticle < multiplicity)
       {
       value     = model->getIntegrand(*particleType);
       valueTest = gRandom->Rndm() * maxIntegrand;
-      //cout << "valueTest:" << valueTest << " value:" << value << " valueTest<value:" << (valueTest < value) << endl;
       if (valueTest<value)
         {
         Particle * particle = factory->getNextObject();
@@ -337,31 +349,21 @@ void TherminatorGenerator::createEvent()
         particle->setLive(true);
         model->setParticlePX(*particle);
         iParticle++;
-        if (particleType->isStable() ||  decayDisabled)
+        if (decayDisabled || particleType->isStable())
           {
-//          if (flag)
-//            {
-//            cout << "    decayDisabled:" << decayDisabled << endl;
-//            cout << "  hasDecayModes() " << particleType->hasDecayModes() << endl;
-//            cout << " getNDecayModes() " << particleType->getNDecayModes()<< endl;
-//            cout << " particle considered stable - WTF?" << endl;
-//            }
           if (accept(*particle)) event.add(particle);
           }
         else
-          {
-//          if (flag)
-//            {
-//            cout << "  hasDecayModes() " << particleType->hasDecayModes() << endl;
-//            cout << " getNDecayModes() " << particleType->getNDecayModes() << endl;
-//            cout <<"  attempting to decay this particle XOXOXOXOXXOXOXOXOXOXOXOXOXOXOXOXXOXOXOXOXOXO" << endl;
-//            }
-//
           decayParticle(event, *particle);
-          }
         }
       }
     }
+  if (totalQ!=0 || totalB!=0 || totalS!=0)
+    {
+    cout << "totalQ " << totalQ <<  "   totalB " << totalB <<  "   totalS " << totalS << endl;
+    throw TaskException("Sanity check failed: totalQ!=0 || totalB!=0 || totalS!=0","TherminatorGenerator::createEvent()");
+    }
+
 }
 
 //!
@@ -395,6 +397,7 @@ void TherminatorGenerator::decayParticle(Event & event, Particle & parent)
 //    cout << "Trying to decay pdg:" << pdg << endl;
 //    flag = true;
 //    }
+ // double parentB = parentType.getBaryonNumber();
 
   ParticleDecayMode & decayMode  = parentType.generateDecayMode();
   int nChildren = decayMode.getNChildren();
@@ -407,20 +410,34 @@ void TherminatorGenerator::decayParticle(Event & event, Particle & parent)
     }
   LorentzVector & parentMomentum  = parent.getMomentum();
   LorentzVector & parentPosition  = parent.getPosition();
+
+  bool shit = false;
   switch (nChildren)
     {
       case 1:
-     // if (flag) cout << "---------------------------------1-body decay" << endl;
-      if (reportInfo(__FUNCTION__)) cout << "case 1  parentType==" << parent.getName() << endl;
+      {
+      String s = "Single particle decay for ";
+      s += parent.getName();
+      throw TaskException(s,"TherminatorGenerator::decayParticle(Event & event, Particle & parent)");
+      }
       break;
 
       case 2:
       {
-     // if (flag) cout << "---------------------------------2-body decay" << endl;
       Particle * child1 = particleFactory->getNextObject();
       Particle * child2 = particleFactory->getNextObject();
       ParticleType  & childType1 = decayMode.getChildType(0); child1->setType(&childType1); child1->setLive(true);
       ParticleType  & childType2 = decayMode.getChildType(1); child2->setType(&childType2); child2->setLive(true);
+
+//      double childType1B = childType1.getBaryonNumber();
+//      double childType2B = childType2.getBaryonNumber();
+//      if (parentB != (childType1B+childType2B ))
+//        {
+//        cout << "Parent:" << parentType.getName << " C1: " << childType1.getName() << " C2: "<< childType1.getName() << "  "
+//        << "parentB: " << parentB << " childType1B+childType2B" << childType1B+childType2B << endl;
+//        exit(1);
+//        }
+
       LorentzVector & p1 = child1->getMomentum();
       LorentzVector & r1 = child1->getPosition();
       LorentzVector & p2 = child2->getMomentum();
@@ -432,15 +449,26 @@ void TherminatorGenerator::decayParticle(Event & event, Particle & parent)
                              childType2,p2,r2);
       parent.setDecayed(true);
       if (decayStoreDecayedParts) event.add(&parent);
-      if (child1->isStable() || decayDisabled)
+      if (child1->isStable())
         {
-        if (accept(*child1)) event.add(child1);
+        if (accept(*child1))
+          {
+          event.add(child1);
+          }
+//        else
+//          cout << "not accepted:" << childType1.getName() << endl;
         }
       else
         decayParticle(event, *child1);
-      if (child2->isStable() || decayDisabled)
+
+      if (child2->isStable())
         {
-        if (accept(*child2)) event.add(child2);
+        if (accept(*child2))
+          {
+          event.add(child2);
+          }
+//        else
+//          cout << "not accepted:" << childType2.getName() << endl;
         }
       else
         decayParticle(event, *child2);
@@ -449,7 +477,6 @@ void TherminatorGenerator::decayParticle(Event & event, Particle & parent)
 
       case 3:
       {
-      //if (flag) cout << "3-body decay" << endl;
       Particle * child1 = particleFactory->getNextObject();
       Particle * child2 = particleFactory->getNextObject();
       Particle * child3 = particleFactory->getNextObject();
@@ -470,21 +497,37 @@ void TherminatorGenerator::decayParticle(Event & event, Particle & parent)
                              childType3,p3,r3);
       parent.setDecayed(true);
       if (decayStoreDecayedParts) event.add(&parent);
-      if (child1->isStable() || decayDisabled)
+      if (child1->isStable())
         {
-        if (accept(*child1)) event.add(child1);
+        if (accept(*child1))
+          {
+          event.add(child1);
+          }
+//        else
+//          cout << "not accepted:" << childType1.getName() << endl;
         }
       else
         decayParticle(event, *child1);
-      if (child2->isStable() || decayDisabled)
+      if (child2->isStable())
         {
-        if (accept(*child2)) event.add(child2);
+        if (accept(*child2))
+          {
+          event.add(child2);
+          }
+//        else
+//          cout << "not accepted:" << childType2.getName() << endl;
         }
       else
         decayParticle(event, *child2);
-      if (child3->isStable() || decayDisabled)
+
+      if (child3->isStable())
         {
-        if (accept(*child3)) event.add(child3);
+        if (accept(*child3))
+          {
+          event.add(child3);
+          }
+//        else
+//          cout << "not accepted:" << childType3.getName() << endl;
         }
       else
         decayParticle(event, *child3);

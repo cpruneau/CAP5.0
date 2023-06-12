@@ -65,13 +65,33 @@ public:
 
   virtual void printConfiguration(ostream & output);
 
-  virtual void printItem(const char * keyword, ostream & output=cout, int size=50, int style=0) const;
-  virtual void printItem(const char * keyword, bool   value, ostream & output=cout, int size=50, int style=0) const;
-  virtual void printItem(const char * keyword, unsigned int  value, ostream & output=cout, int size=50, int style=0) const;
-  virtual void printItem(const char * keyword, int    value, ostream & output=cout, int size=50, int style=0) const;
-  virtual void printItem(const char * keyword, long   value, ostream & output=cout, int size=50, int style=0) const;
-  virtual void printItem(const char * keyword, double value, ostream & output=cout, int size=50, int style=0) const;
-  virtual void printItem(const char * keyword, const char * value, ostream & output=cout, int size=50, int style=0) const;
+  void printItem(const char * keyword, ostream & output=cout, int size=50, int style=0) const
+  {
+  switch (style)
+    {
+      case 0: output <<  left << setw(size) << setfill('.')<< keyword << " : " << configuration.getParameter(keyword) << setfill(' ') << endl; break;
+      case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << configuration.getParameter(keyword) << endl; break;
+    }
+  }
+
+  template<typename T>
+  void printItem(const char * keyword, T value, ostream & output=cout, int size=50, int style=0) const
+  {
+  switch (style)
+    {
+      case 0: output <<  left << setw(size) << setfill('.')<< keyword << " : " << value << setfill(' ') << endl; break;
+      case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << value << endl; break;
+    }
+  }
+
+
+//  virtual void printItem(const char * keyword, ostream & output=cout, int size=50, int style=0) const;
+//  virtual void printItem(const char * keyword, bool   value, ostream & output=cout, int size=50, int style=0) const;
+//  virtual void printItem(const char * keyword, unsigned int  value, ostream & output=cout, int size=50, int style=0) const;
+//  virtual void printItem(const char * keyword, int    value, ostream & output=cout, int size=50, int style=0) const;
+//  virtual void printItem(const char * keyword, long   value, ostream & output=cout, int size=50, int style=0) const;
+//  virtual void printItem(const char * keyword, double value, ostream & output=cout, int size=50, int style=0) const;
+//  virtual void printItem(const char * keyword, const char * value, ostream & output=cout, int size=50, int style=0) const;
 
 
   //!

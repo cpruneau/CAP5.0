@@ -44,7 +44,8 @@ eventsUseStream2         (false),
 eventsUseStream3         (false),
 eventsAnalyze            (false),
 filtersUseModel          (false),
-filtersUseAnalysis       (true),
+filtersUseGlobal         (false),
+filtersUseAnalysis       (false),
 calibsCreate             (false),
 calibsReset              (false),
 calibsClear              (false),
@@ -102,6 +103,7 @@ eventsUseStream2         (false),
 eventsUseStream3         (false),
 eventsAnalyze            (false),
 filtersUseModel          (false),
+filtersUseGlobal         (false),
 filtersUseAnalysis       (true),
 calibsCreate             (false),
 calibsReset              (false),
@@ -160,6 +162,7 @@ void EventTask::setDefaultConfiguration()
   addParameter("EventsUseStream3",            eventsUseStream3);
   addParameter("EventsAnalyze",               eventsAnalyze);
   addParameter("FiltersUseModel",             filtersUseModel);
+  addParameter("FiltersUseGlobal",            filtersUseGlobal);
   addParameter("FiltersUseAnalysis",          filtersUseAnalysis);
   addParameter("CalibrationsCreate",          calibsCreate);
   addParameter("CalibrationsReset",           calibsReset);
@@ -182,29 +185,30 @@ void EventTask::setDefaultConfiguration()
 void EventTask::configure()
 {
   Task::configure();
-  eventsCreate             = getValueBool("EventsCreate");
-  eventsRequested          = getValueBool("EventsRequested");
-  eventsConvertToCAP       = getValueBool("EventsConvertToCAP");
-  eventsImport             = getValueBool("EventsImport");
+  eventsCreate             = getValueBool(  "EventsCreate");
+  eventsRequested          = getValueBool(  "EventsRequested");
+  eventsConvertToCAP       = getValueBool(  "EventsConvertToCAP");
+  eventsImport             = getValueBool(  "EventsImport");
   eventsImportTree         = getValueString("EventsImportTree");
   eventsImportPath         = getValueString("EventsImportPath");
   eventsImportFile         = getValueString("EventsImportFile");
-  eventsImportFileMinIndex = getValueInt("EventsImportFileMinIndex");
-  eventsImportFileMaxIndex = getValueInt("EventsImportFileMaxIndex");
-  eventsExport             = getValueBool("EventsExport");
+  eventsImportFileMinIndex = getValueInt(   "EventsImportFileMinIndex");
+  eventsImportFileMaxIndex = getValueInt(   "EventsImportFileMaxIndex");
+  eventsExport             = getValueBool(  "EventsExport");
   eventsExportPath         = getValueString("EventsExportPath");
   eventsExportFile         = getValueString("EventsExportFile");
   eventsExportTree         = getValueString("EventsExportTree");
-  eventsExportNative       = getValueBool("EventsExportNative");
-  eventsExportCAP          = getValueBool("EventsExportCAP");
-  eventsExportMaxPerFile   = getValueLong("EventsExportMaxPerFile");
-  eventsUseStream0         = getValueBool("EventsUseStream0");
-  eventsUseStream1         = getValueBool("EventsUseStream1");
-  eventsUseStream2         = getValueBool("EventsUseStream2");
-  eventsUseStream3         = getValueBool("EventsUseStream3");
-  eventsAnalyze            = getValueBool("EventsAnalyze");
-  filtersUseModel          = getValueBool("FiltersUseModel");
-  filtersUseAnalysis       = getValueBool("FiltersUseAnalysis");
+  eventsExportNative       = getValueBool(  "EventsExportNative");
+  eventsExportCAP          = getValueBool(  "EventsExportCAP");
+  eventsExportMaxPerFile   = getValueLong(  "EventsExportMaxPerFile");
+  eventsUseStream0         = getValueBool(  "EventsUseStream0");
+  eventsUseStream1         = getValueBool(  "EventsUseStream1");
+  eventsUseStream2         = getValueBool(  "EventsUseStream2");
+  eventsUseStream3         = getValueBool(  "EventsUseStream3");
+  eventsAnalyze            = getValueBool(  "EventsAnalyze");
+  filtersUseModel          = getValueBool(  "FiltersUseModel");
+  filtersUseGlobal         = getValueBool(  "FiltersUseGlobal");
+  filtersUseAnalysis       = getValueBool(  "FiltersUseAnalysis");
 
   calibsCreate       = getValueBool("CalibrationsCreate");
   calibsReset        = getValueBool("CalibrationsReset");
@@ -244,6 +248,7 @@ void EventTask::configure()
     printItem("EventsUseStream3",        eventsUseStream3);
     printItem("EventsAnalyze",           eventsAnalyze);
     printItem("FiltersUseModel",         filtersUseModel);
+    printItem("FiltersUseGlobal",        filtersUseGlobal);
     printItem("FiltersUseAnalysis",      filtersUseAnalysis);
     }
 }
@@ -270,6 +275,12 @@ void EventTask::initializeFilters()
     eventFilters = FilterCreator::getEventFiltersModel();
     particleFilters  = FilterCreator::getParticleFiltersModel();
     }
+  if (filtersUseGlobal)
+    {
+    if (reportInfo(__FUNCTION__)) cout << "Using global filters." << endl;
+    eventFilters = FilterCreator::getEventFiltersGlobal();
+    particleFilters  = FilterCreator::getParticleFiltersGlobal();
+    }
   if (filtersUseAnalysis)
     {
     if (reportInfo(__FUNCTION__)) cout << "Using analysis filters." << endl;
@@ -286,7 +297,6 @@ void EventTask::initializeFilters()
     }
 
 }
-
 
 //void initializeEvent();
 //virtual void initializeEventCAP();

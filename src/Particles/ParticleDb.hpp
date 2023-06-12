@@ -51,6 +51,7 @@ public:
   int getParticleTypeCount()const { return size();}
 
   void resolveTypes();
+  void mapAntiParticleIndices();
   void setupDecayGenerator();
   ParticleType * findPdgCode(int pdgCode);
   ParticleType * findPrivateCode(int privateCode);

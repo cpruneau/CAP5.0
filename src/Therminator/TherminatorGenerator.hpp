@@ -125,6 +125,7 @@ protected:
   double multiplicitiesFractionMin;
   double multiplicitiesFractionMax;
   double multiplicitiesFractionRange;
+  double multiplicitiesForceZeroNetQ;
 
  // int eventsExportMaxPerFile;
   bool   disablePhotons;

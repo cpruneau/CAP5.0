@@ -82,6 +82,7 @@ public:
   virtual void exportParticleDbCAP();
   virtual void exportParticleDbNative();
 
+  virtual void dbAnalyzer();
 
 protected:
 

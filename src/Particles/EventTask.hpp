@@ -57,6 +57,7 @@ protected:
   bool   eventsUseStream3;
   bool   eventsAnalyze;
   bool   filtersUseModel;
+  bool   filtersUseGlobal;
   bool   filtersUseAnalysis;
 
   bool   calibsCreate;

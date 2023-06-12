@@ -49,24 +49,32 @@ public:
   void execute();
 
   static void createEventFiltersModel();
+  static void createEventFiltersGlobal();
   static void createEventFiltersAnalysis();
   static void createParticleFiltersModel();
+  static void createParticleFiltersGlobal();
   static void createParticleFiltersAnalysis();
 
   static void addEventFilterModel(EventFilter* filter);
+  static void addEventFilterGlobal(EventFilter* filter);
   static void addEventFilterAnalysis(EventFilter* filter);
   static void addParticleFilterModel(ParticleFilter* filter);
+  static void addParticleFilterGlobal(ParticleFilter* filter);
   static void addParticleFilterAnalysis(ParticleFilter* filter);
 
   static void addEventFiltersModel(vector<EventFilter*>  filters);
+  static void addEventFiltersGlobal(vector<EventFilter*>  filters);
   static void addEventFiltersAnalysis(vector<EventFilter*>  filters);
   static void addParticleFiltersModel(vector<ParticleFilter*>  filters);
+  static void addParticleFiltersGlobal(vector<ParticleFilter*>  filters);
   static void addParticleFiltersAnalysis(vector<ParticleFilter*>  filters);
 
 
   static vector<EventFilter*> & getEventFiltersModel();
+  static vector<EventFilter*> & getEventFiltersGlobal();
   static vector<EventFilter*> & getEventFiltersAnalysis();
   static vector<ParticleFilter*> & getParticleFiltersModel();
+  static vector<ParticleFilter*> & getParticleFiltersGlobal();
   static vector<ParticleFilter*> &  getParticleFiltersAnalysis();
 
   //!
@@ -173,9 +181,10 @@ protected:
 
   static vector<EventFilter*>    * eventFiltersModel;
   static vector<ParticleFilter*> * particleFiltersModel;
+  static vector<EventFilter*>    * eventFiltersGlobal;
+  static vector<ParticleFilter*> * particleFiltersGlobal;
   static vector<EventFilter*>    * eventFiltersAnalysis;
   static vector<ParticleFilter*> * particleFiltersAnalysis;
-
 
   ClassDef(FilterCreator,0)
 };

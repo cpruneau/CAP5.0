@@ -357,6 +357,31 @@ ParticleType * ParticleDb::getParticleType(unsigned int index)
 }
 
 
+//!
+//!Find the antiparticles of all particles in the DB and
+//!store their DB index for fast retrieval in some functions.
+//!(assumes no sorting is done after this operation)
+//!Antiparticles have -pdgCode of their particle and viceversa
+//!Particles that have no antiparticle will store -1 to indicates
+//!they do not have an anti-particle.
+//!
+void ParticleDb::mapAntiParticleIndices()
+{
+  int nTypes = objects.size();
+  for (int iType=0; iType<nTypes; iType++)
+    {
+    ParticleType * type = getParticleType(iType);
+    int pdgCode = type->getPdgCode();
+    int index   = findIndexForPdgCode(-pdgCode);
+    if (index>=0)
+      type->setAntiParticleIndex(index);
+    else
+      type->setAntiParticleIndex(iType); // self (has no antiparticle)
+
+    }
+}
+// int value)
+
 
 ostream & ParticleDb::printProperties(ostream & os)
 {

@@ -159,7 +159,7 @@ CAP::ParticleDb * importParticleDb()
 
 
 
-int PlotTherminatorDensities165WvsWO()
+int PlotTherminatorGlobal()
 {
   TString includeBasePath = getenv("CAP_SRC");
   loadBase(includeBasePath);
@@ -172,8 +172,6 @@ int PlotTherminatorDensities165WvsWO()
   using CAP::Particle;
   using CAP::ParticleType;
 
-
-
   try
   {
   CAP::ParticleDb * particleDb = importParticleDb();
@@ -182,7 +180,60 @@ int PlotTherminatorDensities165WvsWO()
     cout << "No ParticleDb!!! Why???" << endl;
     exit(1);
     }
+  int nTypes = particleDb->getNumberOfTypes();
+  cout << "particleDb::nTypes" << nTypes << endl;
 
+  int nQP = 0;
+  int nQ0 = 0;
+  int nQM = 0;
+  int nSP = 0;
+  int nS0 = 0;
+  int nSM = 0;
+  int nBP = 0;
+  int nB0 = 0;
+  int nBM = 0;
+  double q;
+  double s;
+  double b;
+  for (int iType=0; iType<nTypes; iType++)
+    {
+    ParticleType * type = particleDb->getParticleType(iType);
+    q = type->getCharge();
+    s = type->getStrangessNumber();
+    b = type->getBaryonNumber();
+    if (q<0)
+      nQM++;
+    else if (q==0)
+      nQ0++;
+    else
+      nQP++;
+    if (s<0)
+      nSM++;
+    else if (s==0)
+      nS0++;
+    else
+      nSP++;
+    if (b<0)
+      nBM++;
+    else if (b==0)
+      nB0++;
+    else
+      nBP++;
+    }
+  cout << "=======================================================" << endl;
+  cout << "=======================================================" << endl;
+  cout << "DB Statistics" << endl;
+  cout << "=======================================================" << endl;
+  cout << "=======================================================" << endl;
+  cout << "  q < 0 : " << nQM << endl;
+  cout << " q == 0 : " << nQ0 << endl;
+  cout << "  q > 0 : " << nQP << endl;
+  cout << "  s < 0 : " << nSM << endl;
+  cout << " s == 0 : " << nS0 << endl;
+  cout << "  s > 0 : " << nSP << endl;
+  cout << "  b < 0 : " << nBM << endl;
+  cout << " b == 0 : " << nB0 << endl;
+  cout << "  b > 0 : " << nBP << endl;
 
   bool printGif = 0;
   bool printPdf = 1;
@@ -214,106 +265,115 @@ int PlotTherminatorDensities165WvsWO()
     else
       graphConfigurations1D[iGraph]->addParameter("markerStyle",  kOpenSquare);
     }
-  graphConfigurations1D[0]->addParameter("markerColor", kBlack);
-  graphConfigurations1D[0]->addParameter("lineColor",   kBlack);
-  graphConfigurations1D[1]->addParameter("markerColor", kBlue);
-  graphConfigurations1D[1]->addParameter("lineColor",   kBlue);
-  graphConfigurations1D[2]->addParameter("markerColor", kRed);
-  graphConfigurations1D[2]->addParameter("lineColor",   kRed);
-  graphConfigurations1D[3]->addParameter("markerColor", kGreen);
-  graphConfigurations1D[3]->addParameter("lineColor",   kGreen);
-  graphConfigurations1D[4+0]->addParameter("markerColor", kBlack);
-  graphConfigurations1D[4+0]->addParameter("lineColor",   kBlack);
-  graphConfigurations1D[4+1]->addParameter("markerColor", kBlue);
-  graphConfigurations1D[4+1]->addParameter("lineColor",   kBlue);
-  graphConfigurations1D[4+2]->addParameter("markerColor", kRed);
-  graphConfigurations1D[4+2]->addParameter("lineColor",   kRed);
-  graphConfigurations1D[4+3]->addParameter("markerColor", kGreen);
-  graphConfigurations1D[4+3]->addParameter("lineColor",   kGreen);
+
+  int index = 0;
+  graphConfigurations1D[index]->addParameter("markerColor", kBlack);
+  graphConfigurations1D[index]->addParameter("lineColor",   kBlack); index++;
+
+  graphConfigurations1D[index]->addParameter("markerColor", kBlue);
+  graphConfigurations1D[index]->addParameter("lineColor",   kBlue); index++;
+
+  graphConfigurations1D[index]->addParameter("markerColor", kRed);
+  graphConfigurations1D[index]->addParameter("lineColor",   kRed); index++;
+
+  graphConfigurations1D[index]->addParameter("markerColor", kGreen);
+  graphConfigurations1D[index]->addParameter("lineColor",   kGreen); index++;
+
+  graphConfigurations1D[index]->addParameter("markerColor", kBlack);
+  graphConfigurations1D[index]->addParameter("lineColor",   kBlack); index++;
+
+  graphConfigurations1D[index]->addParameter("markerColor", kBlue);
+  graphConfigurations1D[index]->addParameter("lineColor",   kBlue); index++;
+
+  graphConfigurations1D[index]->addParameter("markerColor", kRed);
+  graphConfigurations1D[index]->addParameter("lineColor",   kRed); index++;
+
+  graphConfigurations1D[index]->addParameter("markerColor", kGreen);
+  graphConfigurations1D[index]->addParameter("lineColor",   kGreen); index++;
 
 
-  TString inputPath1  = "/Volumes/ClaudeDisc4/OutputFiles/Therminator/BW/T165.6/";
-  TString inputPath2  = "/Volumes/ClaudeDisc4/OutputFiles/Therminator/BW/T180/";
-  TString outputPath  = "/Volumes/ClaudeDisc4/OutputFiles/Therminator/BW/T180VsT165/";
+  TString inputPath  = "/Volumes/ClaudeDisc4/OutputFiles/Therminator/BW/T165.6/";
+  //TString inputPath  = "/Volumes/ClaudeDisc4/OutputFiles/Therminator/BW/T180/";
+  TString outputPath = inputPath;
 
-  //vector<TH2*>    histos2D;
-  vector<TH1*>    histosPt;
-  //vector<TH1*>    histosY;
+  vector<TH1*>    histos;
   vector<TString> titles;
+  TString plotName;
+  //TString histoNameBase  = "Analysis_All_All_";
+  TString histoNameBase  = "GlobalGen_All_All_";
+  TString histoName;
+  TString histoTitleBase = "Global ";
+  TString histoTitle;
 
   Configuration taskConfig;
   Plotter * plotter = new Plotter("Plotter",taskConfig);
   plotter->setDefaultOptions(useColor);
 
-  TFile & file1 =  plotter->openRootFile(inputPath1,"SingleGen.root","OLD");
-  TFile & file2 =  plotter->openRootFile(inputPath2,"SingleGen.root","OLD");
+  TFile & file =  plotter->openRootFile(inputPath,"GlobalGen.root","OLD");
 
-  int nTypes = particleDb->getNumberOfTypes();
-  cout << "particleDb::nTypes" << nTypes << endl;
-
-  TString histoBase = "SingleGen_All_";
-  TString ptSuffix  = "_n1_ptXS";
-  TString histoName;
-
-  for (int k=nTypes-11; k<nTypes-1; k++)
+  // Multiplicity
+  histoName  = histoNameBase + "n";
+  histoTitle = histoTitleBase + "Mult";
+  plotName   = "Global_Multiplicity";
+  TH1 * h  = (TH1*) file.Get(histoName);
+  if (!h)
     {
-    ParticleType * particleType = particleDb->getParticleType(k);
-    if (!particleType)
-      {
-      cout << "!particleType" << endl;
-      exit(1);
-      }
-    int pdgCode = particleType->getPdgCode();
-    TString particleName    = particleType->getName();
-    TString particleTitle   = particleType->getTitle();
-    histoName = histoBase;
-    histoName += particleName;
-    histoName += ptSuffix;
-
-    TH1 * h2  = (TH1*) file2.Get(histoName);
-    if (!h2)
-      {
-      cout << " File 2: Histograms not found: " << histoName <<   endl;
-      return -1;
-      }
-
-    TH1 * h1  = (TH1*) file1.Get(histoName);
-    if (!h1)
-    {
-    cout << " File 1: Histograms not found: " << histoName <<   endl;
-    return -1;
+    cout << " Histograms not found: " << histoName <<   endl;  return -1;
     }
+  histos.push_back(h);
+  titles.push_back(histoTitle);
+  plotter->plot(histos,graphConfigurations1D,titles,plotName,landscapeLinear,TString("Mult"), 0.0,2000.0,TString("N"),0.0, 100000.0,
+                0.20, 0.75, 0.50, 0.9, 0.05);
+  histos.clear();
+  titles.clear();
 
-    histosPt.push_back(h1);
-    histosPt.push_back(h2);
-    titles.push_back(particleName+" 165");
-    titles.push_back(particleName+" 180");
-    }
 
-  TString plotNameBase = "TherminatorDensities180Vs165_";
-  TString plotName;
+  // Net Charge
+  histoName  = histoNameBase + "q";
+  histoTitle = histoTitleBase + "Net Q";
+  plotName   = "Global_NetCharge";
+  h  = (TH1*) file.Get(histoName);
+  if (!h)  { cout << " Histograms not found: " << histoName <<   endl;  return -1; }
+  histos.push_back(h);
+  titles.push_back(histoTitle);
+  plotter->plot(histos,graphConfigurations1D,titles,plotName,landscapeLinear,TString("Net Q"), -50.0, 50.0,TString("N"),0.0, 80000.0,
+                0.20, 0.75, 0.50, 0.9, 0.05);
+  histos.clear();
+  titles.clear();
 
-  vector<TH1*>    histosSet;
-  //vector<TH1*>    histosY;
-  vector<TString> titlesSet;
 
-  for (int iSet=0;iSet<10;iSet++)
-    {
-    plotName = plotNameBase;
-    plotName += iSet;
-    histosSet.clear();
-    titlesSet.clear();
-    for (int iHisto=0;iHisto<2;iHisto++)
-      {
-      int index = iSet*2 + iHisto;
-      histosSet.push_back(histosPt[index]);
-      titlesSet.push_back(titles[index]);
-      }
-    plotter->plot(histosSet,graphConfigurations1D,titlesSet,plotName,landscapeLogY,TString("pT"), 0.0, 5.0,TString("#rho_{1}(pT)"),1.0E-7, 1.0E3,
-                0.50, 0.6, 0.65, 0.9, 0.04);
-    }
+  // Net strangeness
+  histoName  = histoNameBase + "s";
+  histoTitle = histoTitleBase + "Net S";
+  plotName   = "Global_NetStrangeness";
+  h  = (TH1*) file.Get(histoName);
+  if (!h)  { cout << " Histograms not found: " << histoName <<   endl;  return -1; }
+  histos.push_back(h);
+  titles.push_back(histoTitle);
+  plotter->plot(histos,graphConfigurations1D,titles,plotName,landscapeLinear,TString("Net S"), -50.0, 50.0,TString("N"),0.0, 10000.0,
+                0.20, 0.75, 0.50, 0.9, 0.05);
+  histos.clear();
+  titles.clear();
+
+  // Net baryon
+  histoName  = histoNameBase + "b";
+  histoTitle = histoTitleBase + "Net B";
+  plotName   = "Global_NetBaryon";
+  h  = (TH1*) file.Get(histoName);
+  if (!h)  { cout << " Histograms not found: " << histoName <<   endl;  return -1; }
+  histos.push_back(h);
+  titles.push_back(histoTitle);
+  plotter->plot(histos,graphConfigurations1D,titles,plotName,landscapeLinear,TString("Net B"), -50.0, 50.0,TString("N"),0.0, 10000.0,
+                0.20, 0.75, 0.50, 0.9, 0.05);
+  histos.clear();
+  titles.clear();
+
+
+
 
   plotter->printAllCanvas(outputPath, printGif, printPdf, printSvg, 0, printC);
+
+
   }
   catch (CAP::TaskException exception)
   {

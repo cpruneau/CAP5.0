@@ -46,85 +46,89 @@ void GlobalAnalyzer::setDefaultConfiguration()
   addParameter("SetEvent",             true);
   addParameter("FillCorrelationHistos",false);
   addParameter("Fill2D",               false);
-  addParameter("nBins_n",              100);
-  addParameter("nBins_n2",             20);
+  addParameter("nBins_n",              500);
+  addParameter("nBins_n2",              50);
   addParameter("Min_n",                0.0);
-  addParameter("Max_n",                1000.0);
-  addParameter("range_n",              1000.0),
-  addParameter("nBins_e",              100);
-  addParameter("nBins_e2",             20);
+  addParameter("Max_n",                5000.0);
+  addParameter("nBins_e",              500);
+  addParameter("nBins_e2",              50);
   addParameter("Min_e",                0.0);
-  addParameter("Max_e",                1000.0);
-  addParameter("range_e",              1000.0),
-  addParameter("nBins_q",              100);
-  addParameter("nBins_q2",             20);
-  addParameter("Min_q",                -50.0);
-  addParameter("Max_q",                50.0);
-  addParameter("range_n",              100.0),
-  addParameter("nBins_b",              100);
-  addParameter("nBins_b2",             20);
-  addParameter("Min_b",                -50.0);
-  addParameter("Max_b",                50.0);
-  addParameter("range_b",              100.0);
-  addParameter("nBins_ptSum",          100);
-  addParameter("nBins_ptSum2",         20);
-  addParameter("Min_ptSum",            0.0);
-  addParameter("Max_ptSum",            100.0);
-  addParameter("nBins_ptAvg",          200);
-  addParameter("nBins_ptAvg2",         40);
-  addParameter("Min_ptAvg",            0.0);
-  addParameter("Max_ptAvg",            2.0);
+  addParameter("Max_e",                10000.0);
+  addParameter("nBins_q",              200);
+  addParameter("nBins_q2",              20);
+  addParameter("Min_q",                -100.0);
+  addParameter("Max_q",                100.0);
+  addParameter("nBins_s",              200);
+  addParameter("nBins_s2",              20);
+  addParameter("Min_s",                -100.0);
+  addParameter("Max_s",                100.0);
+  addParameter("nBins_b",              200);
+  addParameter("nBins_b2",              20);
+  addParameter("Min_b",                -100.0);
+  addParameter("Max_b",                100.0);
+
+  addParameter("nBins_ptSum",           100.0);
+  addParameter("nBins_ptSum2",          10.0);
+  addParameter("Min_ptSum",             0.0);
+  addParameter("Max_ptSum",             10000.0);
+  addParameter("nBins_ptAvg",           100.0);
+  addParameter("nBins_ptAvg2",          10.0);
+  addParameter("Min_ptAvg",             0.0);
+  addParameter("Max_ptAvg",             10.0);
+
 }
 
 void GlobalAnalyzer::configure()
 {
   EventTask::configure();
   setEvent = getValueBool("SetEvent");
-  if (reportInfo(__FUNCTION__))
-    {
-    cout << endl;
-    printItem("EventsAnalyze");
-    printItem("EventsUseStream0");
-    printItem("EventsUseStream1");
-    printItem("EventsUseStream2");
-    printItem("EventsUseStream3");
-    printItem("HistogramsCreate");
-    printItem("HistogramsExport");
-    printItem("EventsUseStream0");
-    printItem("EventsUseStream1");
-    printItem("SetEvent");
-    printItem("FillCorrelationHistos");
-    printItem("Fill2D");
-    printItem("nBins_n");
-    printItem("nBins_n2");
-    printItem("Min_n");
-    printItem("Max_n");
-    printItem("range_n");
-    printItem("nBins_e");
-    printItem("nBins_e2");
-    printItem("Min_e");
-    printItem("Max_e");
-    printItem("range_e");
-    printItem("nBins_q");
-    printItem("nBins_q2");
-    printItem("Min_q");
-    printItem("Max_q");
-    printItem("range_n");
-    printItem("nBins_b");
-    printItem("nBins_b2");
-    printItem("Min_b");
-    printItem("Max_b");
-    printItem("range_b");
-    printItem("nBins_ptSum");
-    printItem("nBins_ptSum2");
-    printItem("Min_ptSum");
-    printItem("Max_ptSum");
-    printItem("nBins_ptAvg");
-    printItem("nBins_ptAvg2");
-    printItem("Min_ptAvg");
-    printItem("Max_ptAvg");
-    cout << endl;
-    }
+//  if (reportInfo(__FUNCTION__))
+//    {
+//    cout << endl;
+//    printItem("EventsAnalyze");
+//    printItem("EventsUseStream0");
+//    printItem("EventsUseStream1");
+//    printItem("EventsUseStream2");
+//    printItem("EventsUseStream3");
+//    printItem("HistogramsCreate");
+//    printItem("HistogramsExport");
+//    printItem("EventsUseStream0");
+//    printItem("EventsUseStream1");
+//    printItem("SetEvent");
+//    printItem("FillCorrelationHistos");
+//    printItem("Fill2D");
+//    printItem("nBins_n");
+//    printItem("nBins_n2");
+//    printItem("Min_n");
+//    printItem("Max_n");
+//    printItem("range_n");
+//    printItem("nBins_e");
+//    printItem("nBins_e2");
+//    printItem("Min_e");
+//    printItem("Max_e");
+//    printItem("range_e");
+//    printItem("nBins_q");
+//    printItem("nBins_q2");
+//    printItem("Min_q");
+//    printItem("Max_q");
+//    printItem("range_n");
+//    printItem("nBins_b");
+//    printItem("nBins_b2");
+//    printItem("Min_b");
+//    printItem("Max_b");
+//    printItem("nBins_s");
+//    printItem("Min_s");
+//    printItem("Max_s");
+//    printItem("nBins_ptSum");
+//    printItem("nBins_ptSum2");
+//    printItem("Min_ptSum");
+//    printItem("Max_ptSum");
+//    printItem("nBins_ptAvg");
+//    printItem("nBins_ptAvg2");
+//    printItem("Min_ptAvg");
+//    printItem("Max_ptAvg");
+//    cout << endl;
+//    }
 }
 
 void GlobalAnalyzer::initializeHistogramManager()
@@ -153,7 +157,7 @@ void GlobalAnalyzer::createHistograms()
 {
   if (reportStart(__FUNCTION__))
     ;
-  String bn  = getParentName( );
+  String bn  = getName( );
   if (reportInfo(__FUNCTION__))
     {
     printItem("Creating HistogramGroup for",bn);
@@ -255,7 +259,7 @@ void GlobalAnalyzer::analyzeEvent()
       EventProperties * ep = event.getEventProperties();
       ep->fill(n,ptSum, e,q,s,b);
       }
-
+    //cout << "Global counts " << n[0] << " charge: " << q[0]  << endl;
     GlobalHistos * globalHistos = (GlobalHistos * ) histogramManager.getGroup(0,iEventFilter);
     globalHistos->fill(n,ptSum,e,q,s,b,1.0);
     }

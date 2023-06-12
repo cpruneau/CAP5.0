@@ -68,6 +68,7 @@ protected:
   int    leptonTau;      //!<Tau lepton number
   bool   stable;         //!<defines whether this ParticleType is stable
   bool   weakStable;     //!<particle is weakly stable (i.e., decays by weak-decay)
+  int    antiParticleIndex; //!< index (in the active DB) of the antiparticle of this particle.
   std::vector<ParticleDecayMode> decayModes; //!<Array of decay modes
   SelectionGenerator decayRndmSelector;
 
@@ -400,6 +401,12 @@ public:
   }
 
 
+  inline int getAntiParticleIndex() const
+  {
+  return antiParticleIndex;
+  }
+
+
   void setIndex(int _index);
   void setName(const String & _name);
   void setTitle(const String & _title);
@@ -427,6 +434,8 @@ public:
   void setNumberAB(int value);
   void setNumberT(int  value);
   void setNumberAT(int value);
+  void setAntiParticleIndex(int value);
+
   bool isHiggs() const;
   bool isFermion() const;
   bool isBoson() const;

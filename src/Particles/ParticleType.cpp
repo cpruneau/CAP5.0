@@ -63,6 +63,7 @@ leptonMuon(0),
 leptonTau(0),
 stable(0),
 weakStable(0),
+antiParticleIndex(-1),
 decayModes(),
 decayRndmSelector(),
 spinFactor(1.0),
@@ -398,6 +399,14 @@ void  ParticleType::setNumberC(int  value) { nc  = value;}
 void  ParticleType::setNumberAC(int value) { nac = value;}
 void  ParticleType::setNumberB(int  value) { nb  = value;}
 void  ParticleType::setNumberAB(int value) { nab = value;}
+void  ParticleType::setNumberT(int  value) { nt = value;}
+void  ParticleType::setNumberAT(int value) { nat = value;}
+
+void  ParticleType::setAntiParticleIndex(int value)
+{
+  antiParticleIndex = value;
+}
+
 
 //!
 //! Return true if this particle is a Higgs  boson

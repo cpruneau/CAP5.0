@@ -76,6 +76,9 @@ void GlobalHistos::createHistograms()
   int nBins_b2          = configuration.getValueInt(ppn,"nBins_b2");
   double min_b          = configuration.getValueDouble(ppn,"Min_b");
   double max_b          = configuration.getValueDouble(ppn,"Max_b");
+  int nBins_s           = configuration.getValueInt(ppn,"nBins_s");
+  double min_s          = configuration.getValueDouble(ppn,"Min_s");
+  double max_s          = configuration.getValueDouble(ppn,"Max_s");
   int nBins_ptSum       = configuration.getValueInt(ppn,"nBins_ptSum");
   int nBins_ptSum2      = configuration.getValueInt(ppn,"nBins_ptSum2");
   double min_ptSum      = configuration.getValueDouble(ppn,"Min_ptSum");
@@ -88,36 +91,39 @@ void GlobalHistos::createHistograms()
   if (reportInfo(__FUNCTION__))
     {
     cout << endl;
-    cout << "  G:Parent Task Name....................: " << ptn << endl;
-    cout << "  G:Parent Path Name....................: " << ppn << endl;
-    cout << "  G:Histo Base Name.....................: " << bn << endl;
-    cout << "  G:nParticleFilters....................: "  <<  nParticleFilters << endl;
-    cout << "  G:FillCorrelationHistos...............: "  <<  fillCorrelationHistos << endl;
-    cout << "  G:Fill2D..............................: "  <<  fill2D << endl;
-    cout << "  G:nBins_n.............................: "  <<  nBins_n << endl;
-    cout << "  G:nBins_n2............................: "  <<  nBins_n2 << endl;
-    cout << "  G:Min_n...............................: "  <<  min_n << endl;
-    cout << "  G:Max_n...............................: "  <<  max_n << endl;
-    cout << "  G:nBins_e.............................: "  <<  nBins_e << endl;
-    cout << "  G:nBins_e2............................: "  <<  nBins_e2 << endl;
-    cout << "  G:Min_e...............................: "  <<  min_e << endl;
-    cout << "  G:Max_e...............................: "  <<  max_e << endl;
-    cout << "  G:nBins_q.............................: "  <<  nBins_q << endl;
-    cout << "  G:nBins_q2............................: "  <<  nBins_q2 << endl;
-    cout << "  G:Min_q...............................: "  <<  min_q << endl;
-    cout << "  G:Max_q...............................: "  <<  max_q << endl;
-    cout << "  G:nBins_b.............................: "  <<  nBins_b << endl;
-    cout << "  G:nBins_b2............................: "  <<  nBins_b2 << endl;
-    cout << "  G:Min_b...............................: "  <<  min_b << endl;
-    cout << "  G:Max_b...............................: "  <<  max_b << endl;
-    cout << "  G:nBins_ptSum.........................: "  <<  nBins_ptSum << endl;
-    cout << "  G:nBins_ptSum2........................: "  <<  nBins_ptSum2 << endl;
-    cout << "  G:Min_ptSum...........................: "  <<  min_ptSum << endl;
-    cout << "  G:Max_ptSum...........................: "  <<  max_ptSum << endl;
-    cout << "  G:nBins_ptAvg.........................: "  <<  nBins_ptAvg << endl;
-    cout << "  G:nBins_ptAvg2........................: "  <<  nBins_ptAvg2 << endl;
-    cout << "  G:Min_ptAvg...........................: "  <<  min_ptAvg << endl;
-    cout << "  G:Max_ptAvg...........................: "  <<  max_ptAvg << endl;
+    cout << "  Global:Parent Task Name....................: " << ptn << endl;
+    cout << "  Global:Parent Path Name....................: " << ppn << endl;
+    cout << "  Global:Histo Base Name.....................: " << bn << endl;
+    cout << "  Global:nParticleFilters....................: "  <<  nParticleFilters << endl;
+    cout << "  Global:FillCorrelationHistos...............: "  <<  fillCorrelationHistos << endl;
+    cout << "  Global:Fill2D..............................: "  <<  fill2D << endl;
+    cout << "  Global:nBins_n.............................: "  <<  nBins_n << endl;
+    cout << "  Global:nBins_n2............................: "  <<  nBins_n2 << endl;
+    cout << "  Global:Min_n...............................: "  <<  min_n << endl;
+    cout << "  Global:Max_n...............................: "  <<  max_n << endl;
+    cout << "  Global:nBins_e.............................: "  <<  nBins_e << endl;
+    cout << "  Global:nBins_e2............................: "  <<  nBins_e2 << endl;
+    cout << "  Global:Min_e...............................: "  <<  min_e << endl;
+    cout << "  Global:Max_e...............................: "  <<  max_e << endl;
+    cout << "  Global:nBins_q.............................: "  <<  nBins_q << endl;
+    cout << "  Global:nBins_q2............................: "  <<  nBins_q2 << endl;
+    cout << "  Global:Min_q...............................: "  <<  min_q << endl;
+    cout << "  Global:Max_q...............................: "  <<  max_q << endl;
+    cout << "  Global:nBins_b.............................: "  <<  nBins_b << endl;
+    cout << "  Global:nBins_b2............................: "  <<  nBins_b2 << endl;
+    cout << "  Global:Min_b...............................: "  <<  min_b << endl;
+    cout << "  Global:Max_b...............................: "  <<  max_b << endl;
+    cout << "  Global:nBins_s.............................: "  <<  nBins_s << endl;
+    cout << "  Global:Min_s...............................: "  <<  min_s << endl;
+    cout << "  Global:Max_s...............................: "  <<  max_s << endl;
+    cout << "  Global:nBins_ptSum.........................: "  <<  nBins_ptSum << endl;
+    cout << "  Global:nBins_ptSum2........................: "  <<  nBins_ptSum2 << endl;
+    cout << "  Global:Min_ptSum...........................: "  <<  min_ptSum << endl;
+    cout << "  Global:Max_ptSum...........................: "  <<  max_ptSum << endl;
+    cout << "  Global:nBins_ptAvg.........................: "  <<  nBins_ptAvg << endl;
+    cout << "  Global:nBins_ptAvg2........................: "  <<  nBins_ptAvg2 << endl;
+    cout << "  Global:Min_ptAvg...........................: "  <<  min_ptAvg << endl;
+    cout << "  Global:Max_ptAvg...........................: "  <<  max_ptAvg << endl;
     }
 
   //setSeverityLevel(MessageLogger::Debug);
@@ -129,7 +135,7 @@ void GlobalHistos::createHistograms()
   h_n.push_back(     createHistogram(createName(bn,pfName1,"n"), nBins_n, min_n,  max_n, "n","N") );
   h_e.push_back(     createHistogram(createName(bn,pfName1,"e"), nBins_e, min_e,  max_e, "e","N") );
   h_q.push_back(     createHistogram(createName(bn,pfName1,"q"), nBins_q, min_q,  max_q, "q","N") );
-  h_s.push_back(     createHistogram(createName(bn,pfName1,"s"), nBins_b, min_b,  max_b, "s","N") );
+  h_s.push_back(     createHistogram(createName(bn,pfName1,"s"), nBins_s, min_s,  max_s, "s","N") );
   h_b.push_back(     createHistogram(createName(bn,pfName1,"b"), nBins_b, min_b,  max_b, "b","N") );
   h_ptSum.push_back( createHistogram(createName(bn,pfName1,"ptSum"), nBins_ptSum, min_ptSum,  max_ptSum, "ptSum","N") );
   h_ptAvg.push_back( createHistogram(createName(bn,pfName1,"ptAvg"), nBins_ptAvg, min_ptAvg,  max_ptAvg, "ptAvg","N") );
@@ -189,12 +195,12 @@ void GlobalHistos::importHistograms(TFile & inputFile)
   if (reportInfo(__FUNCTION__))
     {
     cout << endl;
-    cout << "  G:Parent Task Name....................: " << ptn << endl;
-    cout << "  G:Parent Path Name....................: " << ppn << endl;
-    cout << "  G:Histo Base Name.....................: " << bn << endl;
-    cout << "  G:nParticleFilters....................: "  <<  nParticleFilters << endl;
-    cout << "  G:FillCorrelationHistos...............: "  <<  fillCorrelationHistos << endl;
-    cout << "  G:Fill2D..............................: "  <<  fill2D << endl;
+    cout << "  Global:Parent Task Name....................: " << ptn << endl;
+    cout << "  Global:Parent Path Name....................: " << ppn << endl;
+    cout << "  Global:Histo Base Name.....................: " << bn << endl;
+    cout << "  Global:nParticleFilters....................: "  <<  nParticleFilters << endl;
+    cout << "  Global:FillCorrelationHistos...............: "  <<  fillCorrelationHistos << endl;
+    cout << "  Global:Fill2D..............................: "  <<  fill2D << endl;
     }
 
   for (unsigned int k1=0; k1<nParticleFilters; k1++)
@@ -258,7 +264,7 @@ void GlobalHistos::fill(vector<double> & n, vector<double> & ptSum, vector<doubl
   double pts = ptSum[k1];
   double ptAvg = 0.0;
   if (nPart>0) ptAvg = pts/nPart;
-  //cout << "nPart:" << nPart << " pts:" << pts << " ptAvg:" << ptAvg << endl;
+  //cout << "nPart:" << nPart << " pts:" << pts << " ptAvGlobal:" << ptAvg << endl;
   h_n[k1]->Fill(n[k1],weight);
   h_e[k1]->Fill(e[k1],weight);
   h_q[k1]->Fill(q[k1],weight);
