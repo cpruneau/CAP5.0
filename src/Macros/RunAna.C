@@ -96,6 +96,7 @@ int RunAna(TString configFile,
     cout << "DB path.................... : " << dbPath << endl;
     cout << "DB path particleData....... : " << dbPathParticleData << endl;
     cout << "DB path TherminatorIni..... : " << dbPathTherminatorIni << endl;
+    configuration.addParameter("Run:Analysis:GlobalGen:HistogramsExportPath",histogramPath);
     configuration.addParameter("Run:Analysis:SingleGen:HistogramsExportPath",histogramPath);
     configuration.addParameter("Run:Analysis:PairGen:HistogramsExportPath",histogramPath);
     configuration.addParameter("Run:ParticleDb:ParticleDbImportPath",dbPathParticleData);
