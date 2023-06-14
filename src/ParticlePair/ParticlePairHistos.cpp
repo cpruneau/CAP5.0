@@ -539,35 +539,5 @@ void ParticlePairHistos::fill(Particle & particle1, Particle & particle2, double
       h_DptDpt_DyDphi ->AddBinContent(iGDeltaEtaDeltaPhi, weight*pt1*pt2); h_DptDpt_DyDphi->SetEntries(h_DptDpt_DyDphi->GetEntries()+1);
       }
     }
-
-  //if (fillP2)h_DptDpt_phiPhi ->AddBinContent(iG,weight*dpt1*dpt2);
-
-//  if (fillEta)
-//    {
-//    double deta = eta1 - eta2;
-//    h_n2_etaEta   ->Fill(eta1,eta2);
-//    h_n2_DetaDphi ->Fill(deta,dphi);
-//    if (fillP2)
-//      {
-//      h_n2_etaEta->SetEntries(h_n2_etaEta->GetEntries()+nPairsEta);
-//      h_n2_DetaDphi->SetEntries(h_n2_DetaDphi->GetEntries()+nPairsEta);
-//
-//      h_DptDpt_etaEta->Fill(eta1,eta2,weight*pt1*pt2);  // needs attention
-//      h_DptDpt_DetaDphi->Fill(deta,dphi,weight*pt1*pt2); // needs attention
-//      }
-//    }
-//  if (fillY)
-//    {
-//    double dy = y1 - y2;
-//    h_n2_yY     ->Fill(y1,y2);
-//    h_n2_DyDphi ->Fill(dy,dphi);
-//    if (fillP2)
-//      {
-//      h_DptDpt_yY->Fill(y1,y2,weight*pt1*pt2); // needs attention
-//      h_DptDpt_DyDphi->Fill(dy,dphi,weight*pt1*pt2); // needs attention
-//      }
-//    }
-//  if (reportInfo(__FUNCTION__))
-//    ;
 }
 
