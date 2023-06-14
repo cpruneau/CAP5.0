@@ -294,248 +294,279 @@ void ParticlePairHistos::importHistograms(TFile & inputFile)
 
 void ParticlePairHistos::fill(vector<ParticleDigit*> & particle1, vector<ParticleDigit*> & particle2, bool same, double weight)
 {
-  double nPairs    = 0;
-  double nPairsEta = 0;
-  double nPairsY   = 0;
-  int iG;
-
-  for (unsigned int iPart_1=0; iPart_1<particle1.size(); iPart_1++)
-    {
-    float pt1 = particle1[iPart_1]->pt;
-    float dpt1 = pt1; // - avgPt1
-    unsigned int iPt_1  = particle1[iPart_1]->iPt;
-    unsigned int iPhi_1 = particle1[iPart_1]->iPhi;
-    unsigned int iEta_1 = particle1[iPart_1]->iEta;
-    unsigned int iY_1   = particle1[iPart_1]->iY;
-
-    for (unsigned int iPart_2=(same?iPart_1+1: 0); iPart_2<particle2.size(); iPart_2++)
-      {
-      float pt2 = particle2[iPart_2]->pt;
-      float dpt2 = pt2; // - avgPt2
-      unsigned int iPt_2  = particle2[iPart_2]->iPt;
-      unsigned int iPhi_2 = particle2[iPart_2]->iPhi;
-      unsigned int iEta_2 = particle2[iPart_2]->iEta;
-      unsigned int iY_2   = particle2[iPart_2]->iY;
-
-      nPairs++;
-      iG = h_n2_ptpt->GetBin(iPt_1,iPt_2);
-      h_n2_ptpt->AddBinContent(iG,  weight);
-
-      iG = h_n2_phiPhi->GetBin(iPhi_1,iPhi_2);
-      h_n2_phiPhi->AddBinContent(iG,  weight);
-      if (fillP2)
-        {
-        h_DptDpt_phiPhi ->AddBinContent(iG,weight*dpt1*dpt2);
-        }
-      if (same)
-        {
-        nPairs++;
-        iG = h_n2_ptpt->GetBin(iPt_2,iPt_1);
-        h_n2_ptpt->AddBinContent(iG,  weight);
-        iG = h_n2_phiPhi->GetBin(iPhi_2,iPhi_1);
-        h_n2_phiPhi->AddBinContent(iG,  weight);
-        if (fillP2)
-          {
-          h_DptDpt_phiPhi->AddBinContent(iG,weight*pt1*pt2);
-          }
-        }
-
-      if (fillEta && iEta_1!=0 && iEta_2!=0 )
-        {
-        nPairsEta++;
-        // delta-eta maps onto a 2n-1 range i.e., 0 to 2n-2
-        int iDeltaEta  = iEta_1-iEta_2 + nBins_eta-1;
-        int iDeltaPhi  = iPhi_1-iPhi_2;
-        if (iDeltaPhi < 0) iDeltaPhi += nBins_phi;
-
-        iG = h_n2_etaEta->GetBin(iEta_1,iEta_2);
-        h_n2_etaEta->AddBinContent(iG,weight);
-        if (fillP2)
-          {
-          h_DptDpt_etaEta->AddBinContent(iG,weight*pt1*pt2);
-          }
-
-        iG = h_n2_DetaDphi->GetBin(iDeltaEta+1,iDeltaPhi+1);
-        h_n2_DetaDphi->AddBinContent(iG,weight);
-        if (fillP2)
-          {
-          h_DptDpt_DetaDphi->AddBinContent(iG,weight*pt1*pt2);
-          }
-        if (same)
-          {
-          nPairsEta++;
-          // delta-eta maps onto a 2n-1 range i.e., 0 to 2n-2
-          iDeltaEta  = iEta_2-iEta_1 + nBins_eta-1;
-          iDeltaPhi  = iPhi_2-iPhi_1;
-          if (iDeltaPhi < 0) iDeltaPhi += nBins_phi;
-          iG = h_n2_etaEta->GetBin(iEta_2,iEta_1);
-          h_n2_etaEta->AddBinContent(iG,weight);
-          if (fillP2)
-            {
-            h_DptDpt_etaEta->AddBinContent(iG,weight*pt1*pt2);
-            }
-
-          iG = h_n2_DetaDphi->GetBin(iDeltaEta+1,iDeltaPhi+1);
-          h_n2_DetaDphi->AddBinContent(iG,weight);
-          if (fillP2)
-            {
-            h_DptDpt_DetaDphi->AddBinContent(iG,weight*pt1*pt2);
-            }
-          }
-        }
-
-      if (fillY && iY_1!=0 && iY_2!=0 )
-        {
-        nPairsY++;
-        int iDeltaY    = iY_1-iY_2 + nBins_y-1;
-        int iDeltaPhi  = iPhi_1-iPhi_2;
-        if (iDeltaPhi < 0) iDeltaPhi += nBins_phi;
-
-        iG = h_n2_yY->GetBin(iY_1,iY_2);
-        h_n2_yY->AddBinContent(iG,weight);
-        if (fillP2)
-          {
-          h_DptDpt_yY->AddBinContent(iG,weight*pt1*pt2);
-          }
-
-        iG = h_n2_DyDphi->GetBin(iDeltaY+1,iDeltaPhi+1);
-        h_n2_DyDphi  ->AddBinContent(iG,weight);
-        if (fillP2)
-          {
-          h_DptDpt_DyDphi->AddBinContent(iG,weight*pt1*pt2);
-          }
-        if (same)
-          {
-          nPairsY++;
-          int iDeltaY   = iY_2-iY_1 + nBins_y-1;
-          int iDeltaPhi  = iPhi_2-iPhi_1;
-          if (iDeltaPhi < 0) iDeltaPhi += nBins_phi;
-
-          iG = h_n2_yY->GetBin(iY_1,iY_2);
-          h_n2_yY->AddBinContent(iG,weight);
-          if (fillP2)
-            {
-            h_DptDpt_yY->AddBinContent(iG,weight*pt1*pt2);
-            }
-
-          iG = h_n2_DyDphi->GetBin(iDeltaY+1,iDeltaPhi+1);
-          h_n2_DyDphi  ->AddBinContent(iG,weight);
-          if (fillP2)
-            {
-            h_DptDpt_DyDphi->AddBinContent(iG,weight*pt1*pt2);
-            }
-          }
-        }
-
-      //      if (fill3D)
-      //        {
-      //        //decompose(double *pa,double *pb,double &qlong,double &qout,double &qside,double &qinv)
-      //
-      //        // Method from Scott Pratt to do three dimensional qinv components
-      //        double pt,s,Mlong,roots;
-      //        double ptot[4],q[4];
-      //        const int g[4]={1,-1,-1,-1};
-      //        int alpha;
-      //        qinv=0.0;
-      //        s=0.0;
-      //        for(alpha=0;alpha<4;alpha++)
-      //          {
-      //          ptot[alpha]=pa[alpha]+pb[alpha];
-      //          s+=g[alpha]*ptot[alpha]*ptot[alpha];
-      //          q[alpha]=pa[alpha]-pb[alpha];
-      //          qinv-=g[alpha]*q[alpha]*q[alpha];
-      //          }
-      //        pt=sqrt(ptot[1]*ptot[1]+ptot[2]*ptot[2]);
-      //        Mlong=sqrt(s+pt*pt);
-      //        roots=sqrt(s);
-      //
-      //        qside=(ptot[1]*q[2]-ptot[2]*q[1])/pt;
-      //        qlong=(ptot[0]*q[3]-ptot[3]*q[0])/Mlong;
-      //        qout=(roots/Mlong)*(ptot[1]*q[1]+ptot[2]*q[2])/pt;
-      //        qinv=sqrt(qinv);
-      //        }
-      }
-    }
-
-  // Update number of entries
-  h_n2_ptpt->SetEntries(h_n2_ptpt->GetEntries()+nPairs);
-  h_n2_phiPhi->SetEntries(h_n2_phiPhi->GetEntries()+nPairs);
-  if (fillP2)
-    {
-    h_DptDpt_phiPhi->SetEntries(h_DptDpt_phiPhi->GetEntries()+nPairs);
-    }
-  if (fillEta)
-    {
-    h_n2_etaEta->SetEntries(h_n2_etaEta->GetEntries()+nPairsEta);
-    h_n2_DetaDphi->SetEntries(h_n2_DetaDphi->GetEntries()+nPairsEta);
-    if (fillP2)
-      {
-      h_DptDpt_etaEta->SetEntries(h_DptDpt_etaEta->GetEntries()+nPairsEta);
-      h_DptDpt_DetaDphi->SetEntries(h_DptDpt_DetaDphi->GetEntries()+nPairsEta);
-      }
-    }
-
-  if (fillY)
-    {
-    h_n2_yY->SetEntries(h_n2_yY->GetEntries()+nPairsY);
-    h_n2_DyDphi->SetEntries(h_n2_DyDphi->GetEntries()+nPairsY);
-    if (fillP2)
-      {
-      h_DptDpt_yY->SetEntries(h_DptDpt_yY->GetEntries()+nPairsY);
-      h_DptDpt_DyDphi->SetEntries(h_DptDpt_DyDphi->GetEntries()+nPairsY);
-      }
-    }
-  h_n2->Fill(double(nPairs),weight);
+//  double nPairs    = 0;
+//  double nPairsEta = 0;
+//  double nPairsY   = 0;
+//  int iG;
+//
+//  for (unsigned int iPart1=0; iPart1<particle1.size(); iPart1++)
+//    {
+//    float pt1 = particle1[iPart1]->pt;
+//    float dpt1 = pt1; // - avgPt1
+//    unsigned int iPt_1  = particle1[iPart1]->iPt;
+//    unsigned int iPhi_1 = particle1[iPart1]->iPhi;
+//    unsigned int iEta_1 = particle1[iPart1]->iEta;
+//    unsigned int iY_1   = particle1[iPart1]->iY;
+//
+//    for (unsigned int iPart2=(same?iPart1+1: 0); iPart2<particle2.size(); iPart2++)
+//      {
+//      float pt2 = particle2[iPart2]->pt;
+//      float dpt2 = pt2; // - avgPt2
+//      unsigned int iPt_2  = particle2[iPart2]->iPt;
+//      unsigned int iPhi_2 = particle2[iPart2]->iPhi;
+//      unsigned int iEta_2 = particle2[iPart2]->iEta;
+//      unsigned int iY_2   = particle2[iPart2]->iY;
+//
+//      nPairs++;
+//      iG = h_n2_ptpt->GetBin(iPt_1,iPt_2);
+//      h_n2_ptpt->AddBinContent(iG,  weight);
+//
+//      iG = h_n2_phiPhi->GetBin(iPhi_1,iPhi_2);
+//      h_n2_phiPhi->AddBinContent(iG,  weight);
+//      if (fillP2)
+//        {
+//        h_DptDpt_phiPhi ->AddBinContent(iG,weight*dpt1*dpt2);
+//        }
+//      if (same)
+//        {
+//        nPairs++;
+//        iG = h_n2_ptpt->GetBin(iPt_2,iPt_1);
+//        h_n2_ptpt->AddBinContent(iG,  weight);
+//        iG = h_n2_phiPhi->GetBin(iPhi_2,iPhi_1);
+//        h_n2_phiPhi->AddBinContent(iG,  weight);
+//        if (fillP2)
+//          {
+//          h_DptDpt_phiPhi->AddBinContent(iG,weight*pt1*pt2);
+//          }
+//        }
+//
+//      if (fillEta && iEta_1!=0 && iEta_2!=0 )
+//        {
+//        nPairsEta++;
+//        // delta-eta maps onto a 2n-1 range i.e., 0 to 2n-2
+//        int iDeltaEta  = iEta_1-iEta_2 + nBins_eta-1;
+//        int iDeltaPhi  = iPhi_1-iPhi_2;
+//        if (iDeltaPhi < 0) iDeltaPhi += nBins_phi;
+//
+//        iG = h_n2_etaEta->GetBin(iEta_1,iEta_2);
+//        h_n2_etaEta->AddBinContent(iG,weight);
+//        if (fillP2)
+//          {
+//          h_DptDpt_etaEta->AddBinContent(iG,weight*pt1*pt2);
+//          }
+//
+//        iG = h_n2_DetaDphi->GetBin(iDeltaEta+1,iDeltaPhi+1);
+//        h_n2_DetaDphi->AddBinContent(iG,weight);
+//        if (fillP2)
+//          {
+//          h_DptDpt_DetaDphi->AddBinContent(iG,weight*pt1*pt2);
+//          }
+//        if (same)
+//          {
+//          nPairsEta++;
+//          // delta-eta maps onto a 2n-1 range i.e., 0 to 2n-2
+//          iDeltaEta  = iEta_2-iEta_1 + nBins_eta-1;
+//          iDeltaPhi  = iPhi_2-iPhi_1;
+//          if (iDeltaPhi < 0) iDeltaPhi += nBins_phi;
+//          iG = h_n2_etaEta->GetBin(iEta_2,iEta_1);
+//          h_n2_etaEta->AddBinContent(iG,weight);
+//          if (fillP2)
+//            {
+//            h_DptDpt_etaEta->AddBinContent(iG,weight*pt1*pt2);
+//            }
+//
+//          iG = h_n2_DetaDphi->GetBin(iDeltaEta+1,iDeltaPhi+1);
+//          h_n2_DetaDphi->AddBinContent(iG,weight);
+//          if (fillP2)
+//            {
+//            h_DptDpt_DetaDphi->AddBinContent(iG,weight*pt1*pt2);
+//            }
+//          }
+//        }
+//
+//      if (fillY && iY_1!=0 && iY_2!=0 )
+//        {
+//        nPairsY++;
+//        int iDeltaY    = iY_1-iY_2 + nBins_y-1;
+//        int iDeltaPhi  = iPhi_1-iPhi_2;
+//        if (iDeltaPhi < 0) iDeltaPhi += nBins_phi;
+//
+//        iG = h_n2_yY->GetBin(iY_1,iY_2);
+//        h_n2_yY->AddBinContent(iG,weight);
+//        if (fillP2)
+//          {
+//          h_DptDpt_yY->AddBinContent(iG,weight*pt1*pt2);
+//          }
+//
+//        iG = h_n2_DyDphi->GetBin(iDeltaY+1,iDeltaPhi+1);
+//        h_n2_DyDphi  ->AddBinContent(iG,weight);
+//        if (fillP2)
+//          {
+//          h_DptDpt_DyDphi->AddBinContent(iG,weight*pt1*pt2);
+//          }
+//        if (same)
+//          {
+//          nPairsY++;
+//          int iDeltaY   = iY_2-iY_1 + nBins_y-1;
+//          int iDeltaPhi  = iPhi_2-iPhi_1;
+//          if (iDeltaPhi < 0) iDeltaPhi += nBins_phi;
+//
+//          iG = h_n2_yY->GetBin(iY_1,iY_2);
+//          h_n2_yY->AddBinContent(iG,weight);
+//          if (fillP2)
+//            {
+//            h_DptDpt_yY->AddBinContent(iG,weight*pt1*pt2);
+//            }
+//
+//          iG = h_n2_DyDphi->GetBin(iDeltaY+1,iDeltaPhi+1);
+//          h_n2_DyDphi  ->AddBinContent(iG,weight);
+//          if (fillP2)
+//            {
+//            h_DptDpt_DyDphi->AddBinContent(iG,weight*pt1*pt2);
+//            }
+//          }
+//        }
+//      }
+//    }
+//
+//  // Update number of entries
+//  h_n2_ptpt->SetEntries(h_n2_ptpt->GetEntries()+nPairs);
+//  h_n2_phiPhi->SetEntries(h_n2_phiPhi->GetEntries()+nPairs);
+//  if (fillP2)
+//    {
+//    h_DptDpt_phiPhi->SetEntries(h_DptDpt_phiPhi->GetEntries()+nPairs);
+//    }
+//  if (fillEta)
+//    {
+//    h_n2_etaEta->SetEntries(h_n2_etaEta->GetEntries()+nPairsEta);
+//    h_n2_DetaDphi->SetEntries(h_n2_DetaDphi->GetEntries()+nPairsEta);
+//    if (fillP2)
+//      {
+//      h_DptDpt_etaEta->SetEntries(h_DptDpt_etaEta->GetEntries()+nPairsEta);
+//      h_DptDpt_DetaDphi->SetEntries(h_DptDpt_DetaDphi->GetEntries()+nPairsEta);
+//      }
+//    }
+//
+//  if (fillY)
+//    {
+//    h_n2_yY->SetEntries(h_n2_yY->GetEntries()+nPairsY);
+//    h_n2_DyDphi->SetEntries(h_n2_DyDphi->GetEntries()+nPairsY);
+//    if (fillP2)
+//      {
+//      h_DptDpt_yY->SetEntries(h_DptDpt_yY->GetEntries()+nPairsY);
+//      h_DptDpt_DyDphi->SetEntries(h_DptDpt_DyDphi->GetEntries()+nPairsY);
+//      }
+//    }
+//  h_n2->Fill(double(nPairs),weight);
 }
 
 void ParticlePairHistos::fill(Particle & particle1, Particle & particle2, double weight)
 {
 //  if (reportInfo(__FUNCTION__))
 //    ;
-  LorentzVector & momentum1 = particle1.getMomentum();
-  double pt1   = momentum1.Pt();
-  //double e1    = momentum1.E();
-  double phi1  = momentum1.Phi();
-  double eta1  = momentum1.Eta();
-  double y1    = momentum1.Rapidity();
-  LorentzVector & momentum2 = particle2.getMomentum();
-  double pt2   = momentum2.Pt();
-  //double e2    = momentum2.E();
-  double phi2  = momentum2.Phi();
-  double eta2  = momentum2.Eta();
-  double y2    = momentum2.Rapidity();
-  if (phi1<0.0) phi1 += CAP::Math::twoPi();
-  if (phi2<0.0) phi2 += CAP::Math::twoPi();
-  double dphi = phi1 - phi2;
-  if (dphi<0.0) dphi += CAP::Math::twoPi();
-  else if (dphi>CAP::Math::twoPi()) dphi -= CAP::Math::twoPi();
 
-  h_n2_ptpt->Fill(pt1,pt2);
-  h_n2_phiPhi->Fill(phi1,phi2);
+ int iPhi1, iPt1, iEta1, iY1;
+  int iPhi2, iPt2, iEta2, iY2;
+  int iGPtPt;
+  int iGPhiPhi;
+  int iGEtaEta;
+  int iGYY;
+  int iGDeltaEtaDeltaPhi;
+  int iGDeltaYDeltaPhi;
+
+  LorentzVector & momentum1 = particle1.getMomentum();
+  double pt1   = momentum1.Pt();        iPt1 = getPtBinFor(pt1);
+  double phi1  = momentum1.Phi();       if (phi1<0.0) phi1 += CAP::Math::twoPi(); iPhi1 = getPhiBinFor(phi1);
+  double eta1  = momentum1.Eta();       iEta1 = fillEta ? getEtaBinFor(eta1) : 0;
+  double y1    = momentum1.Rapidity();  iY1   = fillY   ? getYBinFor(y1)     : 0;
+
+  LorentzVector & momentum2 = particle2.getMomentum();
+  double pt2   = momentum2.Pt();        iPt2 = getPtBinFor(pt2);
+  double phi2  = momentum2.Phi();       if (phi2<0.0) phi2 += CAP::Math::twoPi(); iPhi2 = getPhiBinFor(phi2);
+  double eta2  = momentum2.Eta();       iEta2 = fillEta ? getEtaBinFor(eta2) : 0;
+  double y2    = momentum2.Rapidity();  iY2   = fillY   ? getYBinFor(y2)     : 0;
+
+//  cout <<  "pt1:" << pt1 << " phi1:" << phi1 << " y1:" << y1 << " iPt1: " << iPt1 << " iPhi1:" <<  iPhi1 << " iY1:" <<  iY1 << endl;
+//  cout <<  "pt2:" << pt2 << " phi2:" << phi2 << " y2:" << y2 << " iPt2: " << iPt2 << " iPhi2:" <<  iPhi2 << " iY2:" <<  iY2 << endl;
+
+  if (iPt1==0  || iPt2==0)  return;
+  if (iPhi1==0 || iPhi1==0) return;
+  if (iEta1==0 && iY1==0) return;
+  if (iEta2==0 && iY2==0) return;
+  int iDeltaEta  = iEta1-iEta2 + nBins_eta-1;
+  int iDeltaY    = iY1-iY2 + nBins_y-1;
+  int iDeltaPhi  = iPhi1-iPhi2;
+  if (iDeltaPhi < 0) iDeltaPhi += nBins_phi;
+  //cout <<  "iDeltaY:" << iDeltaY << " iDeltaPhi: " << iDeltaPhi << endl;
+  fillP2 = false;
+  fillY  = true;
+
+  iGPtPt   = h_n2_ptpt->GetBin(iPt1,iPt2);
+  iGPhiPhi = h_n2_phiPhi->GetBin(iPhi1,iPhi2);
+
+  h_n2_ptpt   ->AddBinContent(iGPtPt,    weight);  h_n2_ptpt  ->SetEntries(h_n2_ptpt  ->GetEntries()+1);
+  h_n2_phiPhi ->AddBinContent(iGPhiPhi,  weight);  h_n2_phiPhi->SetEntries(h_n2_phiPhi->GetEntries()+1);
+
+  if (fillP2)
+    {
+    h_DptDpt_phiPhi->AddBinContent(iGPhiPhi,weight*pt1*pt2);
+    h_DptDpt_phiPhi->SetEntries(h_DptDpt_phiPhi->GetEntries()+1);
+    }
+
+  if (fillEta && iEta1!=0 && iEta2!=0 )
+    {
+    iGEtaEta           = h_n2_etaEta->GetBin(iEta1,iEta2);
+    iGDeltaEtaDeltaPhi = h_n2_DetaDphi->GetBin(iDeltaEta+1,iDeltaPhi+1);
+    h_n2_etaEta->AddBinContent(iGEtaEta,weight);             h_n2_etaEta  ->SetEntries(h_n2_etaEta  ->GetEntries()+1);
+    h_n2_DetaDphi->AddBinContent(iGDeltaEtaDeltaPhi,weight); h_n2_DetaDphi->SetEntries(h_n2_DetaDphi->GetEntries()+1);
+
+    if (fillP2)
+      {
+      h_DptDpt_etaEta   ->AddBinContent(iGEtaEta,           weight*pt1*pt2); h_DptDpt_etaEta->SetEntries(h_DptDpt_etaEta    ->GetEntries()+1);
+      h_DptDpt_DetaDphi ->AddBinContent(iGDeltaEtaDeltaPhi, weight*pt1*pt2); h_DptDpt_DetaDphi->SetEntries(h_DptDpt_DetaDphi->GetEntries()+1);
+      }
+    }
+
+  if (fillY && iY1!=0 && iY2!=0 )
+    {
+    iGYY             = h_n2_yY->GetBin(iY1,iY2);
+    iGDeltaYDeltaPhi = h_n2_DyDphi->GetBin(iDeltaY+1,iDeltaPhi+1);
+    h_n2_yY      ->AddBinContent(iGYY,weight);              h_n2_yY      ->SetEntries(h_n2_yY      ->GetEntries()+1);
+    h_n2_DyDphi  ->AddBinContent(iGDeltaYDeltaPhi,weight);  h_n2_DyDphi  ->SetEntries(h_n2_DyDphi  ->GetEntries()+1);
+    if (fillP2)
+      {
+      h_DptDpt_yY     ->AddBinContent(iGYY, weight*pt1*pt2);               h_DptDpt_yY ->SetEntries(   h_DptDpt_yY     ->GetEntries()+1);
+      h_DptDpt_DyDphi ->AddBinContent(iGDeltaEtaDeltaPhi, weight*pt1*pt2); h_DptDpt_DyDphi->SetEntries(h_DptDpt_DyDphi->GetEntries()+1);
+      }
+    }
+
   //if (fillP2)h_DptDpt_phiPhi ->AddBinContent(iG,weight*dpt1*dpt2);
 
-  if (fillEta)
-    {
-    double deta = eta1 - eta2;
-    h_n2_etaEta   ->Fill(eta1,eta2);
-    h_n2_DetaDphi ->Fill(deta,dphi);
-    if (fillP2)
-      {
-      h_DptDpt_etaEta->Fill(eta1,eta2,weight*pt1*pt2);  // needs attention
-      h_DptDpt_DetaDphi->Fill(deta,dphi,weight*pt1*pt2); // needs attention
-      }
-    }
-  if (fillY)
-    {
-    double dy = y1 - y2;
-    h_n2_yY     ->Fill(y1,y2);
-    h_n2_DyDphi ->Fill(dy,dphi);
-    if (fillP2)
-      {
-      h_DptDpt_yY->Fill(y1,y2,weight*pt1*pt2); // needs attention
-      h_DptDpt_DyDphi->Fill(dy,dphi,weight*pt1*pt2); // needs attention
-      }
-    }
+//  if (fillEta)
+//    {
+//    double deta = eta1 - eta2;
+//    h_n2_etaEta   ->Fill(eta1,eta2);
+//    h_n2_DetaDphi ->Fill(deta,dphi);
+//    if (fillP2)
+//      {
+//      h_n2_etaEta->SetEntries(h_n2_etaEta->GetEntries()+nPairsEta);
+//      h_n2_DetaDphi->SetEntries(h_n2_DetaDphi->GetEntries()+nPairsEta);
+//
+//      h_DptDpt_etaEta->Fill(eta1,eta2,weight*pt1*pt2);  // needs attention
+//      h_DptDpt_DetaDphi->Fill(deta,dphi,weight*pt1*pt2); // needs attention
+//      }
+//    }
+//  if (fillY)
+//    {
+//    double dy = y1 - y2;
+//    h_n2_yY     ->Fill(y1,y2);
+//    h_n2_DyDphi ->Fill(dy,dphi);
+//    if (fillP2)
+//      {
+//      h_DptDpt_yY->Fill(y1,y2,weight*pt1*pt2); // needs attention
+//      h_DptDpt_DyDphi->Fill(dy,dphi,weight*pt1*pt2); // needs attention
+//      }
+//    }
 //  if (reportInfo(__FUNCTION__))
 //    ;
 }
