@@ -39,7 +39,7 @@ Model::Model(const Configuration & _requestedConfiguration)
 IdentifiedObject(),
 ConfigurationManager(_requestedConfiguration),
 modelType(0),
-subModelType(0),
+subModelType(6),
 temperature(0),
 muB(0),
 muI(0),
@@ -209,8 +209,8 @@ void Model::setParticlePX(Particle& _particle)
 void   Model::setDefaultConfiguration()
 {
   ConfigurationManager::setDefaultConfiguration();
-  addParameter("ModelType",               0);
-  addParameter("SubModelType",            0);
+  addParameter("ModelType",               modelType);
+  addParameter("SubModelType",            subModelType);
   addParameter("Temperature",             160.0);
   addParameter("MuB",                     0.0);
   addParameter("MuI",                     0.0);

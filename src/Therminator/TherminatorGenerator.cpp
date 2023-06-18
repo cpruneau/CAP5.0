@@ -37,6 +37,8 @@
 
 using CAP::Event;
 ClassImp(TherminatorGenerator);
+
+
 //  if      (modelType == "KrakowSFO")    { sModel = 0;  tModelINI += "krakow.ini";  }
 //  else if (modelType == "BlastWave")    { sModel = 1;  tModelINI += "blastwave.ini";  }
 //  else if (tMomodelTypedel == "BWAVT")      { sModel = 2;  tModelINI += "bwa.ini";    }
@@ -52,8 +54,8 @@ TherminatorGenerator::TherminatorGenerator(const TString & _name,
                                            const Configuration & _configuration)
 :
 EventTask::EventTask(_name, _configuration),
-modelType(0),
-modelSubType(0),
+modelType(1),
+modelSubType(6),
 modelInputPath(),
 modelInputFile(),
 modelOutputPath(),
