@@ -5,18 +5,22 @@
 # Creates  libraries with dictionary and various executables
 #
 ################################################################################################
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+
 if(APPLE)
+    cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
     set (CMAKE_OSX_DEPLOYMENT_TARGET "13.2" CACHE STRING "Minimum OS X deployment version" FORCE)
+    project(CAP VERSION 1.0 DESCRIPTION "Correlation Analysis Package" LANGUAGES CXX)
 #    set (CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "Architectures" FORCE)
 #    set (CMAKE_XCODE_ATTRIBUTE_MACOSX_DEPLOYMENT_TARGET[arch=arm64] "11.0" CACHE STRING "arm 64 minimum deployment target" FORCE)
+else()
+ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+ cmake_policy(SET CMP0048 NEW)
+ project(CAP DESCRIPTION "Correlation Analysis Package" LANGUAGES CXX)
 endif()
 
 ################################################################################################
 # Project CAP
 ################################################################################################
-#project(CAP VERSION 1.0 DESCRIPTION "Correlation Analysis Package" LANGUAGES CXX)
-project(CAP DESCRIPTION "Correlation Analysis Package" LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 14)
 #set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
