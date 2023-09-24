@@ -19,28 +19,7 @@ PythiaEventGenerator::PythiaEventGenerator(const String & _name,
                                            const Configuration & _configuration)
 :
 EventTask(_name, _configuration),
-pythia(nullptr),
-outputFile(nullptr),
-//outputEvent(nullptr),
-//outputTree(nullptr),
-//nMaxClonesArray(10000),
-standaloneMode(true),
-printBanner(true),
-printStatistics(true),
-printNEvents(0),
-beamsPdgA(2212),
-beamsPdgB(2212),
-beamsFrameType(2),
-beamsECMS(2700.0),
-beamsEA(1350.0),
-beamsEB(1350.0),
-setSeed(1),
-seedValue(1112131),
-useQCDCR(1),
-useRopes(0),
-useShoving(0),
-xmlInputPath("nil"),
-nEventsPrinted(0)
+pythia(nullptr)
 {
   appendClassName("PythiaEventGenerator");
 }
@@ -49,70 +28,39 @@ nEventsPrinted(0)
 void PythiaEventGenerator::setDefaultConfiguration()
 {
   EventTask::setDefaultConfiguration();
-  addParameter("StandaloneMode",   standaloneMode);
-  addParameter("Print:Banner",     printBanner);
-  addParameter("Print:Statistics", printStatistics);
-  addParameter("Print:NEvents",    printNEvents);
+  addParameter("EventsUseStream0",true);
+  addParameter("EventsUseStream1",false);
+  addParameter("EventsUseStream2",false);
+  addParameter("EventsUseStream3",false);
+  addParameter("EventsCreate",     true);
+  addParameter("Print:Banner",     false);
+  addParameter("Print:Statistics", false);
+  addParameter("Print:NEvents",    0);
+  addParameter("Beams:idA",        2212);
+  addParameter("Beams:idB",        2212);
+  addParameter("Beams:frameType",  2);
+  addParameter("Beams:eCM",        2700.0);
+  addParameter("Beams:eA",         1350.0);
+  addParameter("Beams:eB",         1350.0);
+  addParameter("SetSeed",          true);
+  addParameter("SeedValue",        121211);
+  addParameter("UseQCDCR",         true);
+  addParameter("UseRopes",         false);
+  addParameter("UseShoving",       false);
+  addParameter("xmlInputPath",     TString(""));
 
-  addParameter("Beams:idA",        beamsPdgA);
-  addParameter("Beams:idB",        beamsPdgB);
-  addParameter("Beams:frameType",  beamsFrameType);
-  addParameter("Beams:eCM",        beamsECMS);
-  addParameter("Beams:eA",         beamsEA);
-  addParameter("Beams:eB",         beamsEB);
-
-  addParameter("SetSeed",          setSeed);
-  addParameter("SeedValue",        seedValue);
-  addParameter("useQCDCR",         useQCDCR);
-  addParameter("useRopes",         useRopes);
-  addParameter("useShoving",       useShoving);
-  addParameter("XmlInputPath",     xmlInputPath);
-
-  generateKeyValuePairs("Option",  TString("none"),30);
+  for (int k=0; k<30; k++)
+    {
+    String key = "Option"; key += k;
+    addParameter(key, TString("none"));
+    }
+  // printConfiguration(cout);
 }
 
 void PythiaEventGenerator::configure()
 {
   EventTask::configure();
-  standaloneMode  = getValueBool(  "StandaloneMode");
-  printBanner     = getValueBool(  "Print:Banner");
-  printStatistics = getValueBool(  "Print:Statistics");
-  printNEvents    = getValueInt(   "Print:NEvents");
-
-  beamsPdgA       = getValueInt(   "Beams:idA");
-  beamsPdgB       = getValueInt(   "Beams:idB");
-  beamsFrameType  = getValueInt(   "Beams:frameType");
-  beamsECMS       = getValueDouble("Beams:eCM");
-  beamsEA         = getValueDouble("Beams:eA");
-  beamsEB         = getValueDouble("Beams:eB");
-  setSeed         = getValueBool(  "SetSeed");
-  seedValue       = getValueLong(  "SeedValue");
-  useQCDCR        = getValueBool(  "UseQCDCR");
-  useRopes        = getValueBool(  "UseRopes");
-  useShoving      = getValueBool(  "UseShoving");
-  xmlInputPath    = getValueString("XmlInputPath");
-
-  if (reportInfo(__FUNCTION__))
-    {
-    cout << endl;
-    printItem("StandaloneMode",   standaloneMode);
-    printItem("Print:Banner",     printBanner);
-    printItem("Print:Statistics", printStatistics);
-    printItem("Print:NEvents",    printNEvents);
-    printItem("Beams:idA",        beamsPdgA);
-    printItem("Beams:idB",        beamsPdgB);
-    printItem("Beams:frameType",  beamsFrameType);
-    printItem("Beams:eCM",        beamsECMS);
-    printItem("Beams:eA",         beamsEA);
-    printItem("Beams:eB",         beamsEB);
-    printItem("SetSeed",          setSeed);
-    printItem("SeedValue",        seedValue);
-    printItem("useQCDCR",         useQCDCR);
-    printItem("useRopes",         useRopes);
-    printItem("useShoving",       useShoving);
-    printItem("XmlInputPath",     xmlInputPath);
-    cout << endl;
-    }
+  if (reportDebug(__FUNCTION__)) printConfiguration(cout);
 }
 
 
@@ -123,68 +71,49 @@ void PythiaEventGenerator::configure()
 //!
 void PythiaEventGenerator::initialize()
 {
-  ;
+  //;
+  //EventTask::configure();
   EventTask::initialize();
-
-  if (reportInfo(__FUNCTION__))
-    {
-    cout << endl;
-    printItem("StandaloneMode", standaloneMode);
-    printItem("Print:Banner",   printBanner);
-    printItem("Beams:idA",      beamsPdgA);
-    printItem("Beams:idB",      beamsPdgB);
-    printItem("Beams:frameType",beamsFrameType);
-    printItem("Beams:eCM",      beamsECMS);
-    printItem("Beams:eA",       beamsEA);
-    printItem("Beams:eB",       beamsEB);
-    printItem("SetSeed",        setSeed);
-    printItem("SeedValue",      seedValue);
-    printItem("useQCDCR",       useQCDCR);
-    printItem("useRopes",       useRopes);
-    printItem("useShoving",     useShoving);
-    printItem("XmlInputPath",   xmlInputPath);
-    }
-
-  pythia = new Pythia8::Pythia(xmlInputPath.Data(), printBanner);
-  pythia->settings.mode("Beams:idA",  beamsPdgA);
-  pythia->settings.mode("Beams:idB",  beamsPdgB);
-  pythia->settings.mode("Beams:frameType", beamsFrameType);
-  switch (beamsFrameType)
+  pythia = new Pythia8::Pythia(getValueString("xmlInputPath").Data(), getValueBool("Print:Banner"));
+  pythia->settings.mode("Beams:idA",       getValueInt(   "Beams:idA"));
+  pythia->settings.mode("Beams:idB",       getValueInt(   "Beams:idB"));
+  pythia->settings.mode("Beams:frameType", getValueInt(   "Beams:frameType"));
+  switch (getValueInt("Beams:frameType"))
     {
       default:
       case 1:
-      pythia->settings.parm("Beams:eCM", beamsECMS);
+      pythia->settings.parm("Beams:eCM",     getValueDouble("Beams:eCM"));
       break;
       case 2:
-      pythia->settings.parm("Beams:eA",      beamsEA);
-      pythia->settings.parm("Beams:eB",      beamsEB);
+      pythia->settings.parm("Beams:eA",      getValueDouble("Beams:eA"));
+      pythia->settings.parm("Beams:eB",      getValueDouble("Beams:eB"));
       break;
     }
 
 
-  if (setSeed)
+  if (getValueDouble("SetSeed"))
     {
     String  seedValueString = "Random:seed = ";
-    seedValueString += seedValue;
+    seedValueString += getValueLong("SeedValue");
     pythia->readString("Random:setSeed = on");
     pythia->readString(seedValueString.Data());
-    cout << "  Pythia:Random:setSeed = on" <<  endl;
-    cout << "  Pythia:" << seedValueString <<  endl;
-
+    printItem("Pythia:Random:setSeed","ON");
+    printItem("Pythia:Random:SeedValue",seedValueString);
     }
   for (int k=0; k<30; k++)
     {
     String key = "Option"; key += k;
     String  value = getValueString(key);
-    if (key.Contains("Option") && !value.Contains("none") )
+    if (!value.Contains("none") )
       {
-      cout << "  Pythia::" << key << "......: " << value << endl;
+      TString s = "Pythia:"; s+=key;
+      printItem(s,value);
       pythia->readString(value.Data());
       }
     }
-
-  if(useQCDCR)
+  if(getValueBool(  "UseQCDCR"))
     {
+    printItem("Pythia:UseQCDCR","ON");
     pythia->readString("MultiPartonInteractions:pT0Ref = 2.15");
     pythia->readString("BeamRemnants:remnantMode = 1");
     pythia->readString("BeamRemnants:saturation = 5");
@@ -195,11 +124,12 @@ void PythiaEventGenerator::initialize()
     pythia->readString("ColourReconnection:junctionCorrection = 1.2");
     pythia->readString("ColourReconnection:timeDilationMode = 2");
     pythia->readString("ColourReconnection:timeDilationPar = 0.18");
-    if(!useRopes)
-      pythia->readString("Ropewalk:RopeHadronization = off");
+    if(!getValueBool("UseRopes")) pythia->readString("Ropewalk:RopeHadronization = off");
     }
-  if(useQCDCR && useRopes)
+  if(getValueBool("UseQCDCR") && getValueBool(  "UseRopes"))
     {
+    printItem("Pythia:UseQCDCR","ON");
+    printItem("Pythia:UseRopes","ON");
     pythia->readString("Ropewalk:RopeHadronization = on");
     pythia->readString("Ropewalk:doShoving = on");
     pythia->readString("Ropewalk:doFlavour = on");
@@ -214,13 +144,15 @@ void PythiaEventGenerator::initialize()
     pythia->readString("PartonVertex:protonRadius = 0.7");
     pythia->readString("PartonVertex:emissionWidth = 0.1");
   }
-  if(!useQCDCR && useRopes)
+  if(!getValueBool("UseQCDCR") && getValueBool(  "UseRopes"))
     {
     throw TaskException("ropes w/o the necessary junctions! Flip kQCDCR=kTRUE","PythiaEventGenerator::initialize()");
     }
 
-  if(useShoving)
+  if(getValueBool("UseShoving"))
     {
+    printItem("Pythia:UseShoving","ON");
+
     pythia->readString("Ropewalk:RopeHadronization = on");
     pythia->readString("Ropewalk:doShoving = on");
     pythia->readString("Ropewalk:doFlavour = off");
@@ -241,23 +173,10 @@ void PythiaEventGenerator::initialize()
     pythia->readString("PartonVertex:emissionWidth = 0.1");
     }
   pythia->init();
-  if (reportDebug(__FUNCTION__))
-    {
-    pythia->settings.listAll();
-    pythia->settings.listChanged();
-    //pythia->particleData.list(id);
-    }
-//  if (eventsExport )
+//  if (reportDebug(__FUNCTION__))
 //    {
-//    String outputFileName = getValueString("EventsExportPath");
-//    outputFileName += "/";
-//    outputFileName += getValueString("EventsExportFileName");
-//    outputFile = TFile::Open(outputFileName,"recreate");
-//    //outputEvent = &pythia->pythia()->event;
-//    outputTree  = new TTree(getValueString("EventsExportTreeName"),"PythiaEventTree");
-//    particles = (TClonesArray*) pythia->GetListOfParticles();
-//    outputTree->Branch("particles", &particles);
-//    outputTree->Branch("event",&outputEvent);
+//    pythia->settings.listAll();
+//    pythia->settings.listChanged();
 //    }
   if (reportEnd(__FUNCTION__))
     ;
@@ -265,13 +184,11 @@ void PythiaEventGenerator::initialize()
 
 void PythiaEventGenerator::createEvent()
 {
-  if (reportStart(__FUNCTION__))
-    ;
+
   incrementTaskExecuted();
   Event & event = *eventStreams[0];
   EventProperties & eventProperties = * event.getEventProperties();
   Particle * interaction;
-  standaloneMode = true;
   event.reset();
   particleFactory->reset();
   interaction = particleFactory->getNextObject();
@@ -282,8 +199,11 @@ void PythiaEventGenerator::createEvent()
   event.setNucleusA(1.0,1.0);
   event.setNucleusB(1.0,1.0);
   pythia->next();
+
 //  int ioff = 0;
   int nParticleToCopy   = pythia->event.size();
+  //printItem("nParticleToCopy",nParticleToCopy);
+
   if (pythia->event[0].id() == 90)
     {
     nParticleToCopy--;
@@ -350,19 +270,13 @@ void PythiaEventGenerator::createEvent()
 
 void PythiaEventGenerator::finalize()
 {
-  if (reportInfo(__FUNCTION__) && printStatistics)
+  if (reportInfo(__FUNCTION__) && getValueBool("Print:Statistics"))
     {
     cout << endl;
     pythia->stat();
     cout << endl;
     }
   delete pythia;
-//  if (eventsExport)
-//    {
-//    outputTree->Print();
-//    outputTree->Write();
-//    delete outputFile;
-//    }
   if (reportEnd(__FUNCTION__))
     ;
 }

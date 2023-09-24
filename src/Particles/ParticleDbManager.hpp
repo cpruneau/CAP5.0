@@ -66,22 +66,9 @@ public:
   virtual void setDefaultConfiguration();
   virtual void configure();
   virtual void initialize();
-  //!
-  //! Read or write a particle type data file as specificied by the configuration parameters.
-  //!
   virtual void execute();
   virtual void importParticleDb();
-  virtual void importParticleDbCAP()  ;   // throw (FileException);
-  virtual void importParticleDbNative() ;   // throw (FileException);
-  virtual void initializeParticleDb();
-  virtual void initializeParticleDbCAP();
-  virtual void initializeParticleDbNative();
-  virtual void convertParticleDbCAPToNative();
-  virtual void convertParticleDbNativeToCAP();
   virtual void exportParticleDb();
-  virtual void exportParticleDbCAP();
-  virtual void exportParticleDbNative();
-
   virtual void dbAnalyzer();
 
 protected:
@@ -95,19 +82,11 @@ protected:
   String particleDbImportPath;
   String particleDbImportFile;
   String particleDbImportDecaysFile;
-  bool   particleDbImportNative;
-  bool   particleDbImportCAP;
-  bool   particleDbConvertCAPToNative;
-  bool   particleDbConvertNativeToCAP;
   bool   particleDbExport;
   String particleDbExportPath;
   String particleDbExportFile;
   String particleDbExportDecaysFile;
-  bool   particleDbExportNative;
-  bool   particleDbExportCAP;
-
   vector<ParticleDb*> particleDbs;
-
   ClassDef(ParticleDbManager,0)
 };
 

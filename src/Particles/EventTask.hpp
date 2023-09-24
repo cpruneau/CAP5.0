@@ -211,7 +211,7 @@ public:
   virtual void importEventNative();
   virtual void convertEventCAPToNative();
   virtual void convertEventNativeToCAP();
-  virtual void partial(const String & outputPathBase);
+  //virtual void partial(const String & outputPathBase);
   virtual void exportEvent();
   virtual void exportEventCAP();
   virtual void exportEventNative();

@@ -68,6 +68,7 @@ protected:
   int     nSubbunchesPerBunch;
   int     nBunches;
   long    nEventsRequested;
+  long    nEventsReport;
   String  bunchLabel;
   String  subbunchLabel;
   long    iEvent;

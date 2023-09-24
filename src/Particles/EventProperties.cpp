@@ -190,17 +190,25 @@ void EventProperties::printProperties(ostream & output)
   output << "       particlesCounted: " << particlesCounted << endl;
   output << "      particlesAccepted: " << particlesAccepted << endl;
   output << "              nFilters : " << nFilters << endl;
+  bool printN = nFiltered.size()>0;
+  bool printS0 = s0Filtered.size()>0;
+  bool printS1 = s1Filtered.size()>0;
+
   for (int k=0;k<nFilters;k++)
-  {
-  output 
-    << setw(5) << k << " "
-  << scientific << setw(15)<< setprecision(5) << nFiltered[k]
-  << scientific << setw(15)<< setprecision(5) << ptSumFiltered[k]
-  << scientific << setw(15)<< setprecision(5) << eFiltered[k]
-  << scientific << setw(15)<< setprecision(5) << qFiltered[k]
-  << scientific << setw(15)<< setprecision(5) << sFiltered[k]
-  << scientific << setw(15)<< setprecision(5) << bFiltered[k]
-  << scientific << setw(15)<< setprecision(5) << s0Filtered[k]
-  << scientific << setw(15)<< setprecision(5) << s1Filtered[k] << endl;
-  }
+    {
+    if (printN)
+      {
+      output
+      << setw(5) << k << " "
+      << scientific << setw(15)<< setprecision(5) << nFiltered[k]
+      << scientific << setw(15)<< setprecision(5) << ptSumFiltered[k]
+      << scientific << setw(15)<< setprecision(5) << eFiltered[k]
+      << scientific << setw(15)<< setprecision(5) << qFiltered[k]
+      << scientific << setw(15)<< setprecision(5) << sFiltered[k]
+      << scientific << setw(15)<< setprecision(5) << bFiltered[k];
+      }
+    if (printS0) output << scientific << setw(15)<< setprecision(5) << s0Filtered[k];
+    if (printS1) output << scientific << setw(15)<< setprecision(5) << s1Filtered[k];
+    output << endl;
+    }
 }

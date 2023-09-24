@@ -34,13 +34,19 @@ class ParticlePartition
 {
 protected:
 
+  int nTypes;
   vector<ParticleType*> particleTypes;
-  vector<double> averageMultiplicity;
-  vector<int> lowestMultiplicity;
-  vector<int> highestMultiplicity;
+  vector<double> averageMultiplicities;
+  vector<double> probabilities;
+  vector<int> lowestMultiplicities;
+  vector<int> highestMultiplicities;
   vector<int> workPartition;
 
   vector< vector<int> > validPartitions;
+  vector< double > partitionProbabilities;
+
+  static vector<double> logFacArray;
+  static void calculateLogFac();
 
 
 public:
@@ -53,8 +59,28 @@ public:
 
   void createBounds();
   bool isValid(int netCharge=0, int netBaryon=0, int netStrange=0);
-  bool incrementPartition();
+  void initializePartition();
+  int  incrementPartition(int type);
+  bool isPartitionValid();
+  void scanPartitions(int netQReq=0, int netSReq=0, int netBReq=0);
+  void savePartition();
+  void calculateSpeciesProbabilities();
+  double calculatePartitionProbability(vector<int> partition);
+  double multinomial(vector<int> & partition, vecotr<double> probability);
+  double logMultinomial(vector<int> & multiplicities, vecotr<double> probability);
+  double logFac(int n);
+  void   exportPartitions();
+  void importPartitions();
+  void exportPartitions();
 
+
+  templage<typename T>
+  T  Partition::sumVector(vector<T> & vector)
+  {
+  int  sum = 0;
+  for (int k=0; k<vector.size(); k++) sum += vector[k];
+  return sum;
+  }
 
   ostream & print(ostream & os);
 

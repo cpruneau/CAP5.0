@@ -63,33 +63,29 @@ public:
   return *this;
   }
 
-  inline bool accept(double value)
+  virtual bool accept(double value)
   {
   switch (filterType)
     {
       default:
-      throw Exception("Logic Error","Condition::accept(double value)");
+      return (value>=minimum && value<maximum); // select if within range
 
       case 2:
       case 3:
       return std::fabs(value - filterSubtype)<0.1; // select by PDG or USER type
-      case 5:
-      return (value>=minimum && value<=maximum); // select if within range
     }
   }
 
-  inline bool accept(int  value)
+  virtual bool accept(int  value)
   {
   switch (filterType)
     {
       default:
-      throw Exception("Logic Error","Condition::accept(double value)");
+      return (value>=minimum && value<maximum); // select if within range
 
       case 2:
       case 3:
       return filterSubtype == value; // select by PDG or USER type
-      case 5:
-      return (value>=minimum && value<=maximum); // select if within range
     }
   }
 
@@ -154,6 +150,13 @@ public:
 
   virtual bool accept(double value)
   {
+//  std::cout << " -------------------------------------------------"  << std::endl;
+//  std::cout << " ConditionOr: value passed:" << value << std::endl;
+//  std::cout << " ConditionOr:      minimum:" << minimum  << std::endl;
+//  std::cout << " ConditionOr:      maximum:" << maximum << std::endl;
+//  std::cout << " ConditionOr:      minimum2:" << minimum2 << std::endl;
+//  std::cout << " ConditionOr:      maximum2:" << maximum2 << std::endl;
+
   return (value>=minimum && value<=maximum) || (value>=minimum2 && value<=maximum2);
   }
 };
@@ -307,6 +310,14 @@ public:
 
   void addCondition(unsigned int type, unsigned int subtype, double minimum, double maximum, double minimum2, double maximum2)
   {
+//  std::cout << "addCondition(unsigned int type, unsigned int subtype, double minimum, double maximum, double minimum2, double maximum2)" << std::endl;
+//  std::cout << "    type: " << type << std::endl;
+//  std::cout << " subtype: " << subtype << std::endl;
+//  std::cout << " minimum: " << minimum << std::endl;
+//  std::cout << " maximum: " << maximum << std::endl;
+//  std::cout << " minimum2: " << minimum2 << std::endl;
+//  std::cout << " maximum2: " << maximum2 << std::endl;
+//  exit(1);
   Condition * condition = new ConditionOr(type,subtype,minimum,maximum,minimum2,maximum2);
   conditions.push_back(condition);
   }

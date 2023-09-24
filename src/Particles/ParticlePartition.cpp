@@ -30,238 +30,194 @@ ClassImp(ParticlePartition);
 ParticlePartition::ParticlePartition()
 :
 particleTypes(),
-averageMultiplicity(),
-lowestMultiplicity(),
-highestMultiplicity(),
+averageMultiplicities(),
+lowestMultiplicities(),
+highestMultiplicities(),
 workPartition(),
 validPartitions()
+{  }
+
+void ParticlePartition::createBounds()
 {
-}
-
-// ================================================================================================
-// read in ParticleType information from pdg data file
-// ================================================================================================
-//void ParticlePartition::readFromFile(const String & inputFileName)
-//{
-//  cout << "<I> ParticlePartition::readFromFile() Reading particle list from file:" <<  inputFileName << endl;
-//  ifstream inputFile(inputFileName.Data());
-//  if (!inputFile.is_open())
-//    {
-//    cout << "<E> ParticlePartition::readFromFile() File not found:" <<  inputFileName << endl;
-//    e xit(1);
-//    }
-//  int pdgCode;
-//  string name;
-//  string title;
-//  double mass, width;
-//  int gSpin, gIsospin;
-//  int baryon, strange, charm, bottom, charge;
-//  int nDecayModes, decayNpart;
-//  double decayBranchingRatio;
-//  int decayPart[5] = {0, 0, 0, 0, 0};
-//  ParticleType * particleType;
-//  ParticleType * antiParticleType;
-//  int dummy_int;
-//  String theName;
-//  String theAntiName;
-//  String theTitle;
-//  String theAntiTitle;
-//  while (1)
-//    {
-//    //cout << "Reading in ParticleType resonance decay table.. - 2 -" << endl;
-//    inputFile >> pdgCode;
-//    if (inputFile.eof())
-//      {
-//      cout << "Reach EOF" << endl;
-//      break;
-//      }
-//    inputFile >> name;
-//    inputFile >> mass;
-//    inputFile >> width;
-//    inputFile >> gSpin;
-//    inputFile >> baryonNumber;
-//    inputFile >> strange;
-//    inputFile >> charm;
-//    inputFile >> bottom;
-//    inputFile >> gIsospin;
-//    inputFile >> charge;
-//    inputFile >> nDecayModes;
-//    inputFile >> title;
-//    theName  = name;
-//    theTitle = title;
-//    particleType= new ParticleType(pdgCode, theName, theTitle, mass, width, gSpin, baryon, strange,
-//                                   charm, bottom, gIsospin, charge);
-//    push_back(particleType);
-//    if (particleType->isFermion())
-//      {
-//      theAntiName  = "Anti-";
-//      theAntiName  += theName;
-//      theAntiTitle = "#bar ";
-//      theAntiTitle += theTitle;
-//      antiParticleType =  new ParticleType(-pdgCode, theAntiName, theAntiTitle, mass, width, gSpin,
-//                                           -baryon, -strange, -charm, -bottom, gIsospin,
-//                                           -charge);
-//      push_back(antiParticleType);
-//      }
-//    // read decay information
-//    for (int j = 0; j < nDecayModes; j++)
-//      {
-//      inputFile >> dummy_int;
-//      inputFile >> decayNpart;
-//      inputFile >> decayBranchingRatio;
-//      inputFile >> decayPart[0];
-//      inputFile >> decayPart[1];
-//      inputFile >> decayPart[2];
-//      inputFile >> decayPart[3];
-//      inputFile >> decayPart[4];
-//      decayNpart = abs(decayNpart);
-//      std::vector<int> children;
-//      std::vector<int> antiChildren;
-//      for (int k=0; k<decayNpart; k++)
-//        {
-//        children.push_back(decayPart[k]);
-//        }
-//      if (!particleType->isFermion())
-//        {
-//        particleType->addDecayMode(decayBranchingRatio,children);
-//        }
-//      else
-//        {
-//        for (int k=0; k<decayNpart; k++)
-//          {
-//          antiChildren.push_back(findPdgCode(decayPart[k])->getAntiParticlePdgCode());
-//          }
-//        particleType->addDecayMode(decayBranchingRatio,children);
-//        antiParticleType->addDecayMode(decayBranchingRatio,antiChildren);
-//        }
-//      }
-//    }
-//    //cout << "Reading in ParticleType resonance decay table.. - 5- " << endl;
-//    inputFile.close();
-//    //particleList.erase(particleList.begin());  // delete gamma
-//    cout << "<I> Total number of Hadrons: " <<  size() << endl;
-//    resolveTypes();
-//    sortByMass();
-//
-//  // setup the decay montecarlo probabilities...
-//  for (unsigned int k=0; k<size(); k++)
-//    {
-//    objects[k]->setupDecayGenerator();
-//    }
-//
-//  cout << "ParticlePartition::readFromFile(const String  & inputFileName) Completed." << endl;
-//}
-//
-//void ParticlePartition::writeToFile(const String & outputFileName, bool printDecayProperties)
-//{
-//  cout << "<I> ParticlePartition::readFromFile() Writing particle list to file:" <<  outputFileName << endl;
-//  ofstream outputFile(outputFileName.Data());
-//  for (unsigned int iType=0; iType<size(); iType++)
-//    {
-//    ParticleType * type = operator[](iType);
-//    if (type->getPdgCode()<0) continue; // not printing antiparticles
-//    //type->printToFile(outputFile,true);
-//    if (printDecayProperties)
-//      {
-//      //
-//      }
-//    }
-//  outputFile.close();
-//  cout << "ParticlePartition::readFromFile(const String  & inputFileName) Completed." << endl;
-//}
-
-
-
-int ParticlePartition::findIndexForType(ParticleType * type)
-{
+  int nTypes = particleTypes.size();
   for (unsigned int iPart = 0; iPart < size(); iPart++)
     {
-    if (type == objects[iPart]) return iPart;
+    double avgMult = averageMultiplicities[iPart];
+    double range = 2.5*std::sqrt(avgMult);
+    lowestMultiplicities[iPart]  = int(avgMult - range);
+    highestMultiplicities[iPart] = int(avgMult + range +0.5);
     }
-  return -1;
 }
 
-
-
-ostream & ParticlePartition::printProperties(ostream & os)
+void ParticlePartition::initializePartition()
 {
-  os << "============================================================================================================================================================" << endl;
-  os << "ParticlePartition" << endl;
-  os << "============================================================================================================================================================" << endl;
-  os <<  fixed << setw(5)  << "k";
-  os <<  fixed << setw(10) << "PDG";
-  os <<  fixed << setw(10) << "Name";
-  os <<  fixed << setw(12) << "Title";
-  os <<  fixed << setw(12) << "Mass";
-  os <<  fixed << setw(12) << "Width";
-  os <<  fixed << setw(9)  << "Charge";
-  os <<  fixed << setw(9)  << "Spin";
-  os <<  fixed << setw(9)  << "Isospin";
-  os <<  fixed << setw(9)  << "Isospin3";
-  os <<  fixed << setw(5)  << "Nq";
-  os <<  fixed << setw(5)  << "Naq";
-  os <<  fixed << setw(5)  << "Ns";
-  os <<  fixed << setw(5)  << "Nas";
-  os <<  fixed << setw(5)  << "Nc";
-  os <<  fixed << setw(5)  << "Nac";
-  os <<  fixed << setw(5)  << "Nb";
-  os <<  fixed << setw(5)  << "Nab";
-  os <<  fixed << setw(5)  << "Nt";
-  os <<  fixed << setw(5)  << "Nat";
-  os <<  fixed << setw(5)  << "L(e)";
-  os <<  fixed << setw(5)  << "L(m)";
-  os <<  fixed << setw(5)  << "L(t)";
-  os <<  fixed << setw(5)  << "S";
-  os <<  fixed << setw(5)  << "W";
-  os << "============================================================================================================================================================" << endl;
-  for (unsigned int k=0; k<size(); k++)
-  {
-  os << fixed << setw(5) << setprecision(4)<< k;
-  objects[k]->printProperties(os);
-  }
-  return os;
-}
-
-ostream & ParticlePartition::printDecayProperties(ostream & os)
-{
-  os << "============================================================================================================================================================" << endl;
-  os << setw(10) << "Pdg";
-  os << setw(20) << "Title";
-  os << setw(20) << "Mass(GeV/c2)";
-  os << setw(20) << "Width(GeV/c2)" << endl;
-  os << "============================================================================================================================================================" << endl;
-  for (unsigned int k=0; k<size(); k++)
-  {
-  objects[k]->printDecayProperties(os);
-  }
-  return os;
-}
-
-ParticlePartition * ParticlePartition::defaultParticlePartition = nullptr;
-
-ParticlePartition * ParticlePartition::getDefaultParticlePartition()
-{
-  if (defaultParticlePartition == nullptr)
+  workPartition.clear();
+  for (unsigned int iPart = 0; iPart < size(); iPart++)
     {
-    defaultParticlePartition = new ParticlePartition();
+    workPartition.push_back(lowestMultiplicities[iPart]);
     }
-  return defaultParticlePartition;
+  currentType = 0;
 }
 
-void ParticlePartition::setDefaultParticlePartition(ParticlePartition * newDb)
+int ParticlePartition::incrementPartition(int type)
 {
-  if (defaultParticlePartition) return;
-  defaultParticlePartition = newDb;
+  int mult = workPartition[type];
+  if (mult<highestMultiplicities[type])
+    {
+    workPartition[type] = mult+1;
+    return currentType;
+    }
+  else
+    {
+    workPartition[type] = lowestMultiplicities[type];
+    type++;
+    return increasePartition(mult);
+    }
 }
 
 
-vector<int> ParticlePartition::getListOfPdgCodes() 
+bool ParticlePartition::isPartitionValid() //int netQReq=0, int netSReq=0, int netBReq=0)
 {
-  vector<int> pdgCodes;
-  for (unsigned int iPart = 0; iPart<size(); iPart++)
+  int netQ = 0;
+  int netS = 0;
+  int netB = 0;
+  for (unsigned int iPart = 0; iPart < size(); iPart++)
+    {
+    ParticleType * particleType = particleTypes[iPart];
+    netQ += particleType->getCharge();
+    netS += particleType->getStrangenessNumber();
+    netB += particleType->getBaryonNumber();
+    }
+  if (netQ==netQReq && netS==netSReq && netB==netBReq)
+    return true;
+  return false;
+}
+
+void ParticlePartition::scanPartitions(int netQReq=0, int netSReq=0, int netBReq=0)
+{
+  initializePartition();
+  int currentType = 0;
+  while (currentType<nType)
+    {
+    if (isPartitionValid())
+      {
+      savePartition();
+      }
+    currentType = incrementPartition(currentType);
+    }
+}
+
+
+void  ParticlePartition::savePartition()
+{
+  validPartitions.push_back(workPartition);
+  double probability = calculatePartitionProbability(workPartition):
+  partitionProbabilities.push_back(probability);
+}
+
+
+
+void ParticlePartition::calculateSpeciesProbabilities()
+{
+  double sum = sumVector(averageMultiplicities);
+  for (int iType=0;iType<nTypes;iType++)
+    {
+    probabilities.push_back(averageMultiplicities[iType]/sum);
+    }
+}
+
+double   ParticlePartition::calculatePartitionProbability(vector<int> partition)
+{
+  return multinomial(partition,probability);
+}
+
+double ParticlePartition::multinomial(vector<int> & partition, vecotr<double> probability)
+{
+  return exp(logMultinomial(partition,probability));
+}
+
+double ParticlePartition::logMultinomial(vector<int> & multiplicities, vecotr<double> probability)
+{
+  int sum = sumVector(multiplicities);
+  double value = logFac(sum);
+  for (iType=0;iType<nTypes;iType++)
+    {
+    int mult = multiplicities[iType];
+    value += double(mult)*std::log(probability[iType])/logFac(mult);
+    }
+  return value;
+}
+
+vector<double> ParticlePartition::logFacArray;
+
+void ParticlePartition::calculateLogFac()
+{
+  if (logFacArray.size()>0) return; // already initialized...
+  logFacArray.push_back(0);
+  logFacArray.push_back(0);
+  for (int k=2; k< 20000; k++)
+    {
+    logFacArray.push_back( logFacArray[k-1] + std::log(double(k)));
+    }
+}
+
+double ParticlePartition::logFac(int n)
+{
+  auto size = logFacArray.size();
+  if (size<1) calculateLogFac();
+  if (n<size) return logFacArray[n];
+  throw MathException("n too large","logFac(int n)");
+}
+
+void  ParticlePartition::exportPartitions()
+{
+  int nPartitions = validPartitions.size();
+  if (nPartitions<1)
+    throw TaskException("No valid partitions to save","ParticlePartition::exportPartitions()");
+  ofstream & outputFile = openOutputAsciiFile(particlePartitionExportPath,particlePartitionExportFile,".data");
+  outputFile << nPartitions << endl;
+  for (int iPartition=0; iPartition<nPartitions; iPartition++)
+    {
+    vector<int> & partition = validPartitions[iPartition];
+    for (iType=0;iType<nTypes;iType++)
+      {
+      outputFile << "  " << partition[iType];
+      }
+    outputFile << partitionProbabilities[iType] << endl;
+    }
+  outputFile.close();
+}
+
+void  ParticlePartition::importPartitions()
+{
+  ifstream & inputFile = openInputAsciiFile(particlePartitionImportPath,particlePartitionImportFile,".data");
+  char   buff[300];
+  int mult;
+  double probability;
+  try
   {
-  int code = objects[iPart]->getPdgCode();
-  pdgCodes.push_back(  code );
+  while (!inputFile.eof())
+    {
+    inputFile.getline(buff,5000);
+    if (!(*buff) || (*buff == '#'))
+      {
+      continue;
+      }
+    istringstream * iss = new istringstream(buff);
+    vector<int> partition;
+    for (iType=0;iType<nTypes;iType++)
+      {
+      (*iss)  >> mult;
+      partition.push_back(mult);
+      }
+    (*iss)  >> probability;
+    validPartitions.push_back(partition);
+    probabilities.push_back(probability);
+    delete iss;
+    }
   }
-  return pdgCodes;
+  catch (...)
+  {
+  throw FileException(particleDbImportPath,particleDbImportFile,"Error reading particle data base file","ParticleDbManager::importParticleDbNative()");
+  }
 }

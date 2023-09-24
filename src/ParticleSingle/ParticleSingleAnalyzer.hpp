@@ -119,9 +119,9 @@ public:
 
 protected:
   
-  bool fillEta; //!< whether to fill pseudorapidity histograms (set from configuration at initialization)
-  bool fillY;   //!< whether to fill rapidity histograms (set from configuration at initialization)
-  bool fillP2;  //!< whether to fill P2 and G2 related histograms  (set from configuration at initialization)
+//  bool fillEta; //!< whether to fill pseudorapidity histograms (set from configuration at initialization)
+//  bool fillY;   //!< whether to fill rapidity histograms (set from configuration at initialization)
+//  bool fillP2;  //!< whether to fill P2 and G2 related histograms  (set from configuration at initialization)
 
   vector< vector<ParticleDigit*> > filteredParticles;
 

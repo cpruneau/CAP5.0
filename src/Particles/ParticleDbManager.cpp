@@ -24,19 +24,13 @@ ParticleDbManager:: ParticleDbManager(const String & _name,
 :
 EventTask(_name,_configuration),
 particleDbImport(1),
-particleDbImportPath(""),
+particleDbImportPath("ParticleData/"),
 particleDbImportFile("particles.data"),
 particleDbImportDecaysFile("decays.data"),
-particleDbImportNative(0),
-particleDbImportCAP(0),
-particleDbConvertCAPToNative(0),
-particleDbConvertNativeToCAP(0),
 particleDbExport(0),
-particleDbExportPath(""),
+particleDbExportPath("ParticleData/"),
 particleDbExportFile("newParticles.data"),
 particleDbExportDecaysFile("neweDecays.data"),
-particleDbExportNative(0),
-particleDbExportCAP(0),
 particleDbs()
 {
   appendClassName("ParticleDbManager");
@@ -49,16 +43,10 @@ void ParticleDbManager::setDefaultConfiguration()
   addParameter("ParticleDbImportPath",        particleDbImportPath);
   addParameter("ParticleDbImportFile",        particleDbImportFile);
   addParameter("ParticleDbImportDecaysFile",  particleDbImportDecaysFile);
-  addParameter("ParticleDbImportNative",      particleDbImportNative);
-  addParameter("ParticleDbImportCAP",         particleDbImportCAP);
-  addParameter("ParticleDbConvertCAPToNative",particleDbConvertCAPToNative);
-  addParameter("ParticleDbConvertNativeToCAP",particleDbConvertNativeToCAP);
   addParameter("ParticleDbExport",            particleDbExport);
   addParameter("ParticleDbExportPath",        particleDbExportPath);
   addParameter("ParticleDbExportFile",        particleDbExportFile);
   addParameter("ParticleDbExportDecaysFile",  particleDbExportDecaysFile);
-  addParameter("ParticleDbExportNative",      particleDbExportNative);
-  addParameter("ParticleDbExportCAP",         particleDbExportCAP);
 }
 
 
@@ -69,14 +57,10 @@ void ParticleDbManager::configure()
   particleDbImportPath       = getValueString("ParticleDbImportPath"        );
   particleDbImportFile       = getValueString("ParticleDbImportFile"        );
   particleDbImportDecaysFile = getValueString("ParticleDbImportDecaysFile"  );
-  particleDbImportNative     = getValueBool(  "ParticleDbImportNative"      );
-  particleDbImportCAP        = getValueBool(  "ParticleDbImportCAP"         );
   particleDbExport           = getValueBool(  "ParticleDbExport"            );
   particleDbExportPath       = getValueString("ParticleDbExportPath"        );
   particleDbExportFile       = getValueString("ParticleDbExportFile"        );
   particleDbExportDecaysFile = getValueString("ParticleDbExportDecaysFile"  );
-  particleDbExportNative     = getValueBool(  "ParticleDbExportNative"      );
-  particleDbExportCAP        = getValueBool(  "ParticleDbExportCAP"         );
   if (reportInfo(__FUNCTION__))
     {
     cout << endl;
@@ -84,166 +68,170 @@ void ParticleDbManager::configure()
     printItem("ParticleDbImportPath"       ,particleDbImportPath);
     printItem("ParticleDbImportFile"       ,particleDbImportFile);
     printItem("ParticleDbImportDecaysFile" ,particleDbImportDecaysFile);
-    printItem("ParticleDbImportNative"     ,particleDbImportNative);
-    printItem("ParticleDbImportCAP"        ,particleDbImportCAP);
     printItem("ParticleDbExport"           ,particleDbExport);
     printItem("ParticleDbExportPath"       ,particleDbExportPath);
     printItem("ParticleDbExportFile"       ,particleDbExportFile);
     printItem("ParticleDbExportDecaysFile" ,particleDbExportDecaysFile);
-    printItem("ParticleDbExportNative"     ,particleDbExportNative);
-    printItem("ParticleDbExportCAP"        ,particleDbExportCAP);
     cout << endl;
     }
   if (reportDebug(__FUNCTION__)) printConfiguration(cout);
 }
 
 void ParticleDbManager::execute()
-{
-
-}
-
-
+{  }
 
 void ParticleDbManager::initialize()
 {
   if (reportStart(__FUNCTION__))
     ;
   incrementTaskExecuted();
-  if (particleDbImport)  importParticleDb();
-  if (particleDbExport)  initializeParticleDb();
-  if (particleDbConvertCAPToNative || particleDbConvertNativeToCAP)
+  if (particleDbImport || particleDbExport)
     {
     importParticleDb();
-    initializeParticleDb();
+    //initializeParticleDb();
     }
   if (reportEnd(__FUNCTION__))
     ;
 }
 
+
+// legacy code from Chun Shen -- now using Therminator DB
+//void ParticleDbManager::importParticleDbCAP()
+//{
+//  String dbPath = taskDbPath;
+//  dbPath += "/";
+//  dbPath += particleDbImportPath;
+//
+//  ifstream & inputFile = openInputAsciiFile(dbPath,particleDbImportFile,".dat");
+//  string name, title;
+//  double mass, width, decayBranchingRatio;
+//  int pdgCode, gSpin, gIsospin, baryonNumber, strangeNumber, charmNumber, bottomNumber, charge;
+//  int nDecayModes, decayNpart, dummy_int;
+//  int decayPart[5] = {0, 0, 0, 0, 0};
+//  int index = 0;
+//  ParticleType * particleType;
+//  ParticleType * antiParticleType;
+//  String theName;
+//  String theAntiName;
+//  String theTitle;
+//  String theAntiTitle;
+//  ParticleDb * particleDb = new ParticleDb();
+//  particleDbs.push_back(particleDb);
+//  ParticleDb::setDefaultParticleDb(particleDb);
+//  try
+//  {
+//  while (1)
+//    {
+//    if (reportDebug(__FUNCTION__))
+//      cout << "Reading in ParticleType." << endl;
+//    inputFile >> pdgCode;
+//    if (inputFile.eof())
+//      {
+//      if (reportDebug(__FUNCTION__))
+//        cout << "Reached EOF." << endl;
+//      break;
+//      }
+//    inputFile >> name;
+//    inputFile >> mass;
+//    inputFile >> width;
+//    inputFile >> gSpin;
+//    inputFile >> baryonNumber;
+//    inputFile >> strangeNumber;
+//    inputFile >> charmNumber;
+//    inputFile >> bottomNumber;
+//    inputFile >> gIsospin;
+//    inputFile >> charge;
+//    inputFile >> nDecayModes;
+//    inputFile >> title;
+//    theName  = name;
+//    theTitle = title;
+//    particleType= new ParticleType();
+//    //pdgCode, theName, theTitle, mass, width, gSpin, baryonNumber, strangeNumber,
+//    //                               charmNumber, bottomNumber, gIsospin, charge);
+//    particleType->setIndex(index); index++;
+//    particleDb->addParticleType(particleType);
+//
+//    if (particleType->isFermion())
+//      {
+//      theAntiName  = "Anti-";
+//      theAntiName  += theName;
+//      theAntiTitle = "#bar ";
+//      theAntiTitle += theTitle;
+//      antiParticleType =  new ParticleType();
+//      //      -pdgCode, theAntiName, theAntiTitle, mass, width, gSpin,
+//      //                                           -baryonNumber, -strangeNumber, -charmNumber, -bottomNumber, gIsospin,
+//      //                                           -charge);
+//      antiParticleType->setIndex(index); index++;
+//      particleDb->addParticleType(antiParticleType);
+//      }
+//    // read decay information
+//    for (int j = 0; j < nDecayModes; j++)
+//      {
+//      inputFile >> dummy_int;
+//      inputFile >> decayNpart;
+//      inputFile >> decayBranchingRatio;
+//      inputFile >> decayPart[0];
+//      inputFile >> decayPart[1];
+//      inputFile >> decayPart[2];
+//      inputFile >> decayPart[3];
+//      inputFile >> decayPart[4];
+//      decayNpart = abs(decayNpart);
+//      std::vector<int> children;
+//      std::vector<int> antiChildren;
+//      for (int k=0; k<decayNpart; k++)
+//        {
+//        children.push_back(decayPart[k]);
+//        }
+//      if (!particleType->isFermion())
+//        {
+//        particleType->addDecayMode(decayBranchingRatio,children);
+//        }
+//      else
+//        {
+//        for (int k=0; k<decayNpart; k++)
+//          {
+//          antiChildren.push_back(particleDb->findPdgCode(decayPart[k])->getAntiParticlePdgCode());
+//          }
+//        particleType->addDecayMode(decayBranchingRatio,children);
+//        antiParticleType->addDecayMode(decayBranchingRatio,antiChildren);
+//        }
+//      }
+//    }
+//  }
+//  catch (...)
+//  {
+//  throw FileException(particleDbImportPath,particleDbImportFile,"Error reading particle data base file","ParticleDbManager::importParticleDbCAP()");
+//  }
+//  inputFile.close();
+//  if (reportInfo(__FUNCTION__))
+//    cout << "Total number of particles read: " <<  particleDb->getNumberOfTypes() << endl;
+//  particleDb->resolveTypes();
+//  particleDb->sortByMass();
+//}
+
+//!
+//!Import particle data from DB files.
+//!mass, width are in GeV
+//!The files were originally from Therminator
+//!The files are assumed to be at:
+//!    taskDbPath/particleDbImportPath
+//! The variable taskDbPath is set as an environment variable
+//! The variable particleDbImportPath is set in the project file
+//!
 void ParticleDbManager::importParticleDb()
 {
-  if (particleDbImportCAP || !particleDbImportNative)
-    importParticleDbCAP();
-  if (particleDbImportNative)
-    importParticleDbNative();
-}
+  String dbPath = taskDbPath;
+  dbPath += "/";
+  dbPath += particleDbImportPath;
 
-void ParticleDbManager::importParticleDbCAP()
-{
-  ifstream & inputFile = openInputAsciiFile(particleDbImportPath,particleDbImportFile,".dat");
-  string name, title;
-  double mass, width, decayBranchingRatio;
-  int pdgCode, gSpin, gIsospin, baryonNumber, strangeNumber, charmNumber, bottomNumber, charge;
-  int nDecayModes, decayNpart, dummy_int;
-  int decayPart[5] = {0, 0, 0, 0, 0};
-  int index = 0;
-  ParticleType * particleType;
-  ParticleType * antiParticleType;
-  String theName;
-  String theAntiName;
-  String theTitle;
-  String theAntiTitle;
-  ParticleDb * particleDb = new ParticleDb();
-  particleDbs.push_back(particleDb);
-  ParticleDb::setDefaultParticleDb(particleDb);
-  try
-  {
-  while (1)
-    {
-    if (reportDebug(__FUNCTION__))
-      cout << "Reading in ParticleType." << endl;
-    inputFile >> pdgCode;
-    if (inputFile.eof())
-      {
-      if (reportDebug(__FUNCTION__))
-        cout << "Reached EOF." << endl;
-      break;
-      }
-    inputFile >> name;
-    inputFile >> mass;
-    inputFile >> width;
-    inputFile >> gSpin;
-    inputFile >> baryonNumber;
-    inputFile >> strangeNumber;
-    inputFile >> charmNumber;
-    inputFile >> bottomNumber;
-    inputFile >> gIsospin;
-    inputFile >> charge;
-    inputFile >> nDecayModes;
-    inputFile >> title;
-    theName  = name;
-    theTitle = title;
-    particleType= new ParticleType();
-    //pdgCode, theName, theTitle, mass, width, gSpin, baryonNumber, strangeNumber,
-    //                               charmNumber, bottomNumber, gIsospin, charge);
-    particleType->setIndex(index); index++;
-    particleDb->addParticleType(particleType);
-
-    if (particleType->isFermion())
-      {
-      theAntiName  = "Anti-";
-      theAntiName  += theName;
-      theAntiTitle = "#bar ";
-      theAntiTitle += theTitle;
-      antiParticleType =  new ParticleType();
-      //      -pdgCode, theAntiName, theAntiTitle, mass, width, gSpin,
-      //                                           -baryonNumber, -strangeNumber, -charmNumber, -bottomNumber, gIsospin,
-      //                                           -charge);
-      antiParticleType->setIndex(index); index++;
-      particleDb->addParticleType(antiParticleType);
-      }
-    // read decay information
-    for (int j = 0; j < nDecayModes; j++)
-      {
-      inputFile >> dummy_int;
-      inputFile >> decayNpart;
-      inputFile >> decayBranchingRatio;
-      inputFile >> decayPart[0];
-      inputFile >> decayPart[1];
-      inputFile >> decayPart[2];
-      inputFile >> decayPart[3];
-      inputFile >> decayPart[4];
-      decayNpart = abs(decayNpart);
-      std::vector<int> children;
-      std::vector<int> antiChildren;
-      for (int k=0; k<decayNpart; k++)
-        {
-        children.push_back(decayPart[k]);
-        }
-      if (!particleType->isFermion())
-        {
-        particleType->addDecayMode(decayBranchingRatio,children);
-        }
-      else
-        {
-        for (int k=0; k<decayNpart; k++)
-          {
-          antiChildren.push_back(particleDb->findPdgCode(decayPart[k])->getAntiParticlePdgCode());
-          }
-        particleType->addDecayMode(decayBranchingRatio,children);
-        antiParticleType->addDecayMode(decayBranchingRatio,antiChildren);
-        }
-      }
-    }
-  }
-  catch (...)
-  {
-  throw FileException(particleDbImportPath,particleDbImportFile,"Error reading particle data base file","ParticleDbManager::importParticleDbCAP()");
-  }
-  inputFile.close();
+  // read particle file
   if (reportInfo(__FUNCTION__))
-    cout << "Total number of particles read: " <<  particleDb->getNumberOfTypes() << endl;
-  particleDb->resolveTypes();
-  particleDb->sortByMass();
-}
-
-//!
-//!Import particle data from Therminator files.
-//!mass, width are in GeV
-//!
-void ParticleDbManager::importParticleDbNative()
-{
-  ifstream & inputFile = openInputAsciiFile(particleDbImportPath,particleDbImportFile,".data");
+    {
+    cout << "DB Path............: " << dbPath << endl;
+    cout << "Particle File......: " << particleDbImportFile << endl;
+    cout << "Expected extension.: .data"<< endl;
+    }
+  ifstream & inputFile = openInputAsciiFile(dbPath,particleDbImportFile,".data");
   ParticleDb * particleDb = new ParticleDb();
   particleDbs.push_back(particleDb);
   ParticleDb::setDefaultParticleDb(particleDb);
@@ -306,7 +294,16 @@ void ParticleDbManager::importParticleDbNative()
   throw FileException(particleDbImportPath,particleDbImportFile,"Error reading particle data base file","ParticleDbManager::importParticleDbNative()");
   }
   inputFile.close();
-  ifstream & inputFileDecays = openInputAsciiFile(particleDbImportPath,particleDbImportDecaysFile,".data");
+
+  // read decay file
+  if (reportInfo(__FUNCTION__))
+    {
+    cout << "DB Path............: " << dbPath << endl;
+    cout << "Decay File.........: " << particleDbImportDecaysFile << endl;
+    cout << "Expected extension.: .data"<< endl;
+    }
+
+  ifstream & inputFileDecays = openInputAsciiFile(dbPath,particleDbImportDecaysFile,".data");
   double tBRatio, tRatio;
   int    CGcoeff; // complete branching ratio by Clebsch-Gordan coefficient: 0-no 1-yes
   ParticleType * parentType = nullptr;
@@ -467,53 +464,24 @@ void ParticleDbManager::importParticleDbNative()
   //dbAnalyzer();
 }
 
-void ParticleDbManager::initializeParticleDb()
-{
-  if ((particleDbExportCAP || particleDbConvertNativeToCAP) && !particleDbImportCAP)
-    initializeParticleDbCAP();
-  if ((particleDbExportNative || particleDbConvertCAPToNative) && !particleDbImportNative)
-    initializeParticleDbNative();
-}
-
-void ParticleDbManager::initializeParticleDbCAP()
-{
-  ParticleDb * particleDb = new ParticleDb();
-  ParticleDb::setDefaultParticleDb(particleDb);
-}
-
-void ParticleDbManager::initializeParticleDbNative()
-{
-
-}
-
 void ParticleDbManager::exportParticleDb()
 {
-  if (particleDbExportCAP || !particleDbExportNative)
-    exportParticleDbCAP();
-  if (particleDbExportNative)
-    exportParticleDbNative();
+ // TO be developed...
 }
 
-void ParticleDbManager::exportParticleDbCAP()
-{
-  ofstream & outputFile = openOutputAsciiFile(particleDbExportPath,particleDbExportFile,".dat");
-  for (unsigned int iType=0; iType<particleDb->size(); iType++)
-    {
-    ParticleType * type = particleDb->getParticleType(iType);
-    if (type->getPdgCode()<0) continue; // not printing antiparticles
-    // this code is incomplete.
-    }
-  outputFile.close();
-  if (reportEnd(__FUNCTION__))
-    ;
-}
-
-void ParticleDbManager::exportParticleDbNative()
-{  }
-
-
-void ParticleDbManager::convertParticleDbCAPToNative() {}
-void ParticleDbManager::convertParticleDbNativeToCAP() {}
+//void ParticleDbManager::exportParticleDbCAP()
+//{
+//  ofstream & outputFile = openOutputAsciiFile(particleDbExportPath,particleDbExportFile,".dat");
+//  for (unsigned int iType=0; iType<particleDb->size(); iType++)
+//    {
+//    ParticleType * type = particleDb->getParticleType(iType);
+//    if (type->getPdgCode()<0) continue; // not printing antiparticles
+//    // this code is incomplete.
+//    }
+//  outputFile.close();
+//  if (reportEnd(__FUNCTION__))
+//    ;
+//}
 
 double ParticleDbManager::clebschGordan(double aJot,  double aEm,
                                         double aJot1, double aEm1,
@@ -587,17 +555,17 @@ void ParticleDbManager::dbAnalyzer()
 
     ParticleType * particleType = particleDb->getParticleType(iType);
     int     pdg     = particleType->getPdgCode();
-    double  charge  = particleType->getCharge();
-    double  strange = particleType->getStrangessNumber();
-    double  baryon  = particleType->getBaryonNumber();
+//    double  charge  = particleType->getCharge();
+//    double  strange = particleType->getStrangessNumber();
+//    double  baryon  = particleType->getBaryonNumber();
     count = 0;
     for (unsigned int kType=0; kType<nTypes; kType++)
       {
       ParticleType * particleType2 = particleDb->getParticleType(kType);
       int     pdg2     = particleType2->getPdgCode();
-      double  charge2  = particleType2->getCharge();
-      double  strange2 = particleType2->getStrangessNumber();
-      double  baryon2  = particleType2->getBaryonNumber();
+//      double  charge2  = particleType2->getCharge();
+//      double  strange2 = particleType2->getStrangessNumber();
+//      double  baryon2  = particleType2->getBaryonNumber();
       if (pdg == pdg2) count++;
       }
     if (count>1)
@@ -621,12 +589,12 @@ void ParticleDbManager::dbAnalyzer()
     if (stable) continue;
     if (nModes<1) throw TaskException("nModes<1 && !isStable()","ParticleDbManager::dbAnalyzer()");
 
-//    cout << "Analysing particle named: " << name << " PDG Index:" << pdg << endl;
-//    cout << "    Charge: " << charge << endl;
-//    cout << "   Strange: " << strange << endl;
-//    cout << "    Baryon: " << baryon << endl;
-//    cout << "    Stable: " << stable << endl;
-//    cout << "    nModes: " << nModes << endl;
+    cout << "Analysing particle named: " << name << " PDG Index:" << pdg << endl;
+    cout << "    Charge: " << charge << endl;
+    cout << "   Strange: " << strange << endl;
+    cout << "    Baryon: " << baryon << endl;
+    cout << "    Stable: " << stable << endl;
+    cout << "    nModes: " << nModes << endl;
 
     std::vector<ParticleDecayMode> decayModes =  type->getDecayModes();
 

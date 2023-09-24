@@ -41,6 +41,7 @@ void GlobalAnalyzer::setDefaultConfiguration()
   EventTask::setDefaultConfiguration();
   addParameter("HistogramsCreate",     true);
   addParameter("HistogramsExport",     true);
+  addParameter("EventsAnalyze",        true);
   addParameter("EventsUseStream0",     true);
   addParameter("EventsUseStream1",     false);
   addParameter("SetEvent",             true);
@@ -142,8 +143,17 @@ void GlobalAnalyzer::initialize()
   if (reportStart(__FUNCTION__))
     ;
   EventTask::initialize();
-  int nParticleFilters = particleFilters.size();
+  nParticleFilters = particleFilters.size();
   setEvent = true;//getValueBool("SetEvent");
+  if (reportDebug(__FUNCTION__)) 
+    {
+    cout << endl;
+    printItem("nEventFilters",nEventFilters);
+    printItem("nParticleFilters",nParticleFilters);
+    printItem("setEvent",setEvent);
+    }
+    cout << " #event added streams: "  << getNEventStreams() << endl;
+
   n.assign(nParticleFilters,0.0);
   ptSum.assign(nParticleFilters,0.0);
   e.assign(nParticleFilters,0.0);
@@ -161,8 +171,8 @@ void GlobalAnalyzer::createHistograms()
   if (reportInfo(__FUNCTION__))
     {
     printItem("Creating HistogramGroup for",bn);
-    printItem("nEventFilters"              ,nEventFilters);
-    printItem("nParticleFilters"           ,nParticleFilters);
+    printItem("nEventFilters",nEventFilters);
+    printItem("nParticleFilters",nParticleFilters);
     }
   for (int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {
@@ -190,9 +200,9 @@ void GlobalAnalyzer::importHistograms(TFile & inputFile)
   String bn  = getParentName( );
   if (reportDebug(__FUNCTION__))
     {
-    cout << "Loading HistogramGroup for " << bn  << endl;
-    cout << "nEventFilters................ : " << nEventFilters << endl;
-    cout << "nParticleFilters............. : " << nParticleFilters << endl;
+    printItem("Loading HistogramGroup for ",bn);
+    printItem("nEventFilters",nEventFilters);
+    printItem("nParticleFilters",nParticleFilters);
     }
   for (int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {
@@ -210,9 +220,6 @@ void GlobalAnalyzer::importHistograms(TFile & inputFile)
 
 void GlobalAnalyzer::analyzeEvent()
 {
-//  
-//  if (reportStart(__FUNCTION__))
-//    ;
   incrementTaskExecuted();
   Event & event = * getEventStream(0);
   // count eventStreams used to fill histograms and for scaling at the end..
@@ -221,6 +228,15 @@ void GlobalAnalyzer::analyzeEvent()
   unsigned int nParticleFilters = particleFilters.size();
   unsigned int nParticles       = event.getNParticles();
   resetNParticlesAcceptedEvent();
+
+//  if (reportInfo(__FUNCTION__))
+//    {
+//    cout << endl;
+//    printItem("nEventFilters",nEventFilters);
+//    printItem("nParticleFilters",nParticleFilters);
+//    printItem("setEvent",setEvent);
+//    }
+
   for (unsigned int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {
     if (!eventFilters[iEventFilter]->accept(event)) continue;
@@ -254,11 +270,26 @@ void GlobalAnalyzer::analyzeEvent()
           }
         }
       }
+//    if (reportInfo(__FUNCTION__))
+//      {
+//      printItem("iEventFilter",iEventFilter);
+//      printItem("setEvent",setEvent);
+//      for (int k=0; k<nParticleFilters; k++)
+//        {
+//        cout << " n[" << k << "] = " << n[k] << endl;
+//        cout << " e[" << k << "] = " << e[k] << endl;
+//        cout << " q[" << k << "] = " << q[k] << endl;
+//        cout << " s[" << k << "] = " << s[k] << endl;
+//        cout << " b[" << k << "] = " << b[k] << endl;
+//        }
+//      }
     if (iEventFilter==0 && setEvent)
       {
       EventProperties * ep = event.getEventProperties();
       ep->fill(n,ptSum, e,q,s,b);
+      //ep->printProperties(cout);
       }
+    //Sexit(1);
     //cout << "Global counts " << n[0] << " charge: " << q[0]  << endl;
     GlobalHistos * globalHistos = (GlobalHistos * ) histogramManager.getGroup(0,iEventFilter);
     globalHistos->fill(n,ptSum,e,q,s,b,1.0);

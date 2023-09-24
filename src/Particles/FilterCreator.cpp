@@ -86,13 +86,13 @@ void FilterCreator::setDefaultConfiguration()
   addParameter("EventFilterAnaValue12",     0.0);
 
   addParameter("PartFilterModelOption",     TString("All"));
-  addParameter("PartFilterModelPt",         false);
+  addParameter("PartFilterModelFilterPt",   false);
   addParameter("PartFilterModelMinPt",      0.2);
   addParameter("PartFilterModelMaxPt",      2.0);
-  addParameter("PartFilterModelEta",        false);
+  addParameter("PartFilterModelFilterEta",  false);
   addParameter("PartFilterModelMinEta",     -4.0);
   addParameter("PartFilterModelMaxEta",     4.0);
-  addParameter("PartFilterModelY",          false);
+  addParameter("PartFilterModelFilterY",    false);
   addParameter("PartFilterModelMinY",       -4.0);
   addParameter("PartFilterModelMaxY",       4.0);
 
@@ -100,10 +100,10 @@ void FilterCreator::setDefaultConfiguration()
   addParameter("PartFilterGlobalFilterPt",     false);
   addParameter("PartFilterGlobalMinPt",        0.0);
   addParameter("PartFilterGlobalMaxPt",        2.0);
-  addParameter("PartFilterGlobalEta",          false);
+  addParameter("PartFilterGlobalFilterEta",    false);
   addParameter("PartFilterGlobalMinEta",       -4.0);
   addParameter("PartFilterGlobalMaxEta",       4.0);
-  addParameter("PartFilterGlobalY",            false);
+  addParameter("PartFilterGlobalFilterY",      false);
   addParameter("PartFilterGlobalMinY",         -4.0);
   addParameter("PartFilterGlobalMaxY",         4.0);
 
@@ -111,10 +111,10 @@ void FilterCreator::setDefaultConfiguration()
   addParameter("PartFilterAnaFilterPt",     false);
   addParameter("PartFilterAnaMinPt",        0.0);
   addParameter("PartFilterAnaMaxPt",        2.0);
-  addParameter("PartFilterAnaEta",          false);
+  addParameter("PartFilterAnaFilterEta",    false);
   addParameter("PartFilterAnaMinEta",       -4.0);
   addParameter("PartFilterAnaMaxEta",       4.0);
-  addParameter("PartFilterAnaY",            false);
+  addParameter("PartFilterAnaFilterY",      false);
   addParameter("PartFilterAnaMinY",         -4.0);
   addParameter("PartFilterAnaMaxY",         4.0);
 }
@@ -136,260 +136,15 @@ void FilterCreator::execute()
 void FilterCreator::initialize()
 {
   if (reportInfo(__FUNCTION__)) cout << "Building filters" << endl;
-
-  String eventFilterModelOption           = getValueString("EventFilterModelOption");
-  int    eventFilterModelNValues          = getValueInt(   "EventFilterModelNValues");
-  String eventFilterGlobalOption          = getValueString("EventFilterGlobalOption");
-  int    eventFilterGlobalNValues         = getValueInt(   "EventFilterGlobalNValues");
-  String eventFilterAnaOption             = getValueString("EventFilterAnaOption");
-  int    eventFilterAnaNValues            = getValueInt(   "EventFilterAnaNValues");
-
-  String partFilterModelOption            = getValueString("PartFilterModelOption");
-  bool   partFilterModelPt                = getValueBool(  "PartFilterModelPt");
-  double partFilterModelMinPt             = getValueDouble("PartFilterModelMinPt");
-  double partFilterModelMaxPt             = getValueDouble("PartFilterModelMaxPt");
-  bool   partFilterModelEta               = getValueBool(  "PartFilterModelEta");
-  double partFilterModelMinEta            = getValueDouble("PartFilterModelMinEta");
-  double partFilterModelMaxEta            = getValueDouble("PartFilterModelMaxEta");
-  bool   partFilterModelY                 = getValueBool(  "PartFilterModelY");
-  double partFilterModelMinY              = getValueDouble("PartFilterModelMinY");
-  double partFilterModelMaxY              = getValueDouble("PartFilterModelMaxY");
-
-  String partFilterGlobalOption           = getValueString("PartFilterGlobalOption");
-  bool   partFilterGlobalPt               = getValueBool(  "PartFilterGlobalPt");
-  double partFilterGlobalMinPt            = getValueDouble("PartFilterGlobalMinPt");
-  double partFilterGlobalMaxPt            = getValueDouble("PartFilterGlobalMaxPt");
-  bool   partFilterGlobalEta              = getValueBool(  "PartFilterGlobalEta");
-  double partFilterGlobalMinEta           = getValueDouble("PartFilterGlobalMinEta");
-  double partFilterGlobalMaxEta           = getValueDouble("PartFilterGlobalMaxEta");
-  bool   partFilterGlobalY                = getValueBool(  "PartFilterGlobalY");
-  double partFilterGlobalMinY             = getValueDouble("PartFilterGlobalMinY");
-  double partFilterGlobalMaxY             = getValueDouble("PartFilterGlobalMaxY");
-
-
-  String partFilterAnaOption              = getValueString("PartFilterAnaOption");
-  bool   partFilterAnaPt                  = getValueBool(  "PartFilterAnaPt");
-  double partFilterAnaMinPt               = getValueDouble("PartFilterAnaMinPt");
-  double partFilterAnaMaxPt               = getValueDouble("PartFilterAnaMaxPt");
-  bool   partFilterAnaEta                 = getValueBool(  "PartFilterAnaEta");
-  double partFilterAnaMinEta              = getValueDouble("PartFilterAnaMinEta");
-  double partFilterAnaMaxEta              = getValueDouble("PartFilterAnaMaxEta");
-  bool   partFilterAnaY                   = getValueBool(  "PartFilterAnaY");
-  double partFilterAnaMinY                = getValueDouble("PartFilterAnaMinY");
-  double partFilterAnaMaxY                = getValueDouble("PartFilterAnaMaxY");
-
-//  if (reportDebug(__FUNCTION__)) printConfiguration(cout);
-
-  if (reportInfo(__FUNCTION__))
-    {
-    cout << endl;
-
-    printItem("EventFilterModelOption",  eventFilterModelOption);
-    printItem("EventFilterModelNValues", eventFilterModelNValues);
-
-    printItem("EventFilterGlobalOption", eventFilterGlobalOption);
-    printItem("EventFilterGlobalNValues",eventFilterGlobalNValues);
-
-    printItem("EventFilterAnaOption",    eventFilterAnaOption);
-    printItem("EventFilterAnaNValues",   eventFilterAnaNValues);
-
-    printItem("PartFilterModelOption",   partFilterModelOption);
-    printItem("PartFilterModelPt",       partFilterModelPt);
-    printItem("PartFilterModelMinPt",    partFilterModelMinPt);
-    printItem("PartFilterModelMaxPt",    partFilterModelMaxPt);
-    printItem("PartFilterModelEta",      partFilterModelEta);
-    printItem("PartFilterModelMinEta",   partFilterModelMinEta);
-    printItem("PartFilterModelMaxEta",   partFilterModelMaxEta);
-    printItem("PartFilterModelY",        partFilterModelY);
-    printItem("PartFilterModelMinY",     partFilterModelMinY);
-    printItem("PartFilterModelMaxY",     partFilterModelMaxY);
-
-
-    printItem("PartFilterGlobalOption",   partFilterGlobalOption);
-    printItem("PartFilterGlobalFilterPt", partFilterGlobalPt);
-    printItem("PartFilterGlobalMinPt",    partFilterGlobalMinPt);
-    printItem("PartFilterGlobalMaxPt",    partFilterGlobalMaxPt);
-    printItem("PartFilterGlobalEta",      partFilterGlobalEta);
-    printItem("PartFilterGlobalMinEta",   partFilterGlobalMinEta);
-    printItem("PartFilterGlobalMaxEta",   partFilterGlobalMaxEta);
-    printItem("PartFilterGlobalY",        partFilterGlobalY);
-    printItem("PartFilterGlobalMinY",     partFilterGlobalMinY);
-    printItem("PartFilterGlobalMaxY",     partFilterGlobalMaxY);
-
-
-    printItem("PartFilterAnaOption",     partFilterAnaOption);
-    printItem("PartFilterAnaPt",         partFilterAnaPt);
-    printItem("PartFilterAnaMinPt",      partFilterAnaMinPt);
-    printItem("PartFilterAnaMaxPt",      partFilterAnaMaxPt);
-    printItem("PartFilterAnaEta",        partFilterAnaEta);
-    printItem("PartFilterAnaMinEta",     partFilterAnaMinEta);
-    printItem("PartFilterAnaMaxEta",     partFilterAnaMaxEta);
-    printItem("PartFilterAnaY",          partFilterAnaY);
-    printItem("PartFilterAnaMinY",       partFilterAnaMinY);
-    printItem("PartFilterAnaMaxY",       partFilterAnaMaxY);
-     cout << endl;
-    }
-
   initializeParticleDbLink();
-  // =========================================
-  // Setup all event filters
-  // =========================================
-  createEventFiltersModel();
-  createEventFiltersGlobal();
-  createEventFiltersAnalysis();
-  createParticleFiltersModel();
-  createParticleFiltersGlobal();
-  createParticleFiltersAnalysis();
-
-  if (reportInfo(__FUNCTION__)) cout << "Event filter model option selected: " << eventFilterModelOption  << endl;
-  if (eventFilterModelOption.EqualTo("none"))
-    {
-    if (reportWarning(__FUNCTION__)) cout << "No event filter selected for model" << endl;
-    }
-  else
-    {
-    if (eventFilterModelOption.EqualTo("All"))          FilterCreator::addEventFiltersModel(EventFilter::createOpenEventFilter());
-    else if (eventFilterModelOption.EqualTo("AliceMB")) FilterCreator::addEventFiltersModel(EventFilter::createAliceMBEventFilter());
-    else
-      {
-      vector<double> bounds;
-      for (int k=0; k<eventFilterModelNValues; k++)
-        {
-        String key = "EventFilterModelValue";  key += k;
-        bounds.push_back( getValueBool(key));
-        }
-      if (eventFilterModelOption.EqualTo("ImpactParameter"))  FilterCreator::addEventFiltersModel(EventFilter::createImpactParameterFilters(bounds));
-      else if (eventFilterModelOption.EqualTo("V0Mult"))      FilterCreator::addEventFiltersModel(EventFilter::createV0MultiplicityFilters(bounds));
-      else if (eventFilterModelOption.EqualTo("TpcMult"))     FilterCreator::addEventFiltersModel(EventFilter::createTpcMultiplicityFilters(bounds));
-      else
-        {
-        if (reportWarning(__FUNCTION__)) cout << "Unknown filter option selected for model: " <<  eventFilterModelOption << endl;
-        }
-      }
-    }
-
-
-  if (reportInfo(__FUNCTION__)) cout << "Event filter global option selected: " << eventFilterGlobalOption  << endl;
-  if (eventFilterGlobalOption.EqualTo("none"))
-    {
-    if (reportWarning(__FUNCTION__)) cout << "No event filter selected for Global" << endl;
-    }
-  else
-    {
-    if (eventFilterGlobalOption.EqualTo("All"))          FilterCreator::addEventFiltersGlobal(EventFilter::createOpenEventFilter());
-    else if (eventFilterGlobalOption.EqualTo("AliceMB")) FilterCreator::addEventFiltersGlobal(EventFilter::createAliceMBEventFilter());
-    else
-      {
-      vector<double> bounds;
-      for (int k=0; k<eventFilterGlobalNValues; k++)
-        {
-        String key = "EventFilterGlobalValue";  key += k;
-        bounds.push_back( getValueBool(key));
-        }
-      if (eventFilterGlobalOption.EqualTo("ImpactParameter"))  FilterCreator::addEventFiltersGlobal(EventFilter::createImpactParameterFilters(bounds));
-      else if (eventFilterGlobalOption.EqualTo("V0Mult"))      FilterCreator::addEventFiltersGlobal(EventFilter::createV0MultiplicityFilters(bounds));
-      else if (eventFilterGlobalOption.EqualTo("TpcMult"))     FilterCreator::addEventFiltersGlobal(EventFilter::createTpcMultiplicityFilters(bounds));
-      else
-        {
-        if (reportWarning(__FUNCTION__)) cout << "Unknown filter option selected for Global: " <<  eventFilterGlobalOption << endl;
-        }
-      }
-    }
-
-
-  if (reportInfo(__FUNCTION__)) cout << "Event filter analysis option selected: " << eventFilterAnaOption  << endl;
-  if (eventFilterAnaOption.EqualTo("none"))
-    {
-    if (reportWarning(__FUNCTION__)) cout << "No event filter selected for model" << endl;
-    }
-  else
-    {
-    if (eventFilterAnaOption.EqualTo("All"))          FilterCreator::addEventFiltersAnalysis(EventFilter::createOpenEventFilter());
-    else if (eventFilterAnaOption.EqualTo("AliceMB")) FilterCreator::addEventFiltersAnalysis(EventFilter::createAliceMBEventFilter());
-    else
-      {
-      vector<double> bounds;
-      for (int k=0; k<eventFilterAnaNValues; k++)
-        {
-        String key = "EventFilterAnaValue";  key += k;
-        bounds.push_back( getValueBool(key));
-        }
-      if (eventFilterAnaOption.EqualTo("ImpactParameter"))  FilterCreator::addEventFiltersAnalysis(EventFilter::createImpactParameterFilters(bounds));
-      else if (eventFilterAnaOption.EqualTo("V0Mult"))      FilterCreator::addEventFiltersAnalysis(EventFilter::createV0MultiplicityFilters(bounds));
-      else if (eventFilterAnaOption.EqualTo("TpcMult"))     FilterCreator::addEventFiltersAnalysis(EventFilter::createTpcMultiplicityFilters(bounds));
-      else
-        {
-        if (reportWarning(__FUNCTION__)) cout << "Unknown filter option selected for analysis: " <<  eventFilterAnaOption << endl;
-        }
-      }
-    }
-
-
-  // =========================================
-  // Setup all particle filters
-  // =========================================
-  if (reportInfo(__FUNCTION__)) cout << "PartFilterModelOption" << partFilterModelOption  << endl;
-  if (partFilterModelOption.EqualTo("All"))                   FilterCreator::addParticleFiltersModel(createOpenParticleFilter());
-  else if (partFilterModelOption.EqualTo("AliceV0"))          FilterCreator::addParticleFiltersModel(createAliceV0Filter());
-  else if (partFilterModelOption.EqualTo("Neutral"))          FilterCreator::addParticleFiltersModel(createNeutralParticleFilter(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY));
-  else if (partFilterModelOption.EqualTo("Charged"))          FilterCreator::addParticleFiltersModel(createChargedParticleFilter(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY));
-  else if (partFilterModelOption.EqualTo("Negative"))         FilterCreator::addParticleFiltersModel(createNegativeParticleFilter(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY));
-  else if (partFilterModelOption.EqualTo("Positive"))         FilterCreator::addParticleFiltersModel(createPositiveParticleFilter(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY));
-  else if (partFilterModelOption.EqualTo("ChargedHadrons"))   FilterCreator::addParticleFiltersModel(createChargedHadronFilters(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY));
-  else if (partFilterModelOption.EqualTo("PlusMinusHadrons")) FilterCreator::addParticleFiltersModel(createPlusMinusHadronFilters(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY));
-  else if (partFilterModelOption.EqualTo("StrangeHadrons"))   FilterCreator::addParticleFiltersModel(createStrangeHadronFilters(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY));
-  else if (partFilterModelOption.EqualTo("Baryons"))          FilterCreator::addParticleFiltersModel(createBaryonFilters(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY));
-  else if (partFilterModelOption.EqualTo("Index"))
-    {
-    if (!particleDb)
-      throw TaskException("particleDb==nullptr","FilterCreator::initialize()");
-    FilterCreator::addParticleFiltersModel(createIndexFilters(*particleDb,partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY));
-    }
-  else
-    if (reportWarning(__FUNCTION__)) cout << "PartFilterModelOption is unknown:" << partFilterModelOption  << endl;
-
-  if (reportInfo(__FUNCTION__)) cout << "PartFilterGlobalOption" << partFilterGlobalOption  << endl;
-  if (partFilterGlobalOption.EqualTo("All"))                   FilterCreator::addParticleFiltersGlobal(createOpenParticleFilter());
-  else if (partFilterGlobalOption.EqualTo("AliceV0"))          FilterCreator::addParticleFiltersGlobal(createAliceV0Filter());
-  else if (partFilterGlobalOption.EqualTo("Neutral"))          FilterCreator::addParticleFiltersGlobal(createNeutralParticleFilter(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY));
-  else if (partFilterGlobalOption.EqualTo("Charged"))          FilterCreator::addParticleFiltersGlobal(createChargedParticleFilter(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY));
-  else if (partFilterGlobalOption.EqualTo("Negative"))         FilterCreator::addParticleFiltersGlobal(createNegativeParticleFilter(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY));
-  else if (partFilterGlobalOption.EqualTo("Positive"))         FilterCreator::addParticleFiltersGlobal(createPositiveParticleFilter(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY));
-  else if (partFilterGlobalOption.EqualTo("ChargedHadrons"))   FilterCreator::addParticleFiltersGlobal(createChargedHadronFilters(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY));
-  else if (partFilterGlobalOption.EqualTo("PlusMinusHadrons")) FilterCreator::addParticleFiltersGlobal(createPlusMinusHadronFilters(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY));
-  else if (partFilterGlobalOption.EqualTo("StrangeHadrons"))   FilterCreator::addParticleFiltersGlobal(createStrangeHadronFilters(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY));
-  else if (partFilterGlobalOption.EqualTo("Baryons"))          FilterCreator::addParticleFiltersGlobal(createBaryonFilters(partFilterModelPt,partFilterModelMinPt,partFilterModelMaxPt,partFilterModelEta,partFilterModelMinEta,partFilterModelMaxEta,partFilterModelY,partFilterModelMinY,partFilterModelMaxY));
-  else if (partFilterGlobalOption.EqualTo("Index"))
-    {
-    if (!particleDb)
-      throw TaskException("particleDb==nullptr","FilterCreator::initialize()");
-    FilterCreator::addParticleFiltersGlobal(createIndexFilters(*particleDb,partFilterGlobalPt,partFilterGlobalMinPt,partFilterGlobalMaxPt,partFilterGlobalEta,partFilterGlobalMinEta,partFilterGlobalMaxEta,partFilterGlobalY,partFilterGlobalMinY,partFilterGlobalMaxY));
-    }
-  else
-    if (reportWarning(__FUNCTION__)) cout << "PartFilterGlobalOption is unknown:" << partFilterGlobalOption  << endl;
-
-
-
-
-  if (reportInfo(__FUNCTION__)) cout << "PartFilterModelOption" << partFilterModelOption  << endl;
-  if (partFilterAnaOption.EqualTo("All"))                     FilterCreator::addParticleFiltersAnalysis(createOpenParticleFilter());
-  else if (partFilterAnaOption.EqualTo("AliceV0"))            FilterCreator::addParticleFiltersAnalysis(createAliceV0Filter());
-  else if (partFilterAnaOption.EqualTo("Neutral"))            FilterCreator::addParticleFiltersAnalysis(createNeutralParticleFilter(partFilterAnaPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY));
-  else if (partFilterAnaOption.EqualTo("Charged"))            FilterCreator::addParticleFiltersAnalysis(createChargedParticleFilter(partFilterAnaPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY));
-  else if (partFilterAnaOption.EqualTo("Negative"))           FilterCreator::addParticleFiltersAnalysis(createNegativeParticleFilter(partFilterAnaPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY));
-  else if (partFilterAnaOption.EqualTo("Positive"))           FilterCreator::addParticleFiltersAnalysis(createPositiveParticleFilter(partFilterAnaPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY));
-  else if (partFilterAnaOption.EqualTo("ChargedHadrons"))     FilterCreator::addParticleFiltersAnalysis(createChargedHadronFilters(partFilterAnaPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY));
-  else if (partFilterAnaOption.EqualTo("PlusMinusHadrons"))   FilterCreator::addParticleFiltersAnalysis(createPlusMinusHadronFilters(partFilterAnaPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY));
-  else if (partFilterAnaOption.EqualTo("StrangeHadrons"))     FilterCreator::addParticleFiltersAnalysis(createStrangeHadronFilters(partFilterAnaPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY));
-  else if (partFilterAnaOption.EqualTo("Baryons"))            FilterCreator::addParticleFiltersAnalysis(createBaryonFilters(partFilterAnaPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY));
-  else if (partFilterAnaOption.EqualTo("Index"))
-    {
-    if (!particleDb)
-      throw TaskException("particleDb==nullptr","FilterCreator::initialize()");
-    FilterCreator::addParticleFiltersAnalysis(createIndexFilters(*particleDb,partFilterAnaPt,partFilterAnaMinPt,partFilterAnaMaxPt,partFilterAnaEta,partFilterAnaMinEta,partFilterAnaMaxEta,partFilterAnaY,partFilterAnaMinY,partFilterAnaMaxY));
-    }
-  else
-    if (reportWarning(__FUNCTION__)) cout << "PartFilterAnaOption is unknown:" << partFilterAnaOption  << endl;
+  createEventFilterContainers();
+  createEventFilters(0);
+  createEventFilters(1);
+  createEventFilters(2);
+  createParticleFilterContainers();
+  createParticleFilters(0);
+  createParticleFilters(1);
+  createParticleFilters(2);
 
   if (particleFiltersAnalysis->size()<1)
     {
@@ -402,7 +157,7 @@ void FilterCreator::initialize()
       }
     throw TaskException("particleFiltersAnalysis->size()<1","FilterCreator::execute()");
     }
-  if (reportDebug(__FUNCTION__))
+  if (reportInfo(__FUNCTION__))
     {
     cout << endl;
     cout << "==================================================================================" << std::endl;
@@ -442,148 +197,248 @@ vector<ParticleFilter*> * FilterCreator::particleFiltersGlobal = nullptr;
 vector<EventFilter*>    * FilterCreator::eventFiltersAnalysis = nullptr;
 vector<ParticleFilter*> * FilterCreator::particleFiltersAnalysis = nullptr;
 
-void FilterCreator::createEventFiltersModel()
+void FilterCreator::createEventFilterContainers()
 {
-  if (eventFiltersModel!=nullptr) throw TaskException("eventFiltersModel already created","FilterCreator::createEventFiltersModel()");
-  eventFiltersModel = new vector<EventFilter*>();
-}
-
-void FilterCreator::createEventFiltersGlobal()
-{
-  if (eventFiltersGlobal!=nullptr) throw TaskException("eventFiltersGlobal already created","FilterCreator::createEventFiltersGlobal()");
-  eventFiltersGlobal = new vector<EventFilter*>();
-}
-
-
-void FilterCreator::createEventFiltersAnalysis()
-{
+  if (eventFiltersModel!=nullptr)    throw TaskException("eventFiltersModel already created","FilterCreator::createEventFiltersModel()");
+  if (eventFiltersGlobal!=nullptr)   throw TaskException("eventFiltersGlobal already created","FilterCreator::createEventFiltersGlobal()");
   if (eventFiltersAnalysis!=nullptr) throw TaskException("eventFiltersAnalysis already created","FilterCreator::createEventFiltersAnalysis()");
-  eventFiltersAnalysis = new vector<EventFilter*>();
+
+  eventFiltersModel     = new vector<EventFilter*>();
+  eventFiltersGlobal    = new vector<EventFilter*>();
+  eventFiltersAnalysis  = new vector<EventFilter*>();
+
 }
 
-void FilterCreator::createParticleFiltersModel()
+void FilterCreator::createParticleFilterContainers()
 {
   if (particleFiltersModel!=nullptr) throw TaskException("particleFiltersModel already created","FilterCreator::createParticleFiltersModel()");
-  particleFiltersModel = new vector<ParticleFilter*>();
-}
-
-void FilterCreator::createParticleFiltersGlobal()
-{
   if (particleFiltersGlobal!=nullptr) throw TaskException("particleFiltersGlobal already created","FilterCreator::createParticleFiltersGlobal()");
-  particleFiltersGlobal = new vector<ParticleFilter*>();
-}
-
-void FilterCreator::createParticleFiltersAnalysis()
-{
   if (particleFiltersAnalysis!=nullptr) throw TaskException("particleFiltersAnalysis already created","FilterCreator::createParticleFiltersAnalysis()");
+  particleFiltersModel    = new vector<ParticleFilter*>();
+  particleFiltersGlobal   = new vector<ParticleFilter*>();
   particleFiltersAnalysis = new vector<ParticleFilter*>();
+
 }
 
-void FilterCreator::addEventFilterModel(EventFilter* filter)
+void FilterCreator::createEventFilters(unsigned int type)
 {
-  if (eventFiltersModel==nullptr) throw TaskException("eventFiltersModel==nullptr","FilterCreator::addEventFilterModel(EventFilter* filter)");
-  eventFiltersModel->push_back(filter);
+  String selection;
+  String keyBase;
+  int    nBounds;
+  switch (type)
+    {
+      case 0:
+      selection = getValueString("EventFilterModelOption");
+      keyBase   = "EventFilterModelValue";
+      nBounds   = getValueInt(   "EventFilterModelNValues");
+      break;
+      case 1:
+      selection = getValueString("EventFilterGlobalOption");
+      keyBase   = "EventFilterGlobalValue";
+      nBounds   = getValueInt(   "EventFilterGlobalNValues");
+      break;
+      case 2:
+      selection = getValueString("EventFilterAnaOption");
+      keyBase   = "EventFilterAnaValue";
+      nBounds   = getValueInt(   "EventFilterAnaNValues");
+      break;
+    }
+  if (reportInfo(__FUNCTION__))
+    {
+    cout << endl;
+    printItem("Event Filter Type",type);
+    printItem("Selection",selection);
+    printItem("nBounds",nBounds);
+    }
+
+  vector<double> bounds;
+  for (int k=0; k<nBounds; k++)
+    {
+    String key = keyBase;  key += k;
+    bounds.push_back( getValueDouble(key));
+    }
+
+  if (selection.EqualTo("All"))                   addEventFilters(type,createOpenEventFilter());
+  else if (selection.EqualTo("AliceMB"))          addEventFilters(type,createAliceMBEventFilter());
+  else if (selection.EqualTo("ImpactParameter"))  addEventFilters(type,createImpactParameterFilters(bounds));
+  else if (selection.EqualTo("V0Mult"))           addEventFilters(type,createV0MultiplicityFilters(bounds));
+  else if (selection.EqualTo("TpcMult"))          addEventFilters(type,createTpcMultiplicityFilters(bounds));
+  else
+    {
+    throw TaskException("No valid option supplied","FilterCreator::createEventFilters(unsigned int type,  const String selection, vector<double> bounds)");
+    }
 }
 
-void FilterCreator::addEventFilterGlobal(EventFilter* filter)
+void FilterCreator::createParticleFilters(unsigned int type)
 {
-  if (eventFiltersGlobal==nullptr) throw TaskException("eventFiltersGlobal==nullptr","FilterCreator::addEventFilterGlobal(EventFilter* filter)");
-  eventFiltersGlobal->push_back(filter);
+  String selection;
+  bool   filterPt;
+  bool   filterEta;
+  bool   filterY;
+  double minPt,  maxPt;
+  double minEta, maxEta;
+  double minY,   maxY;
+
+  switch (type)
+    {
+      case 0:
+      selection = getValueString("PartFilterModelOption");
+      filterPt  = getValueBool(  "PartFilterModelFilterPt");
+      filterEta = getValueBool(  "PartFilterModelFilterEta");
+      filterY   = getValueBool(  "PartFilterModelFilterY");
+      minPt     = getValueDouble("PartFilterModelMinPt");
+      maxPt     = getValueDouble("PartFilterModelMaxPt");
+      minEta    = getValueDouble("PartFilterModelMinEta");
+      maxEta    = getValueDouble("PartFilterModelMaxEta");
+      minY      = getValueDouble("PartFilterModelMinY");
+      maxY      = getValueDouble("PartFilterModelMaxY");
+      break;
+      case 1:
+      selection = getValueString("PartFilterGlobalOption");
+      filterPt  = getValueBool(  "PartFilterGlobalFilterPt");
+      filterEta = getValueBool(  "PartFilterGlobalFilterEta");
+      filterY   = getValueBool(  "PartFilterGlobalFilterY");
+      minPt     = getValueDouble("PartFilterGlobalMinPt");
+      maxPt     = getValueDouble("PartFilterGlobalMaxPt");
+      minEta    = getValueDouble("PartFilterGlobalMinEta");
+      maxEta    = getValueDouble("PartFilterGlobalMaxEta");
+      minY      = getValueDouble("PartFilterGlobalMinY");
+      maxY      = getValueDouble("PartFilterGlobalMaxY");
+      break;
+      case 2:
+      selection = getValueString("PartFilterAnaOption");
+      filterPt  = getValueBool(  "PartFilterAnaFilterPt");
+      filterEta = getValueBool(  "PartFilterAnaFilterEta");
+      filterY   = getValueBool(  "PartFilterAnaFilterY");
+      minPt     = getValueDouble("PartFilterAnaMinPt");
+      maxPt     = getValueDouble("PartFilterAnaMaxPt");
+      minEta    = getValueDouble("PartFilterAnaMinEta");
+      maxEta    = getValueDouble("PartFilterAnaMaxEta");
+      minY      = getValueDouble("PartFilterAnaMinY");
+      maxY      = getValueDouble("PartFilterAnaMaxY");
+      break;
+    }
+  if (reportInfo(__FUNCTION__))
+    {
+    cout << endl;
+    printItem("Particle Filter Type",type);
+    printItem("Selection",selection);
+    printItem("filterPt",filterPt);
+    printItem("filterEta",filterEta);
+    printItem("filterY",filterY);
+    printItem("minPt",minPt);
+    printItem("maxPt",maxPt);
+    printItem("minEta",minEta);
+    printItem("maxEta",maxEta);
+    printItem("minY",minY);
+    printItem("maxY",maxY);
+    }
+  // =========================================
+  // Setup all particle filters
+  // =========================================
+  if (selection.EqualTo("All"))                   addParticleFilters(type,createOpenParticleFilter());
+  else if (selection.EqualTo("AliceV0"))          addParticleFilters(type,createAliceV0Filter());
+  else if (selection.EqualTo("Neutral"))          addParticleFilters(type,createNeutralParticleFilter(filterPt,minPt,maxPt,filterEta,minEta,maxEta,filterY,minY,maxY));
+  else if (selection.EqualTo("Charged"))          addParticleFilters(type,createChargedParticleFilter(filterPt,minPt,maxPt,filterEta,minEta,maxEta,filterY,minY,maxY));
+  else if (selection.EqualTo("Negative"))         addParticleFilters(type,createNegativeParticleFilter(filterPt,minPt,maxPt,filterEta,minEta,maxEta,filterY,minY,maxY));
+  else if (selection.EqualTo("Positive"))         addParticleFilters(type,createPositiveParticleFilter(filterPt,minPt,maxPt,filterEta,minEta,maxEta,filterY,minY,maxY));
+  else if (selection.EqualTo("ChargedHadrons"))   addParticleFilters(type,createChargedHadronFilters(filterPt,minPt,maxPt,filterEta,minEta,maxEta,filterY,minY,maxY));
+  else if (selection.EqualTo("PlusMinusHadrons")) addParticleFilters(type,createPlusMinusHadronFilters(filterPt,minPt,maxPt,filterEta,minEta,maxEta,filterY,minY,maxY));
+  else if (selection.EqualTo("StrangeHadrons"))   addParticleFilters(type,createStrangeHadronFilters(filterPt,minPt,maxPt,filterEta,minEta,maxEta,filterY,minY,maxY));
+  else if (selection.EqualTo("Baryons"))          addParticleFilters(type,createBaryonFilters(filterPt,minPt,maxPt,filterEta,minEta,maxEta,filterY,minY,maxY));
+  else if (selection.EqualTo("Index"))
+    {
+    if (!particleDb)
+      throw TaskException("particleDb==nullptr","FilterCreator::initialize()");
+    addParticleFilters(type,createIndexFilters(*particleDb,filterPt,minPt,maxPt,filterEta,minEta,maxEta,filterY,minY,maxY));
+    }
+  else
+    throw TaskException("No valid option supplied","FilterCreator::createParticleFilters(unsigned int type)");
 }
 
-void FilterCreator::addEventFilterAnalysis(EventFilter* filter)
+
+
+void FilterCreator::addEventFilter(unsigned int type, EventFilter* filter)
 {
-  if (eventFiltersAnalysis==nullptr) throw TaskException("eventFiltersAnalysis==nullptr","FilterCreator::addEventFilterAnalysis(EventFilter* filter)");
-  eventFiltersAnalysis->push_back(filter);
+  switch (type)
+    {
+      case 0:
+      if (eventFiltersModel==nullptr) throw TaskException("eventFiltersModel==nullptr","FilterCreator::addEventFilter(unsigned int type, EventFilter* filter)");
+      eventFiltersModel->push_back(filter);
+      break;
+      case 1:
+      if (eventFiltersGlobal==nullptr) throw TaskException("eventFiltersGlobal==nullptr","FilterCreator::addEventFilter(unsigned int type, EventFilter* filter)");
+      eventFiltersGlobal->push_back(filter);
+      break;
+      case 2:
+      if (eventFiltersAnalysis==nullptr) throw TaskException("eventFiltersAnalysis==nullptr","FilterCreator::addEventFilter(unsigned int type, EventFilter* filter)");
+      eventFiltersAnalysis->push_back(filter);
+      break;
+    }
 }
 
-void FilterCreator::addParticleFilterModel(ParticleFilter* filter)
+void FilterCreator::addParticleFilter(unsigned int type, ParticleFilter* filter)
 {
-  if (particleFiltersModel==nullptr) throw TaskException("particleFiltersModel==nullptr","FilterCreator::addParticleFilterModel(ParticleFilter* filter)");
-  particleFiltersModel->push_back(filter);
+  switch (type)
+    {
+      case 0:
+      if (particleFiltersModel==nullptr) throw TaskException("particleFiltersModel==nullptr","FilterCreator::addParticleFilterModel(unsigned int type, ParticleFilter* filter)");
+      particleFiltersModel->push_back(filter);
+      break;
+      case 1:
+      if (particleFiltersGlobal==nullptr) throw TaskException("eventFiltersGlobal==nullptr","FilterCreator::addEventFilter(unsigned int type, EventFilter* filter)");
+      particleFiltersGlobal->push_back(filter);
+      break;
+      case 2:
+      if (particleFiltersAnalysis==nullptr) throw TaskException("eventFiltersAnalysis==nullptr","FilterCreator::addEventFilter(unsigned int type, EventFilter* filter)");
+      particleFiltersAnalysis->push_back(filter);
+      break;
+    }
 }
 
-void FilterCreator::addParticleFilterGlobal(ParticleFilter* filter)
-{
-  if (particleFiltersGlobal==nullptr) throw TaskException("particleFiltersGlobal==nullptr","FilterCreator::addParticleFilterGlobal(ParticleFilter* filter)");
-  particleFiltersGlobal->push_back(filter);
-}
 
 
-void FilterCreator::addParticleFilterAnalysis(ParticleFilter* filter)
+void FilterCreator::addEventFilters(unsigned int type, vector<EventFilter*>  filters)
 {
-  if (particleFiltersAnalysis==nullptr) throw TaskException("particleFiltersAnalysis==nullptr","FilterCreator::addParticleFilterAnalysis(ParticleFilter* filter)");
-  particleFiltersAnalysis->push_back(filter);
-}
-
-void FilterCreator::addEventFiltersModel(vector<EventFilter*>  filters)
-{
-  if (eventFiltersModel==nullptr) throw TaskException("eventFiltersModel==nullptr","FilterCreator::addEventFiltersModel(vector<EventFilter*> & filters)");
+  if (eventFiltersModel==nullptr) throw TaskException("eventFiltersModel==nullptr","FilterCreator::addEventFilters(unsigned int type, EventFilter* filter)");
+  if (eventFiltersGlobal==nullptr) throw TaskException("eventFiltersGlobal==nullptr","FilterCreator::addEventFilters(unsigned int type, EventFilter* filter)");
+  if (eventFiltersAnalysis==nullptr) throw TaskException("eventFiltersAnalysis==nullptr","FilterCreator::addEventFilters(vector<EventFilter*> & filters)");
   int n = filters.size();
   if (n<1)  throw TaskException("filters.size()<1","FilterCreator::addEventFiltersModel(vector<EventFilter*> & filters)");
   for (int k=0; k<n; k++)
     {
-    eventFiltersModel->push_back(filters[k]);
+    switch (type)
+      {
+        case 0: eventFiltersModel->push_back(filters[k]);
+        break;
+        case 1: eventFiltersGlobal->push_back(filters[k]);
+        break;
+        case 2: eventFiltersAnalysis->push_back(filters[k]);
+        break;
+      }
     }
 }
 
-void FilterCreator::addEventFiltersGlobal(vector<EventFilter*>  filters)
+void FilterCreator::addParticleFilters(unsigned int type, vector<ParticleFilter*> filters)
 {
-  if (eventFiltersGlobal==nullptr) throw TaskException("eventFiltersGlobal==nullptr","FilterCreator::addEventFiltersGlobal(vector<EventFilter*> & filters)");
+  if (particleFiltersModel==nullptr)    throw TaskException("particleFiltersModel==nullptr","FilterCreator::addParticleFilters(unsigned int type, vector<ParticleFilter*>  filters)");
+  if (particleFiltersGlobal==nullptr)   throw TaskException("particleFiltersGlobal==nullptr","FilterCreator::addParticleFilters(unsigned int type, vector<ParticleFilter*>  filters)");
+  if (particleFiltersAnalysis==nullptr) throw TaskException("particleFiltersAnalysis==nullptr","FilterCreator::addParticleFilters(unsigned int type, vector<ParticleFilter*>  filters)");
   int n = filters.size();
-  if (n<1)  throw TaskException("filters.size()<1","FilterCreator::addEventFiltersGlobal(vector<EventFilter*> & filters)");
+  if (n<1)  throw TaskException("filters.size()<1","FilterCreator::addParticleFilters(vector<ParticleFilter*>  filters)");
   for (int k=0; k<n; k++)
     {
-    eventFiltersGlobal->push_back(filters[k]);
+    switch (type)
+      {
+        case 0: particleFiltersModel->push_back(filters[k]);
+        break;
+        case 1: particleFiltersGlobal->push_back(filters[k]);
+        break;
+        case 2: particleFiltersAnalysis->push_back(filters[k]);
+        break;
+      }
     }
 }
-
-
-void FilterCreator::addEventFiltersAnalysis(vector<EventFilter*>  filters)
-{
-  if (eventFiltersAnalysis==nullptr) throw TaskException("eventFiltersAnalysis==nullptr","FilterCreator::addEventFiltersAnalysis(vector<EventFilter*> & filters)");
-  int n = filters.size();
-  if (n<1)  throw TaskException("filters.size()<1","FilterCreator::addEventFiltersAnalysis(vector<EventFilter*> & filters)");
-  for (int k=0; k<n; k++)
-    {
-    eventFiltersAnalysis->push_back(filters[k]);
-    }
-}
-
-void FilterCreator::addParticleFiltersModel(vector<ParticleFilter*> filters)
-{
-  if (particleFiltersModel==nullptr) throw TaskException("particleFiltersModel==nullptr","FilterCreator::addParticleFiltersModel(vector<ParticleFilter*>  filters)");
-  int n = filters.size();
-  if (n<1)  throw TaskException("filters.size()<1","FilterCreator::addParticleFiltersModel(vector<ParticleFilter*>  filters)");
-  for (int k=0; k<n; k++)
-    {
-    particleFiltersModel->push_back(filters[k]);
-    }
-}
-
-void FilterCreator::addParticleFiltersGlobal(vector<ParticleFilter*> filters)
-{
-  if (particleFiltersGlobal==nullptr) throw TaskException("particleFiltersGlobal==nullptr","FilterCreator::addParticleFiltersGlobal(vector<ParticleFilter*>  filters)");
-  int n = filters.size();
-  if (n<1)  throw TaskException("filters.size()<1","FilterCreator::addParticleFiltersGlobal(vector<ParticleFilter*>  filters)");
-  for (int k=0; k<n; k++)
-    {
-    particleFiltersGlobal->push_back(filters[k]);
-    }
-}
-
-
-void FilterCreator::addParticleFiltersAnalysis(vector<ParticleFilter*>  filters)
-{
-  if (particleFiltersAnalysis==nullptr) throw TaskException("particleFiltersAnalysis==nullptr","FilterCreator::addParticleFiltersAnalysis(vector<ParticleFilter*>  filters)");
-  int n = filters.size();
-  if (n<1)  throw TaskException("filters.size()<1","FilterCreator::addParticleFiltersAnalysis(vector<ParticleFilter*>  filters)");
-  for (int k=0; k<n; k++)
-    {
-    particleFiltersAnalysis->push_back(filters[k]);
-    }
-}
-
 
 vector<EventFilter*> & FilterCreator::getEventFiltersModel()
 {
@@ -600,7 +455,7 @@ vector<EventFilter*> & FilterCreator::getEventFiltersGlobal()
 vector<EventFilter*> & FilterCreator::getEventFiltersAnalysis()
 {
   if (eventFiltersAnalysis==nullptr) throw TaskException("eventFiltersAnalysis==nullptr","FilterCreator::getEventFiltersAnalysis()");
-  return *eventFiltersModel;
+  return *eventFiltersAnalysis;
 }
 
 vector<ParticleFilter*> & FilterCreator::getParticleFiltersModel()
@@ -621,8 +476,6 @@ vector<ParticleFilter*> & FilterCreator::getParticleFiltersAnalysis()
   if (particleFiltersAnalysis==nullptr) throw TaskException("particleFiltersAnalysis==nullptr","FilterCreator::getParticleFiltersAnalysis()");
   return *particleFiltersAnalysis;
 }
-
-
 
 vector<ParticleFilter*> FilterCreator::createOpenParticleFilter()
 {
@@ -988,8 +841,142 @@ vector<ParticleFilter*> FilterCreator::createStrangeHadronFilters(bool filtering
   return filters;
 }
 
+// EventFilter
+//  filterType  filterSubtype  Observable/Variable
+//     10          any            ImpactParameter
+//     11          0              AliceMBEvent  v0 multiplicity
+//     11          1              AliceMBEvent  TPC multiplicity
+//     12          0              V0Multiplicity
+//     13          1              TpcMultiplicity
+
+vector<EventFilter*> FilterCreator::createOpenEventFilter()
+{
+  vector<EventFilter*> filters;
+  EventFilter * filter = new EventFilter();
+  filter->setName("All");
+  filter->setLongName("All");
+  filter->setTitle("All");
+  filter->setLongTitle("All");
+  filters.push_back(filter);
+  return filters;
+}
 
 
+vector<EventFilter*> FilterCreator::createImpactParameterFilters(vector<double> & bounds)
+{
+  vector<EventFilter*> filters;
+  EventFilter* filter;
+  int n = bounds.size();
+  if (reportInfo(__FUNCTION__))
+    {
+    cout << endl;
+    printItem("bounds.size()",n);
+    }
+  for (int k=0; k<n-1; k++)
+    {
+    double low  = bounds[k];
+    double high = bounds[k+1];
+    String name = "b";
+    name += int(1000*low);
+    name +="To";
+    name += int(1000*high);
+    String title;
+    title = low;
+    title += "#LT b <";
+    title += high;
+    filter = new EventFilter();
+    filter->setName(name);
+    filter->setLongName(name);
+    filter->setTitle(title);
+    filter->setLongTitle(title);
+    filter->addCondition(10, 0, low, high); // meant to cut on b
+    filters.push_back(filter);
+    }
+  return filters;
+}
+
+
+vector<EventFilter*> FilterCreator::createAliceMBEventFilter()
+{
+  vector<EventFilter*> filters;
+  EventFilter* filter  = new EventFilter();
+  filter->setName("AliceMB");
+  filter->setLongName("AliceMB");
+  filter->setTitle("AliceMB");
+  filter->setLongTitle("AliceMB");
+  filter->addCondition(11, 0, 1.0, 1.0E10); // v0 multiplicity
+  filter->addCondition(11, 1, 1.0, 1.0E10); // TPC multiplicity
+  filters.push_back(filter);
+  return filters;
+}
+
+
+vector<EventFilter*> FilterCreator::createV0MultiplicityFilters(vector<double> & bounds)
+{
+  int n = bounds.size();
+  if (reportInfo(__FUNCTION__))
+    {
+    cout << endl;
+    printItem("bounds.size()",n);
+    }
+  vector<EventFilter*> filters;
+  EventFilter* filter;
+  for (int k=0; k<n-1; k++)
+    {
+    double low  = bounds[k];
+    double high = bounds[k+1];
+    String name = "V0M";
+    name += int(1000*low);
+    name +="To";
+    name += int(1000*high);
+    String title;
+    title = low;
+    title += "#LT V0M <";
+    title += high;
+    filter = new EventFilter();
+    filter->setName(name);
+    filter->setLongName(name);
+    filter->setTitle(title);
+    filter->setLongTitle(title);
+    filter->addCondition(11, 0, low, high); // meant to cut on V0M
+    filters.push_back(filter);
+    }
+  return filters;
+}
+
+
+vector<EventFilter*> FilterCreator::createTpcMultiplicityFilters(vector<double> & bounds)
+{
+  vector<EventFilter*> filters;
+  EventFilter* filter;
+  int n = bounds.size();
+  if (reportInfo(__FUNCTION__))
+    {
+    cout << endl;
+    printItem("bounds.size()",n);
+    }
+  for (int k=0; k<n-1; k++)
+    {
+    double low  = bounds[k];
+    double high = bounds[k+1];
+    String name = "TPCMult";
+    name += int(1000*low);
+    name +="To";
+    name += int(1000*high);
+    String title;
+    title = low;
+    title += "#LT TPCMult <";
+    title += high;
+    filter = new EventFilter();
+    filter->setName(name);
+    filter->setLongName(name);
+    filter->setTitle(title);
+    filter->setLongTitle(title);
+    filter->addCondition(11, 1, low, high); // meant to cut on V0M
+    filters.push_back(filter);
+    }
+  return filters;
+}
 
 
 } // namespace CAP

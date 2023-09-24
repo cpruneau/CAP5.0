@@ -45,11 +45,7 @@ bool EventFilter::accept(const Event & event)
   unsigned int nComponents = getNConditions();
   if (nComponents<1) return true;
   EventProperties * eventProperties = event.getEventProperties();
-  if (!eventProperties)
-    {
-    cout << " Event does NOT have properties" << endl;
-    return false;
-    }
+  if (!eventProperties) throw TaskException("Event does NOT have properties","EventFilter::accept(const Event & event)");
   double value;
   for (unsigned int k = 0; k<getNConditions(); k++)
     {
@@ -57,168 +53,39 @@ bool EventFilter::accept(const Event & event)
     unsigned index   = condition.filterSubtype;
     switch (condition.filterType)
       {
-        case 0:
+        case 10:
         // model parameter
-        if (index>=eventProperties->modelParameters.size())
-          {
-          cout << "<E> EventFilter::accept(Event & event)  index>=modelParameters.size()" << endl;
-          return false;
-          }
+        if (index>=eventProperties->modelParameters.size()) throw TaskException("index>=modelParameters.size()","EventFilter::accept(const Event & event)");
         value = eventProperties->modelParameters[index]; break;
-        case 1:
+        case 11:
         // filtered n
-        if (index>=eventProperties->nFiltered.size())
-          {
-          cout << "<E> EventFilter::accept(Event & event)  index>=eventProperties->nFiltered.size()" << endl;
-          return false;
-          }
+        if (index>=eventProperties->nFiltered.size()) throw TaskException("index>=eventProperties->nFiltered.size()","EventFilter::accept(const Event & event)");
         value = eventProperties->nFiltered[index]; break;
-        case 2:
+        case 12:
         // filtered energy
-        if (index>=eventProperties->eFiltered.size())
-          {
-          cout << "<E> EventFilter::accept(Event & event)  index>=eventProperties->eFiltered.size()" << endl;
-          return false;
-          }
+        if (index>=eventProperties->eFiltered.size()) throw TaskException("index>=eventProperties->eFiltered.size()","EventFilter::accept(const Event & event)");
         value = eventProperties->eFiltered[index]; break;
-        case 3:
+        case 13:
         // filtered charge
-        if (index>=eventProperties->qFiltered.size())
-          {
-          cout << "<E> EventFilter::accept(Event & event)  index>=eventProperties->qFiltered.size()" << endl;
-          return false;
-          }
+        if (index>=eventProperties->qFiltered.size()) throw TaskException("index>=eventProperties->qFiltered.size()","EventFilter::accept(const Event & event)");
         value = eventProperties->qFiltered[index]; break;
-        case 4:
+        case 14:
         // filtered strangeness
-        if (index>=eventProperties->sFiltered.size())
-          {
-          cout << "<E> EventFilter::accept(Event & event)  index>=eventProperties->sFiltered.size()" << endl;
-          return false;
-          }
+        if (index>=eventProperties->sFiltered.size())  throw TaskException("index>=eventProperties->sFiltered.size()","EventFilter::accept(const Event & event)");
         value = eventProperties->sFiltered[index]; break;
-        case 5:
+        case 15:
         // filtered baryoness
-        if (index>=eventProperties->bFiltered.size())
-          {
-          cout << "<E> EventFilter::accept(Event & event)  index>=eventProperties->bFiltered.size()" << endl;
-          return false;
-          }
+        if (index>=eventProperties->bFiltered.size()) throw TaskException("index>=eventProperties->bFiltered.size()","EventFilter::accept(const Event & event)");
         value = eventProperties->bFiltered[index]; break;
       }
+//    cout << "            name: " << name << endl;
+//    cout << "      filterType: " <<  condition.filterType << endl;
+//    cout << "   filterSubtype: " <<  condition.filterSubtype << endl;
+//    cout << "       nFiltered: " <<  eventProperties->nFiltered[index] << endl;
+//    cout << "condition accept: " <<  condition.accept(value) << endl;
+
     if (!condition.accept(value))  return false;
     }
   return true;
 }
 
-
-vector<EventFilter*> EventFilter::createOpenEventFilter()
-{
-  vector<EventFilter*> filters;
-  EventFilter * filter = new EventFilter();
-  filter->setName("All");
-  filter->setLongName("All");
-  filter->setTitle("All");
-  filter->setLongTitle("All");
-  filters.push_back(filter);
-  return filters;
-}
-
-vector<EventFilter*> EventFilter::createAliceMBEventFilter()
-{
-  vector<EventFilter*> filters;
-  EventFilter* filter  = new EventFilter();
-  filter->setName("AliceMB");
-  filter->setLongName("AliceMB");
-  filter->setTitle("AliceMB");
-  filter->setLongTitle("AliceMB");
-  filter->addCondition(1, 0, 1.0, 1.0E10); // v0 multiplicity
-  filter->addCondition(1, 1, 1.0, 1.0E10); // TPC multiplicity
-  filters.push_back(filter);
-  return filters;
-}
-
-vector<EventFilter*> EventFilter::createImpactParameterFilters(vector<double> & bounds)
-{
-  vector<EventFilter*> filters;
-  EventFilter* filter;
-  int n = bounds.size();
-  for (int k=0; k<n-1; k++)
-    {
-    double low  = bounds[k];
-    double high = bounds[k+1];
-    String name = "b";
-    name += int(1000*low);
-    name +="To";
-    name += int(1000*high);
-    String title;
-    title = low;
-    title += "#LT b <";
-    title += high;
-    filter = new EventFilter();
-    filter->setName(name);
-    filter->setLongName(name);
-    filter->setTitle(title);
-    filter->setLongTitle(title);
-    filter->addCondition(0, 0, low, high); // meant to cut on b
-    }
-  filters.push_back(filter);
-  return filters;
-}
-
-vector<EventFilter*> EventFilter::createV0MultiplicityFilters(vector<double> & bounds)
-{
-  vector<EventFilter*> filters;
-  EventFilter* filter;
-  int n = bounds.size();
-  for (int k=0; k<n-1; k++)
-    {
-    double low  = bounds[k];
-    double high = bounds[k+1];
-    String name = "b";
-    name += int(1000*low);
-    name +="To";
-    name += int(1000*high);
-    String title;
-    title = low;
-    title += "#LT b <";
-    title += high;
-    filter = new EventFilter();
-    filter->setName(name);
-    filter->setLongName(name);
-    filter->setTitle(title);
-    filter->setLongTitle(title);
-    filter->addCondition(1, 0, low, high); // meant to cut on V0M
-    }
-  filters.push_back(filter);
-  return filters;
-}
-
-
-vector<EventFilter*> EventFilter::createTpcMultiplicityFilters(vector<double> & bounds)
-{
-  vector<EventFilter*> filters;
-  EventFilter* filter;
-  int n = bounds.size();
-  for (int k=0; k<n-1; k++)
-    {
-    double low  = bounds[k];
-    double high = bounds[k+1];
-    String name = "b";
-    name += int(1000*low);
-    name +="To";
-    name += int(1000*high);
-    String title;
-    title = low;
-    title += "#LT b <";
-    title += high;
-    filter = new EventFilter();
-    filter->setName(name);
-    filter->setLongName(name);
-    filter->setTitle(title);
-    filter->setLongTitle(title);
-    filter->addCondition(1, 1, low, high); // meant to cut on V0M
-    }
-  filters.push_back(filter);
-  return filters;
-}

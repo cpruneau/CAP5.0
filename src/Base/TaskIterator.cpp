@@ -27,6 +27,7 @@ nEventsPerSubbunch(1),
 nSubbunchesPerBunch(1),
 nBunches(1),
 nEventsRequested(1),
+nEventsReport(10),
 bunchLabel("BUNCH"),
 subbunchLabel(""),
 iEvent(0),
@@ -45,6 +46,7 @@ void TaskIterator::setDefaultConfiguration()
   addParameter("nSubbunchesPerBunch",     nSubbunchesPerBunch);
   addParameter("nBunches",                nBunches);
   addParameter("nEventsRequested",        nEventsRequested);
+  addParameter("nEventsReport",           nEventsReport);
   addParameter("BunchLabel",              bunchLabel);
   addParameter("SubbunchLabel",           subbunchLabel);
 }
@@ -57,6 +59,7 @@ void TaskIterator::configure()
   nSubbunchesPerBunch    = getValueInt(   "nSubbunchesPerBunch");
   nBunches               = getValueInt(   "nBunches");
   nEventsRequested       = getValueLong(  "nEventsRequested");
+  nEventsReport          = getValueLong(  "nEventsReport");
   bunchLabel             = getValueString("BunchLabel");
   subbunchLabel          = getValueString("SubbunchLabel");
 
@@ -68,6 +71,7 @@ void TaskIterator::configure()
     printItem("nSubbunchesPerBunch" ,nSubbunchesPerBunch);
     printItem("nBunches" ,nBunches);
     printItem("nEventsRequested" ,nEventsRequested);
+    printItem("nEventsReport" ,nEventsReport);
     printItem("bunchLabel" ,bunchLabel);
     printItem("subbunchLabel" ,subbunchLabel);
     }
@@ -96,8 +100,52 @@ void TaskIterator::partial(const String & outputPathBase)
 
 void TaskIterator::execute()
 {
+  histosImportPath = getValueString("HistogramsImportPath");
+  histosExportPath = getValueString("HistogramsExportPath");
+  if (histosImportPath.EqualTo("DEFAULT"))
+    {
+    histosImportPath = taskHistosImportPath;
+    }
+  else if (!histosImportPath.BeginsWith("/"))
+    {
+    TString temp = taskHistosImportPath;
+    temp += "/";
+    temp += histosImportPath;
+    histosImportPath = temp;
+    }
+  if (histosExportPath.EqualTo("DEFAULT"))
+    {
+    histosExportPath = taskHistosExportPath;
+    }
+  else if (!histosExportPath.BeginsWith("/"))
+    {
+    TString temp = taskHistosImportPath;
+    temp += "/";
+    temp += histosExportPath;
+    histosExportPath = temp;
+    }
+  addParameter("HistogramsExportPath",histosExportPath);
+  addParameter("HistogramsExportFile",histosExportFile);
+
+  int n = subTasks.size();
+  if (reportInfo(__FUNCTION__))
+    {
+    cout << endl;
+    cout << "--------------------------------------------------------------------------------" << endl;
+    cout << "--------------------------------------------------------------------------------" << endl;
+    printItem("Number of subtasks",n);
+    for (int k=0; k<n; k++)
+      printItem("Subtask name",subTasks[k]->getName());
+    printItem("isGrid",isGrid);
+    printItem("nEventsRequested",nEventsRequested);
+    printItem("nEventsReport" ,nEventsReport);
+    printItem("nEventsPerSubbunch",nEventsPerSubbunch);
+    printItem("nSubbunchesPerBunch",nSubbunchesPerBunch);
+    printItem("nBunches",nBunches);
+    printItem("HistogramsImportPath",histosImportPath);
+    printItem("HistogramsExportPath",histosExportPath);
+    }
   timer.start();
-  //initialize();
   iEvent           = 0;
   iSubBunch        = 0;
   iBunch           = 0;
@@ -106,6 +154,7 @@ void TaskIterator::execute()
     {
     for (unsigned int  iTask=0; iTask<getNSubTasks(); iTask++)  subTasks[iTask]->execute();
     iEvent++;
+    if (iEvent%nEventsReport == 0) printItem("iEvent",iEvent);
     if (isTaskEod())
       {
       working = false; break;
@@ -122,23 +171,25 @@ void TaskIterator::execute()
       working = false; break;
       }
 
-    if (iEvent%nEventsPerSubbunch==0)
+    // in local mode, with partial saves on
+    //
+    if (histosExportPartial  && !isGrid)
       {
-      // subbunch is completed
-      if (histosExportPartial) partial(getValueString("HistogramsExportPath"));
-      iSubBunch++;
-      if (iSubBunch==nSubbunchesPerBunch)
+      if (iEvent%(nBunches*nSubbunchesPerBunch*nEventsPerSubbunch)==0)
         {
-        // bunch is completed
-        iSubBunch=0;
-        iBunch++;
-        if (iBunch==nBunches) working = false;
+        // subbunch is completed
+        partial(histosExportPath);
+        iSubBunch++;
+        if (iSubBunch==nSubbunchesPerBunch)
+          {
+          // bunch is completed
+          iSubBunch=0;
+          iBunch++;
+          if (iBunch==nBunches) working = false;
+          }
         }
       }
     }
-  if (histosExportPartial && (iEvent%(nBunches*nSubbunchesPerBunch*nEventsPerSubbunch)!=0))
-    partial(getValueString("HistogramsExportPath"));
-
   timer.stop();
   finalize();
   clear(); // should delete everything..
@@ -148,7 +199,6 @@ void TaskIterator::execute()
 void TaskIterator::finalize()
 {
   finalizeSubTasks();
-
   if (reportInfo(__FUNCTION__))
     {
     cout <<  endl<<  endl<<  endl<<  endl;
@@ -171,6 +221,5 @@ void TaskIterator::finalize()
     cout << "---------------------------------------------------------------------------------------- " <<   endl;
     cout << endl << endl<< endl << endl;
     }
-
 }
 

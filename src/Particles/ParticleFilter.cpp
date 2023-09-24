@@ -229,10 +229,20 @@ bool ParticleFilter::accept(const Particle & particle)
             case 4: value = momentum.Py(); break;   // p_y
             case 5: value = momentum.Pz(); break;   // p_z
             case 6: value = momentum.Phi(); break;   // phi azimuth
-            case 7: value = momentum.Eta(); break;   // pseudo rapidity
+            case 7: value = momentum.Eta();
+
+            break;   // pseudo rapidity
             case 8: value = momentum.Rapidity(); break;   // rapidity
           }
         accepting = conditions[k]->accept(value);
+//        if (filterSubType==7)
+//          {
+//          std::cout << " ParticleFilter:accept() filterType==5 filterSubType==" << filterSubType << " value:" << value << std::endl;
+//          std::cout << " k: " << k << std::endl;
+//          conditions[k]->printProperties(std::cout);
+//          std::cout << " accepting = " << accepting << std::endl;
+//          }
+
 //        int pdg = type.getPdgCode();
 //        if (pdg==-211)
 //          {

@@ -46,9 +46,9 @@ int RunAna(TString configFile,
            TString histogramPath,
            long seed=1121331,
            bool isGrid=false,
-           long nEventsPerSubbunch=300,
-           int  nSubbunchesPerBunch=1,
-           int  nBunches=1)
+           long nEventsPerSubbunch=100000,
+           int  nSubbunchesPerBunch=5,
+           int  nBunches=3)
 {
   TString includeBasePath = getenv("CAP_SRC");
   cout << " includeBasePath: " << includeBasePath << endl;
@@ -64,81 +64,72 @@ int RunAna(TString configFile,
   loadTherminator(includeBasePath);
   loadExec(includeBasePath);
 
+
+
   try
   {
-  cout << "------------------------------------------------------------------------------------------------------" << endl;
-  cout << "------------------------------------------------------------------------------------------------------" << endl;
-  cout << "  RunAna()"  << endl;
-  CAP::Configuration configuration;
+
 
   if (isGrid || seed!=0)  gRandom->SetSeed(seed);
 
-  if (isGrid)
-    {
-    // For slurm jobs, one checks that ini file exists prior to calling the job
-    // so the path is included in the file name.
-    TString configurationPath = "";
-    TString configurationFile = configFile;
-    cout << "Configuration path......... : " << configurationPath << endl;
-    cout << "Configuration file......... : " << configurationFile << endl;
-    configuration.readFromFile(configurationPath,configurationFile);
-    configuration.addParameter("Run:Analysis:isGrid",                  isGrid);
-    configuration.addParameter("Run:Analysis:HistogramOutputPath",     histogramPath);
-    configuration.addParameter("Run:Analysis:nEventsPerSubbunch",      nEventsPerSubbunch);
-    configuration.addParameter("Run:Analysis:nSubbunchesPerBunch",     nSubbunchesPerBunch);
-    configuration.addParameter("Run:Analysis:nBunches",                nBunches);
-    configuration.addParameter("Run:Analysis:BunchLabel",              TString("BUNCH"));
-    configuration.addParameter("Run:Analysis:SubbunchLabel",           TString(""));
-    // overide the ini file for selected parameters
-    TString dbPath = getenv("CAP_DATABASE");
-    TString dbPathParticleData   = dbPath + "ParticleData/";
-    TString dbPathTherminatorIni = dbPath + "Therminator/";
-    cout << "DB path.................... : " << dbPath << endl;
-    cout << "DB path particleData....... : " << dbPathParticleData << endl;
-    cout << "DB path TherminatorIni..... : " << dbPathTherminatorIni << endl;
-    configuration.addParameter("Run:Analysis:GlobalGen:HistogramsExportPath",histogramPath);
-    configuration.addParameter("Run:Analysis:SingleGen:HistogramsExportPath",histogramPath);
-    configuration.addParameter("Run:Analysis:PairGen:HistogramsExportPath",histogramPath);
-    configuration.addParameter("Run:ParticleDb:ParticleDbImportPath",dbPathParticleData);
-    configuration.addParameter("Run:Analysis:Therminator:MultiplicitiesInputPath",dbPathTherminatorIni);
-    }
-  else
-    {
-    TString configurationPath = getenv("CAP_PROJECTS");
-    TString configurationFile = configFile;
-    cout << "Configuration path......... : " << configurationPath << endl;
-    cout << "Configuration file......... : " << configurationFile << endl;
-    configuration.readFromFile(configurationPath,configurationFile);
-    }
-
-
-
+  CAP::Configuration configuration;
+  TString configurationPath = getenv("CAP_PROJECTS");
+  TString configurationFile = configFile;
   cout << "------------------------------------------------------------------------------------------------------" << endl;
+  cout << "------------------------------------------------------------------------------------------------------" << endl;
+  cout << "RunAna()"  << endl;
+  cout << "------------------------------------------------------------------------------------------------------" << endl;
+  cout << "------------------------------------------------------------------------------------------------------" << endl;
+  cout << "Configuration path......................... : " << configurationPath << endl;
+  cout << "Configuration file......................... : " << configurationFile << endl;
+  cout << "Run:Analysis:isGrid........................ : " << isGrid << endl;
+  cout << "Run:Analysis:HistogramsImportPath.......... : " << histogramPath << endl;
+  cout << "Run:Analysis:HistogramsExportPath.......... : " << histogramPath << endl;
+  cout << "Run:Analysis:nEventsPerSubbunch............ : " << nEventsPerSubbunch << endl;
+  cout << "Run:Analysis:nBunches...................... : " << nSubbunchesPerBunch << endl;
+  cout << "Run:Analysis:nEventsPerSubbunch............ : " << nBunches << endl;
+  configuration.readFromFile(configurationPath,configurationFile);
+  configuration.addParameter("Run:Analysis:isGrid",                  isGrid);
+  configuration.addParameter("Run:Analysis:HistogramsImportPath",    histogramPath);
+  configuration.addParameter("Run:Analysis:HistogramsExportPath",    histogramPath);
+  configuration.addParameter("Run:Analysis:nEventsPerSubbunch",      nEventsPerSubbunch);
+  configuration.addParameter("Run:Analysis:nSubbunchesPerBunch",     nSubbunchesPerBunch);
+  configuration.addParameter("Run:Analysis:nBunches",                nBunches);
+//  configuration.printConfiguration(cout);
+  cout << "------------------------------------------------------------------------------------------------------" << endl;
+  cout << "Configure and Execute RunAnalysis" << endl;
   cout << "------------------------------------------------------------------------------------------------------" << endl;
   CAP::RunAnalysis * analysis = new CAP::RunAnalysis("Run", configuration);
   analysis->configure();
   analysis->execute();
+  cout << "------------------------------------------------------------------------------------------------------" << endl;
+  cout << "RunAnalysis completed successfully" << endl;
+  cout << "------------------------------------------------------------------------------------------------------" << endl;
+  return 1;
   }
   catch (CAP::TaskException exception)
   {
   exception.print();
-  exit(1);
+  //exit(1);
   }
   catch (CAP::FileException exception)
   {
   exception.print();
-  exit(1);
+  //exit(1);
   }
   catch (CAP::MathException exception)
   {
   exception.print();
-  exit(1);
+  // exit(1);
   }
   catch (CAP::Exception exception)
   {
   exception.print();
-  exit(1);
+  //exit(1);
   }
+  cout << "------------------------------------------------------------------------------------------------------" << endl;
+  cout << " RunAnalysis NOT completed." << endl;
+  cout << "------------------------------------------------------------------------------------------------------" << endl;
 
 return 0;
 }

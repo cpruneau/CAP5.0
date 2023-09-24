@@ -22,10 +22,10 @@ namespace CAP
 ParticleSingleAnalyzer::ParticleSingleAnalyzer(const String & _name,
                                                const Configuration & _configuration)
 :
-EventTask(_name,_configuration),
-fillEta(true),
-fillY(false),
-fillP2(false)
+EventTask(_name,_configuration)
+//fillEta(true),
+//fillY(false),
+//fillP2(false)
 {
   appendClassName("ParticleSingleAnalyzer");
 }
@@ -36,6 +36,7 @@ void ParticleSingleAnalyzer::setDefaultConfiguration()
   addParameter( "UseParticles",      true);
   addParameter( "HistogramsCreate",  true);
   addParameter( "HistogramsExport",  true);
+  addParameter( "EventsAnalyze",     true);
   addParameter( "EventsUseStream0",  true);
   addParameter( "EventsUseStream1",  false);
   addParameter( "nBins_n1",  100);
@@ -66,18 +67,18 @@ void ParticleSingleAnalyzer::setDefaultConfiguration()
   addParameter( "nBins_phiEtaPt",  7200);
   addParameter( "nBins_phiY",      720);
   addParameter( "nBins_phiYPt",    7200);
-  addParameter( "FillEta",  fillEta);
-  addParameter( "FillY",    fillY);
-  addParameter( "FillP2",   fillP2);
+  addParameter( "FillEta",         true);
+  addParameter( "FillY",           false);
+  addParameter( "FillP2",          false);
 }
 
 void ParticleSingleAnalyzer::configure()
 {
   EventTask::configure();
-  fillEta = getValueBool("FillEta");
-  fillY   = getValueBool("FillY");
-  fillP2  = getValueBool("FillP2");
-  //configuration.sanityCheck("EventsAnalyze");
+//  fillEta = getValueBool("FillEta");
+//  fillY   = getValueBool("FillY");
+//  fillP2  = getValueBool("FillP2");
+
   if (reportInfo(__FUNCTION__))
     {
     cout << endl;
@@ -88,6 +89,7 @@ void ParticleSingleAnalyzer::configure()
     printItem("EventsUseStream3");
     printItem("HistogramsCreate");
     printItem("HistogramsExport");
+    printItem("HistogramsExportPath");
     printItem("EventsUseStream0");
     printItem("EventsUseStream1");
     printItem("nBins_n1");
@@ -108,9 +110,9 @@ void ParticleSingleAnalyzer::configure()
     printItem("nBins_phi");
     printItem("Min_phi");
     printItem("Max_phi");
-    printItem("FillEta",fillEta);
-    printItem("FillY",fillY);
-    printItem("FillP2",fillP2);
+    printItem("FillEta");
+    printItem("FillY");
+    printItem("FillP2");
     cout << endl;
     }
 }

@@ -284,7 +284,7 @@ void EventTask::initializeFilters()
   if (filtersUseAnalysis)
     {
     if (reportInfo(__FUNCTION__)) cout << "Using analysis filters." << endl;
-    eventFilters = FilterCreator::getEventFiltersAnalysis();
+    eventFilters     = FilterCreator::getEventFiltersAnalysis();
     particleFilters  = FilterCreator::getParticleFiltersAnalysis();
     }
   nEventFilters    = eventFilters.size();
@@ -338,8 +338,35 @@ void EventTask::exportCalibrations()
 //!
 void EventTask::initialize()
 {
-  if (reportStart(__FUNCTION__))
-    ;
+  histosImportPath = getValueString("HistogramsImportPath");
+  histosExportPath = getValueString("HistogramsExportPath");
+  if (histosImportPath.EqualTo("DEFAULT"))
+    {
+    histosImportPath = taskHistosImportPath;
+    }
+  else if (!histosImportPath.BeginsWith("/"))
+    {
+    TString temp = taskHistosImportPath;
+    temp += "/";
+    temp += histosImportPath;
+    histosImportPath = temp;
+    }
+  if (histosExportPath.EqualTo("DEFAULT"))
+    {
+    histosExportPath = taskHistosExportPath;
+    }
+  else if (!histosExportPath.BeginsWith("/"))
+    {
+    TString temp = taskHistosImportPath;
+    temp += "/";
+    temp += histosExportPath;
+    histosExportPath = temp;
+    }
+  addParameter("HistogramsExportPath",histosExportPath);
+  addParameter("HistogramsExportFile",histosExportFile);
+
+
+
   initializeTaskExecuted();
   initializeParticleDbLink();
   initializeFilters();
@@ -348,6 +375,7 @@ void EventTask::initialize()
   initializeEventStreams();
   initializeParticleFactory();
   initializeHistogramManager();
+
   if (eventsCreate)         initializeEventGenerator();
   if (eventsImport)         initializeEventReader();
   if (eventsExport)         initializeEventWriter();
@@ -382,21 +410,6 @@ void EventTask::finalizeEventWriter()
 
 }
 
-void EventTask::partial(const String & outputPathBase)
-{
-  if (reportInfo(__FUNCTION__))
-    ;
-  printEventStatistics();
-  histosExportPath = outputPathBase;
-  if (histosScale)          scaleHistograms();
-  if (histosExport)         exportHistograms();
-  //if (histosExportDerived)  exportHistograms();
-
-  if (histosReset)   resetHistograms();
-  if (hasSubTasks()) for (unsigned int  iTask=0; iTask<getNSubTasks(); iTask++)  subTasks[iTask]->partial(outputPathBase);
-  if (reportEnd(__FUNCTION__))
-    ;
-}
 
 
 
@@ -457,15 +470,6 @@ void EventTask::exportEvent()
 
 void EventTask::execute()
 {
-//  if (reportInfo(__FUNCTION__))
-//    {
-//    cout << endl;
-//    cout <<  left << setw(50) << setfill('.')<< "eventsImport" ,eventsImport << endl;
-//    cout <<  left << setw(50) << setfill('.')<< "eventsCreate" ,eventsCreate << endl;
-//    cout <<  left << setw(50) << setfill('.')<< "eventsAnalyze" ,eventsAnalyze << endl;
-//    cout <<  left << setw(50) << setfill('.')<< "eventsExport" ,eventsExport << endl;
-//    }
-
   incrementTaskExecuted();
   if (eventsImport)  importEvent();
   if (eventsCreate)  createEvent();

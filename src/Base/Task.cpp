@@ -38,18 +38,24 @@ histosPrint              (false),
 histosForceRewrite       (false),
 histosImport             (false),
 histosImportDerived      (false),
-histosImportPath         ("none"),
-histosImportFile         ("none"),
+histosImportPath         ("DEFAULT"),
+histosImportFile         ("DEFAULT"),
 histosExport             (false),
 histosExportAsRoot       (false),
 histosExportAsText       (false),
 histosExportPartial      (false),
 histosExportPartialCount (false),
 histosExportMaxPerPartial(false),
-histosExportPath         ("none"),
-histosExportFile         ("none"),
+histosExportPath         ("DEFAULT"),
+histosExportFile         ("DEFAULT"),
 taskExecutedTotal        (0),
 taskExecuted             (0),
+taskDbPath               (""),
+taskProjectPath          (""),
+taskDataImportPath       (""),
+taskDataExportPath       (""),
+taskHistosImportPath     (""),
+taskHistosExportPath     (""),
 subTasks                 ()
 {
   setClassName("Task");
@@ -74,19 +80,24 @@ histosPrint              (false),
 histosForceRewrite       (false),
 histosImport             (false),
 histosImportDerived      (false),
-histosImportPath         (""),
-histosImportFile         (""),
+histosImportPath         ("DEFAULT"),
+histosImportFile         ("DEFAULT"),
 histosExport             (false),
 histosExportAsRoot       (false),
 histosExportAsText       (false),
 histosExportPartial      (false),
 histosExportPartialCount (false),
 histosExportMaxPerPartial(false),
-histosExportPath         (""),
-histosExportFile         (""),
+histosExportPath         ("DEFAULT"),
+histosExportFile         ("DEFAULT"),
 taskExecutedTotal        (0),
 taskExecuted             (0),
-subTasks                 ()
+taskDbPath               (""),
+taskProjectPath          (""),
+taskDataImportPath       (""),
+taskDataExportPath       (""),
+taskHistosImportPath     (""),
+taskHistosExportPath     ("")
 {
   setClassName("Task");
   setInstanceName(getName());
@@ -114,6 +125,15 @@ void Task::setDefaultConfiguration()
 //  cout << "==================================================" << endl;
 //  cout << "==================================================" << endl;
 //
+
+  taskExecutedTotal     = 0;
+  taskExecuted          = 0;
+  taskDbPath            = getenv("CAP_DATABASE");
+  taskProjectPath       = getenv("CAP_PROJECTS");
+  taskDataImportPath    = getenv("CAP_DATA_IMPORT_PATH");
+  taskDataExportPath    = getenv("CAP_DATA_EXPORT_PATH");
+  taskHistosImportPath  = getenv("CAP_HISTOS_IMPORT_PATH");
+  taskHistosExportPath  = getenv("CAP_HISTOS_EXPORT_PATH");
 
 
   String none("none");
@@ -168,13 +188,6 @@ void Task::configure()
   histosExportMaxPerPartial = getValueInt("HistogramsExportMaxPerPartial");
   histosExportPath          = getValueString("HistogramsExportPath");
   histosExportFile          = getValueString("HistogramsExportFile");
-  if (hasSubTasks())
-    {
-    for (unsigned int  iTask=0; iTask<subTasks.size(); iTask++)
-      {
-      subTasks[iTask]->configure();
-      }
-    }
   configured = true;
   if (reportEnd(__FUNCTION__))
     ;
@@ -262,9 +275,6 @@ void Task::importHistograms()
     ;
   String importPath = histosImportPath;
   String importFile = histosImportFile;
-
-//  String importPath = getValueString("HistogramsImportPath");
-//  String importFile = getValueString("HistogramsImportFile");
   if (reportDebug(__FUNCTION__))
     {
     cout << endl;
@@ -285,8 +295,6 @@ void Task::importDerivedHistograms()
 {
   if (reportStart(__FUNCTION__))
     ;
-//  String importPath = getValueString("HistogramsImportPath");
-//  String importFile = getValueString("HistogramsImportFile");
   String importPath = histosImportPath;
   String importFile = histosImportFile;
   if (reportDebug(__FUNCTION__))
@@ -341,6 +349,35 @@ void Task::printHistograms()
 
 }
 
+void Task::exportHistograms()
+{
+  exportHistograms(histosExportPath,histosExportFile);
+}
+
+void Task::exportHistograms(const String & exportPath)
+{
+  exportHistograms(exportPath,histosExportFile);
+}
+
+void Task::exportHistograms(const String & exportPath, const String & exportFile)
+{
+  if (reportInfo(__FUNCTION__))
+    {
+    cout << endl;
+    printItem("HistogramsExportPath",exportPath);
+    printItem("HistogramsExportFile",exportFile);
+    cout << endl;
+    }
+  if (exportPath.Length()>2) gSystem->mkdir(exportPath,1);
+  if (exportFile.Length()<5)
+    throw FileException(exportFile,"File name too short. Must 5 charter or more...","Task::exportHistograms()");
+  String option = "NEW";
+  if (histosForceRewrite) option = "RECREATE";
+  TFile & outputFile = openRootFile(exportPath,exportFile,option);
+  exportHistograms(outputFile);
+  outputFile.Close();
+}
+
 void Task::exportHistograms(TFile & outputFile)
 {
   if (reportStart(__FUNCTION__))
@@ -362,39 +399,25 @@ void Task::exportHistograms(ofstream & outputFile)
     ;
 }
 
-void Task::exportHistograms()
+void Task::partial(const String & outputPathBase)
 {
-  if (reportStart(__FUNCTION__))
-    ;
-  String exportPath = histosExportPath;
-  String exportFile = histosExportFile;
-
-//  String histosExportPath     = getValueString("HistogramsExportPath");
-//  String histosExportFile     = getValueString("HistogramsExportFile");
-//  if (histosExportPath.Contains("null") || histosExportPath.Contains("none")) histosExportPath = "";
-//  if (histosExportFile.Contains("null") || histosExportFile.Contains("none")) histosExportFile = getName();
-
   if (reportInfo(__FUNCTION__))
     {
     cout << endl;
-    printItem("HistogramsExportPath",exportPath);
-    printItem("HistogramsExportFile",exportFile);
-    cout << endl;
+    cout << "Partial save of histograms." << endl;
     }
-  if (exportPath.Length()>2) gSystem->mkdir(exportPath,1);
-  if (exportFile.Length()<5)
-    throw FileException(exportFile,"File name too short. Must 5 charter or more...","Task::exportHistograms()");
-
-//  if (histosExportAsRoot)
-//  {
-  String option = "NEW";
-  if (histosForceRewrite) option = "RECREATE";
-  TFile & outputFile = openRootFile(exportPath,exportFile,option);
-  exportHistograms(outputFile);
-  outputFile.Close();
+  // If scaling histograms, one must call resetHistograms to set all histo to zero content.
+  // Otherwise, the content will be non sensical.
+  // However, it is OK to call resetHistograms without calling scaleHistograms
+  if (histosScale && histosReset)   scaleHistograms();
+  if (histosExport)  exportHistograms(outputPathBase);
+  if (histosReset)   resetHistograms();
+  if (hasSubTasks()) for (unsigned int  iTask=0; iTask<getNSubTasks(); iTask++)  subTasks[iTask]->partial(outputPathBase);
   if (reportEnd(__FUNCTION__))
     ;
 }
+
+
 
 void Task::writeNEexecutedTask(TFile & outputFile)
 {

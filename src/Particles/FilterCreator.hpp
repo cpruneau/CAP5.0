@@ -48,27 +48,17 @@ public:
   //!
   void execute();
 
-  static void createEventFiltersModel();
-  static void createEventFiltersGlobal();
-  static void createEventFiltersAnalysis();
-  static void createParticleFiltersModel();
-  static void createParticleFiltersGlobal();
-  static void createParticleFiltersAnalysis();
+  void createEventFilterContainers();
+  void createParticleFilterContainers();
 
-  static void addEventFilterModel(EventFilter* filter);
-  static void addEventFilterGlobal(EventFilter* filter);
-  static void addEventFilterAnalysis(EventFilter* filter);
-  static void addParticleFilterModel(ParticleFilter* filter);
-  static void addParticleFilterGlobal(ParticleFilter* filter);
-  static void addParticleFilterAnalysis(ParticleFilter* filter);
+  void createEventFilters(unsigned int type);
+  void createParticleFilters(unsigned int type);
 
-  static void addEventFiltersModel(vector<EventFilter*>  filters);
-  static void addEventFiltersGlobal(vector<EventFilter*>  filters);
-  static void addEventFiltersAnalysis(vector<EventFilter*>  filters);
-  static void addParticleFiltersModel(vector<ParticleFilter*>  filters);
-  static void addParticleFiltersGlobal(vector<ParticleFilter*>  filters);
-  static void addParticleFiltersAnalysis(vector<ParticleFilter*>  filters);
+  void addEventFilter(unsigned int type, EventFilter* filter);
+  void addParticleFilter(unsigned int type, ParticleFilter* filter);
 
+  void addEventFilters(unsigned int type, vector<EventFilter*>  filters);
+  void addParticleFilters(unsigned int type, vector<ParticleFilter*>  filters);
 
   static vector<EventFilter*> & getEventFiltersModel();
   static vector<EventFilter*> & getEventFiltersGlobal();
@@ -175,6 +165,13 @@ public:
    vector<ParticleFilter*> createStrangeHadronFilters(bool filteringOnPt,  double minPt,  double maxPt,
                                                             bool filteringOnEta, double minEta, double maxEta,
                                                             bool filteringOnY,   double minY,   double maxY);
+
+
+  vector<EventFilter*> createOpenEventFilter();
+  vector<EventFilter*> createAliceMBEventFilter();
+  vector<EventFilter*> createImpactParameterFilters(vector<double> & bounds);
+  vector<EventFilter*> createV0MultiplicityFilters(vector<double>  & bounds);
+  vector<EventFilter*> createTpcMultiplicityFilters(vector<double> & bounds);
 
 
 protected:

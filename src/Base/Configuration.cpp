@@ -46,14 +46,16 @@ CAP::Configuration::~Configuration()
 CAP::String CAP::Configuration::getParameter(const char* aKeyword)  const
 {
   vector<Parameter>::const_iterator iter;
+  //cout << " size: " << parameters.size() << endl;
   for (iter = parameters.begin(); iter != parameters.end(); iter++)
     {
-    if (iter->keyword.Contains(aKeyword))
+    //cout << "keyword:" << iter->keyword << "   " << iter->value << endl;
+    if (iter->keyword.EndsWith(aKeyword))
       {
       return iter->value;
       }
     }
-  throw ConfigurationException(aKeyword,"Parameter not found: ","Configuration::getParameter(const char* aKeyword) ");
+  throw ConfigurationException(aKeyword,"Parameter not found!!!!!","Configuration::getParameter(const char* aKeyword) ");
 }
 
 CAP::String  CAP::Configuration::standardize(const char * path, const char* aKeyword) const
@@ -186,7 +188,7 @@ void CAP::Configuration::addParameter(Parameter& parameter)
   for (iter = parameters.begin(); iter != parameters.end(); iter++)
     {
     String keyCompared = iter->keyword;
-    if (keyCompared.Contains(keySearched.Data()))
+    if (keyCompared.EqualTo(keySearched.Data()))
       {
         iter->value = parameter.value;
         return;
@@ -425,7 +427,7 @@ vector<CAP::String> CAP::Configuration::getSelectedValues(const char *  keyBaseN
   vector<Parameter>::const_iterator iter;
   for (iter = parameters.begin(); iter != parameters.end(); iter++)
     {
-    if (iter->keyword.Contains(keyBaseName) && !iter->value.Contains(defaultValue) ) selectedValues.push_back(iter->value);
+    if (iter->keyword.EqualTo(keyBaseName) && !iter->value.Contains(defaultValue) ) selectedValues.push_back(iter->value);
     }
   return selectedValues;
 }

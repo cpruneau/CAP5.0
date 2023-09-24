@@ -73,31 +73,6 @@ protected:
   
   Pythia8::Pythia * pythia;
 
-  // For TTree file output
-  // Set up the ROOT TFile and TTree.
-  TFile *outputFile;
-//  Pythia8::Event *outputEvent;
-//  TTree *outputTree;
-
-  bool   standaloneMode;
-  bool   printBanner;
-  bool   printStatistics;
-  int    printNEvents;
-  int    beamsPdgA;
-  int    beamsPdgB;
-  int    beamsFrameType;
-  double beamsECMS;
-  double beamsEA;
-  double beamsEB;
-  bool   setSeed;
-  long   seedValue;
-  bool   useQCDCR;
-  bool   useRopes;
-  bool   useShoving;
-  String xmlInputPath;
-  int    nEventsPrinted;
-
-
   ClassDef(PythiaEventGenerator,0)
 };
 

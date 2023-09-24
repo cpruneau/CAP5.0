@@ -32,10 +32,12 @@ fillP2(false)
 void ParticlePairAnalyzer::setDefaultConfiguration()
 {
   EventTask::setDefaultConfiguration();
-  addParameter("HistogramsCreate",  true);
-  addParameter("HistogramsExport",  true);
+//  addParameter("UseParticles",      true);
+  addParameter("EventsAnalyze",     true);
   addParameter("EventsUseStream0",  true);
   addParameter("EventsUseStream1",  false);
+  addParameter("HistogramsCreate",  true);
+  addParameter("HistogramsExport",  true);
   addParameter("FillEta",           fillEta);
   addParameter("FillY",             fillY);
   addParameter("FillP2",            fillP2);
@@ -103,9 +105,9 @@ void ParticlePairAnalyzer::configure()
     printItem("EventsUseStream3");
     printItem("HistogramsCreate");
     printItem("HistogramsExport");
-    printItem("fillEta",fillEta);
-    printItem("fillY",fillY);
-    printItem("fillP2",fillP2);
+    printItem("FillEta",fillEta);
+    printItem("FillY",fillY);
+    printItem("FillP2",fillP2);
     printItem("nBins_n1");
     printItem("Min_n1");
     printItem("Max_n1");
@@ -186,9 +188,9 @@ void ParticlePairAnalyzer::createHistograms()
     cout << "Creating HistogramGroup...........: " << bn << endl;
     cout << "nEventFilters.................: " << nEventFilters << endl;
     cout << "nParticleFilters..............: " << nParticleFilters << endl;
-    cout << "fillEta.......................: " << fillEta  << endl;
-    cout << "fillY.........................: " << fillY    << endl;
-    cout << "fillP2........................: " << fillP2   << endl;
+    cout << "FillEta.......................: " << fillEta  << endl;
+    cout << "FillY.........................: " << fillY    << endl;
+    cout << "FillP2........................: " << fillP2   << endl;
     cout << endl;
     }
 
@@ -240,9 +242,9 @@ void ParticlePairAnalyzer::importHistograms(TFile & inputFile)
     cout << "Loading HistogramGroup............: " << bn << endl;
     cout << "nEventFilters.................: " << nEventFilters << endl;
     cout << "nParticleFilters..............: " << nParticleFilters << endl;
-    cout << "fillEta.......................: " << fillEta  << endl;
-    cout << "fillY.........................: " << fillY    << endl;
-    cout << "fillP2........................: " << fillP2   << endl;
+    cout << "FillEta.......................: " << fillEta  << endl;
+    cout << "FillY.........................: " << fillY    << endl;
+    cout << "FillP2........................: " << fillP2   << endl;
     cout << endl;
     }
   for (int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
