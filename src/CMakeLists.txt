@@ -14,7 +14,7 @@ if(APPLE)
 #    set (CMAKE_XCODE_ATTRIBUTE_MACOSX_DEPLOYMENT_TARGET[arch=arm64] "11.0" CACHE STRING "arm 64 minimum deployment target" FORCE)
 else()
  cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
-# cmake_policy(SET CMP0048 NEW)
+ cmake_policy(SET CMP0048 NEW)
  project(CAP DESCRIPTION "Correlation Analysis Package" LANGUAGES CXX)
 endif()
 
