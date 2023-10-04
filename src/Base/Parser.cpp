@@ -32,7 +32,7 @@ ifstream & Parser::openInputFile(const String & inputPath,
   if (reportStart(__FUNCTION__))
     ;
   String inputFileName = makeFileName(inputPath,fileName,extension);
-  if (reportTrace(__FUNCTION__))
+  if (reportInfo(__FUNCTION__))
     cout << "Attempting to open output file named: " << inputFileName << " in mode: " << ioOption << endl;
 
   ios_base::openmode mode = ios_base::in;
