@@ -19,5 +19,6 @@ echo Will save histograms at $CAP_HISTOPATH
 mkdir $CAP_HISTOPATH
 echo "Calling root w/ RunAna"
 echo "========================================================================================"
-root -b "$CAP_MACROS/RunAna.C("\"$CAP_PROJECTS/$CAP_JOB_CONFIGURATION\"","\"$CAP_HISTOPATH\"",$SEED,true,$CAP_NEVENTS,1,1)"
+#root -b "$CAP_MACROS/RunAna.C("\"$CAP_PROJECTS/$CAP_JOB_CONFIGURATION\"","\"$CAP_HISTOPATH\"",$SEED,true,$CAP_NEVENTS,1,1)"
+root -b "$CAP_MACROS/RunAna.C("\"$CAP_JOB_CONFIGURATION\"","\"$CAP_HISTOPATH\"",$SEED,true,$CAP_NEVENTS,1,1)"
 
