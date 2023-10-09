@@ -53,8 +53,8 @@ void DerivedHistoIterator::configure()
   histosExportPath    = getValueString("HistogramsExportPath");
   histosExportFile    = getName();
   appendedString      = getValueString("AppendedString");
-  maximumDepth        = 2; //getValueInt(   "MaximumDepth");
-  defaultGroupSize    = 20; //getValueInt(   "DefaultGroupSize");
+  maximumDepth        = 1; //getValueInt(   "MaximumDepth");
+  defaultGroupSize    = 50; //getValueInt(   "DefaultGroupSize");
 
   if (reportInfo(__FUNCTION__))
     {
@@ -127,7 +127,7 @@ void DerivedHistoIterator::execute()
       }
      bool prependPath = true;
     bool verbose = false;
-    int  maximumDepth = 1;
+    int  maximumDepth = 2;
     VectorString  allFilesToProcess = listFilesInDir(histosImportPath,includePatterns,excludePatterns, prependPath, verbose, maximumDepth,0);
     
     int nFiles = allFilesToProcess.size();
@@ -143,7 +143,8 @@ void DerivedHistoIterator::execute()
         cout << "X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#"  << endl;
         cout << "X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#X#"  << endl;
         }
-      return;
+      String s = "maximumDepth ="; s += maximumDepth; s += " nFiles = "; s+= nFiles;
+      throw HistogramException("No files to analyze",s,"DerivedHistoIterator::execute()");
       }
     if (reportInfo(__FUNCTION__))
       {
@@ -158,10 +159,10 @@ void DerivedHistoIterator::execute()
       if (reportInfo(__FUNCTION__))
         {
         cout << endl;
-        cout << " nFiles................: " << nFiles << endl;
-        cout << " iFile.................: " << iFile  << endl;
-        cout << " Input file............: " << histosImportFile << endl;
-        cout << " Output file...........: " << histosExportFile << endl;
+        printItem("nFiles",nFiles);
+        printItem("iFile",iFile);
+        printItem("Input file",histosImportFile);
+        printItem("Output file",histosExportFile);
         }
       String nullString = "";
       subTask.setHistosCreate(false);
@@ -179,10 +180,27 @@ void DerivedHistoIterator::execute()
       subTask.setHistosPrint(false);
       subTask.setHistosScale(false);
       subTask.setHistosForceRewrite(true);
+      if (reportInfo(__FUNCTION__))
+        {
+        cout << "Initialize task : " << subTask.getName() << endl;
+        }
       subTask.initialize();
+      if (reportInfo(__FUNCTION__))
+        {
+        cout << "starting calculateDerivedHistograms for task : " << subTask.getName() << endl;
+        }
       subTask.calculateDerivedHistograms();
-      subTask.finalize();
-      subTask.clear();
+      if (reportInfo(__FUNCTION__))
+        {
+        cout << "complted calculateDerivedHistograms for task : " << subTask.getName() << endl;
+        }
+      subTask.exportHistograms();
+      subTask.clearHistograms();
+      subTask.closeHistogramFiles();
+      if (reportInfo(__FUNCTION__))
+        {
+        cout << "Finisihed w/ file : " << iFile << endl;
+        }
       }
     }
   if (reportEnd(__FUNCTION__))

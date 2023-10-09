@@ -56,7 +56,9 @@ taskDataImportPath       (""),
 taskDataExportPath       (""),
 taskHistosImportPath     (""),
 taskHistosExportPath     (""),
-subTasks                 ()
+subTasks                 (),
+rootInputFile            (nullptr),
+rootOutputFile           (nullptr)
 {
   setClassName("Task");
   setInstanceName(getName());
@@ -97,7 +99,9 @@ taskProjectPath          (""),
 taskDataImportPath       (""),
 taskDataExportPath       (""),
 taskHistosImportPath     (""),
-taskHistosExportPath     ("")
+taskHistosExportPath     (""),
+rootInputFile            (nullptr),
+rootOutputFile           (nullptr)
 {
   setClassName("Task");
   setInstanceName(getName());
@@ -228,6 +232,18 @@ void Task::finalize()
   if (histosPlot)    plotHistograms();
   if (histosPrint)   printHistograms();
   if (hasSubTasks()) finalizeSubTasks();
+  if (rootInputFile && rootInputFile->IsOpen())
+    {
+    rootInputFile->Close();
+    rootInputFile = nullptr;
+    }
+
+  if (reportInfo(__FUNCTION__)) cout << "Check if rootOutputFile is open and close it" << endl;
+  if (rootOutputFile && rootOutputFile->IsOpen())
+    {
+    rootOutputFile->Close();
+    rootOutputFile = nullptr;
+    }
 //  if (histosReset)   reset();
 //  if (histosClear)   clear();
   if (reportEnd(__FUNCTION__))
@@ -275,17 +291,18 @@ void Task::importHistograms()
     ;
   String importPath = histosImportPath;
   String importFile = histosImportFile;
-  if (reportDebug(__FUNCTION__))
+  if (reportInfo(__FUNCTION__))
     {
     cout << endl;
     printItem("HistogramsImportPath",importPath);
     printItem("HistogramsImportFile",importFile);
     cout << endl;
   }
-  TFile & inputFile = openRootFile(importPath,importFile,"READ");
-  loadNEventsAccepted(inputFile);
-  loadNEexecutedTask(inputFile);
-  importHistograms(inputFile);
+  rootInputFile = openRootFile(importPath,importFile,"READ");
+  loadNEventsAccepted(*rootInputFile);
+  loadNEexecutedTask(*rootInputFile);
+  importHistograms(*rootInputFile);
+  //inputFile.Close();
   if (reportEnd(__FUNCTION__))
     ;
 }
@@ -304,10 +321,10 @@ void Task::importDerivedHistograms()
     printItem("HistogramsImportFile",importFile);
     cout << endl;
     }
-  TFile & inputFile = openRootFile(importPath,importFile,"READ");
-  loadNEventsAccepted(inputFile);
-  loadNEexecutedTask(inputFile);
-  importDerivedHistograms(inputFile);
+  rootInputFile = openRootFile(importPath,importFile,"READ");
+  loadNEventsAccepted(*rootInputFile);
+  loadNEexecutedTask(*rootInputFile);
+  importDerivedHistograms(*rootInputFile);
   if (reportEnd(__FUNCTION__))
     ;
 }
@@ -373,9 +390,10 @@ void Task::exportHistograms(const String & exportPath, const String & exportFile
     throw FileException(exportFile,"File name too short. Must 5 charter or more...","Task::exportHistograms()");
   String option = "NEW";
   if (histosForceRewrite) option = "RECREATE";
-  TFile & outputFile = openRootFile(exportPath,exportFile,option);
-  exportHistograms(outputFile);
-  outputFile.Close();
+  rootOutputFile = openRootFile(exportPath,exportFile,option);
+  exportHistograms(*rootOutputFile);
+  rootOutputFile->Close();
+  rootOutputFile = nullptr;
 }
 
 void Task::exportHistograms(TFile & outputFile)
@@ -417,6 +435,23 @@ void Task::partial(const String & outputPathBase)
     ;
 }
 
+
+void Task::closeHistogramFiles()
+{
+  if (reportInfo(__FUNCTION__)) cout << "Check if rootInputFile is open and close it" << endl;
+  if (rootInputFile && rootInputFile->IsOpen())
+    {
+    rootInputFile->Close();
+    rootInputFile = nullptr;
+    }
+  if (reportInfo(__FUNCTION__)) cout << "Check if rootOutputFile is open and close it" << endl;
+  if (rootOutputFile && rootOutputFile->IsOpen())
+    {
+    rootOutputFile->Close();
+    rootOutputFile = nullptr;
+    }
+  if (reportInfo(__FUNCTION__)) cout << "Root files are closed." << endl;
+}
 
 
 void Task::writeNEexecutedTask(TFile & outputFile)
@@ -464,23 +499,36 @@ long Task::readParameter(TFile & inputFile, const String & parameterName)
   return value;
 }
 
-TFile &  Task::openRootFile(const String & inputPath, const String & fileName, const String & ioOption)
+TFile *  Task::openRootFile(const String & inputPath, const String & fileName, const String & ioOption)
 {
   if (reportStart(__FUNCTION__))
     ;
-  String inputFileName = inputPath;
-  // make sure that if an inputPath is given, it ends with '/'
-  int slash = inputFileName.First('/');
-  int len = inputFileName.Length();
-  if (len>0 && (len-1)!=slash) inputFileName += "/";
-  inputFileName += fileName;
+
+
+  // sometimes the caller sets the path within the file name... so one
+  // should not prepend the path to the name... By convention, we assume that
+  // if the file name begins with '/', it is an absolute path.
+  String inputFileName;
+  if (fileName.BeginsWith("/"))
+    inputFileName = fileName;
+  else
+    {
+    // make sure that if an inputPath is given, it ends with '/'
+    String inputFilePath = inputPath;
+    int slash = inputFilePath.First('/');
+    int len   = inputFilePath.Length();
+    if (len>0 && (len-1)!=slash) inputFilePath += "/";
+    inputFileName = inputFilePath;
+    inputFileName += fileName;
+    }
+  // make sure the root extension is included in the file name
   if (!inputFileName.EndsWith(".root")) inputFileName += ".root";
   if (reportDebug (__FUNCTION__))  cout << "Opening file: " << inputFileName << " with option: " << ioOption << endl;
   TFile * inputFile = new TFile(inputFileName,ioOption);
   if (!inputFile) throw  FileException(inputFileName,"File not found","Task::openRootFile()");
   if (!inputFile->IsOpen())  throw  FileException(inputFileName,"File not found/opened","Task::openRootFile()");
   if (reportDebug(__FUNCTION__)) cout << "File opened successfully." << endl;
-  return *inputFile;
+  return inputFile;
 }
 
 ifstream & Task::openInputAsciiFile(const String & inputPath, const String & fileName, const String & extension, const String & ioOption)

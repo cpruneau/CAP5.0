@@ -35,7 +35,7 @@ void loadExec(const TString & includeBasePath);
 
 int RunSumDerived(TString configFile="ResoAnalysis.txt",
                   TString pathName="/Volumes/ClaudeDisc4/OutputFiles/Reso",
-                  int nBunches=5)
+                  int nBunches=1)
 {
   TString includeBasePath = getenv("CAP_SRC");
   loadBase(includeBasePath);
@@ -111,7 +111,7 @@ int RunSumDerived(TString configFile="ResoAnalysis.txt",
   configuration.addParameter("Run:RunSubsampleBalFctReco",    false);
 
   configuration.addParameter("Run:Bunched",                   true);
-  configuration.addParameter("Run:nBunches",                  1);
+  configuration.addParameter("Run:nBunches",                  nBunches);
   configuration.addParameter("Run:MaximumDepth",              1);
   configuration.addParameter("Run:RunPartSingleAnalysisGen",      true);
   configuration.addParameter("Run:RunPartSingleAnalysisReco",     false);

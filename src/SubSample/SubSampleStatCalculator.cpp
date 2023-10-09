@@ -138,6 +138,7 @@ void SubSampleStatCalculator::execute()
     cout << endl;
     }
   
+
   for (int iGroup =0; iGroup<nGroups; iGroup++  )
     {
     int first = iGroup*groupSize;
@@ -157,14 +158,14 @@ void SubSampleStatCalculator::execute()
 
     int nInputFile = last - first+1;
     String histosImportFile = allFilesToSum[first];
-    TFile & firstFile = openRootFile("", histosImportFile, "READ");
+    TFile * firstFile = openRootFile("", histosImportFile, "READ");
     collectionAvg  = new HistogramCollection("Sum",getSeverityLevel());
-    collectionAvg->loadCollection(firstFile);
+    collectionAvg->loadCollection(*firstFile);
     parameterName      = "taskExecuted";
-    nEventsProcessed   = readParameter(firstFile,parameterName);
+    nEventsProcessed   = readParameter(*firstFile,parameterName);
     sumEventsProcessed = nEventsProcessed;
     parameterName      = "nEventFilters";
-    nEventFilters      = readParameter(firstFile,parameterName);
+    nEventFilters      = readParameter(*firstFile,parameterName);
     if (nEventFilters>0)
       {
       nEventsAccepted    = new long[nEventFilters];
@@ -173,7 +174,7 @@ void SubSampleStatCalculator::execute()
         {
         parameterName = "EventFilter";
         parameterName += iFilter;
-        nEventsAccepted[iFilter]   = readParameter(firstFile,parameterName);
+        nEventsAccepted[iFilter]   = readParameter(*firstFile,parameterName);
         sumEventsAccepted[iFilter] = nEventsAccepted[iFilter];
         }
       }
@@ -185,12 +186,12 @@ void SubSampleStatCalculator::execute()
     for (int iFile=first+1; iFile<last; iFile++)
       {
       histosImportFile = allFilesToSum[iFile];
-      TFile & inputFile = openRootFile("", histosImportFile, "READ");
+      TFile * inputFile = openRootFile("", histosImportFile, "READ");
       collection = new HistogramCollection(histosImportFile,getSeverityLevel());;
-      collection->loadCollection(inputFile);
+      collection->loadCollection(*inputFile);
       collectionAvg->squareDifferenceCollection(*collection, double(sumEventsProcessed), double(nEventsProcessed), (iFile==(last-1)) ? nInputFile : -iFile);
       parameterName      = "taskExecuted";
-      nEventsProcessed   = readParameter(inputFile,parameterName);
+      nEventsProcessed   = readParameter(*inputFile,parameterName);
       sumEventsProcessed += nEventsProcessed;
       if (nEventFilters>0)
         {
@@ -198,7 +199,7 @@ void SubSampleStatCalculator::execute()
           {
           parameterName = "EventFilter";
           parameterName += iFilter;
-          nEventsAccepted[iFilter] = readParameter(inputFile,parameterName);
+          nEventsAccepted[iFilter] = readParameter(*inputFile,parameterName);
           sumEventsAccepted[iFilter] += nEventsAccepted[iFilter];
           }
         }
@@ -207,7 +208,7 @@ void SubSampleStatCalculator::execute()
         if (reportWarning(__FUNCTION__)) cout << "nEventFilters is null" << endl;
         }
       delete collection;
-      inputFile.Close();
+      inputFile->Close();
       if (reportInfo(__FUNCTION__))
         {
         cout << endl;
@@ -218,30 +219,31 @@ void SubSampleStatCalculator::execute()
         cout << endl;
         }
       }
-    TFile & outputFile = openRootFile(histosExportPath, outputFileName, "RECREATE");
+
+    rootOutputFile = openRootFile(histosExportPath, outputFileName, "RECREATE");
     parameterName    = "taskExecuted";
-    writeParameter(outputFile,parameterName, sumEventsProcessed);
+    writeParameter(*rootOutputFile,parameterName, sumEventsProcessed);
     parameterName    = "nEventFilters";
-    writeParameter(outputFile,parameterName, nEventFilters);
+    writeParameter(*rootOutputFile,parameterName, nEventFilters);
     if (nEventFilters>0)
       {
       for (int iFilter=0; iFilter<nEventFilters; iFilter++)
         {
         parameterName = "EventFilter";
         parameterName += iFilter;
-        writeParameter(outputFile,parameterName,sumEventsAccepted[iFilter]);
+        writeParameter(*rootOutputFile,parameterName,sumEventsAccepted[iFilter]);
         }
       }
 
     cout << " -- 1 --" << endl;
-    collectionAvg->exportHistograms(outputFile);
+    collectionAvg->exportHistograms(*rootOutputFile);
     cout << " -- 2 --" << endl;
-    firstFile.Close();
+    firstFile->Close();
     cout << " -- 2b --" << endl;
     collectionAvg->setOwnership(0);
     delete collectionAvg;
     cout << " -- 3 --" << endl;
-    outputFile.Close();
+    rootOutputFile->Close();
     cout << " -- 4 --" << endl;
     }
   if (reportEnd(__FUNCTION__))

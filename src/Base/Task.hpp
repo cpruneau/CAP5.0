@@ -109,6 +109,10 @@ protected:
   //!
   vector<Task*> subTasks;
 
+  // keep track of files in use...
+  TFile * rootInputFile;
+  TFile * rootOutputFile;
+
 public:
 
   //!
@@ -311,6 +315,8 @@ public:
 
   virtual void partial(const String & outputPathBase);
 
+  virtual void closeHistogramFiles();
+
   //!
   //! Read the given named parameter from the given input file.
   //!
@@ -323,7 +329,7 @@ public:
   //! @param ioOption i/o options.
   //! @return Pointer to the file if successfully open or a null pointer if the file could not be opened.
   //!
-  TFile & openRootFile(const String & inputPath, const String & fileName, const String & ioOption) ;
+  TFile * openRootFile(const String & inputPath, const String & fileName, const String & ioOption) ;
 
   //!
   //! Open the root file named "fileName" located on the path "inputPath", using options specified by "ioOption".

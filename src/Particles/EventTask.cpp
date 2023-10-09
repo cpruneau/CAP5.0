@@ -427,6 +427,20 @@ void EventTask::finalize()
   if (eventsExport)  finalizeEventWriter();
   if (histosScale && !histosExportPartial)  scaleHistograms();
   if (histosExport&& !histosExportPartial)  exportHistograms();
+  if (reportInfo(__FUNCTION__)) cout << "Check if rootInputFile is open and close it" << endl;
+  if (rootInputFile && rootInputFile->IsOpen())  
+    {
+    rootInputFile->Close();
+    rootInputFile = nullptr;
+    }
+
+  if (reportInfo(__FUNCTION__)) cout << "Check if rootOutputFile is open and close it" << endl;
+  if (rootOutputFile && rootOutputFile->IsOpen()) 
+    {
+    rootOutputFile->Close();
+    rootOutputFile = nullptr;
+    }
+
   if (calibsExport)  exportCalibrations();
   if (hasSubTasks()) finalizeSubTasks();
   if (reportEnd(__FUNCTION__))

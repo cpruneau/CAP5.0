@@ -78,11 +78,14 @@ int RunSum(TString configFile,
   cout << "Unknown exception while reading configuration file." << endl;
   return 1;
   }
+  configuration.addParameter("Run:nBunches",                  nBunches);
+
   configuration.addParameter("Run:HistogramsExportPath",      pathName);
   configuration.addParameter("Run:HistogramsImportPath",      pathName);
   configuration.addParameter("Run:HistogramsForceRewrite",    true);
-  configuration.addParameter("Run:RunParticleDbManager",      false);
-  configuration.addParameter("Run:RunFilterCreator",          false);
+
+  configuration.addParameter("Run:RunParticleDbManager",      true);
+  configuration.addParameter("Run:RunFilterCreator",          true);
   configuration.addParameter("Run:RunEventAnalysis",          false);
   configuration.addParameter("Run:RunEventAnalysisGen",       false);
   configuration.addParameter("Run:RunEventAnalysisReco",      false);
@@ -90,12 +93,20 @@ int RunSum(TString configFile,
   configuration.addParameter("Run:RunDerivedGen",             false);
   configuration.addParameter("Run:RunDerivedReco",            false);
   configuration.addParameter("Run:RunBalFct",                 false);
-  configuration.addParameter("Run:RunBalFctGen",              false);
+  configuration.addParameter("Run:RunBalFctGen",              true);
   configuration.addParameter("Run:RunBalFctReco",             false);
-  configuration.addParameter("Run:RunPartSingleAnalysisGen",  false);
+
+  configuration.addParameter("Run:RunPartSingleAnalysisGen",  true);
   configuration.addParameter("Run:RunPartSingleAnalysisReco", false);
-  configuration.addParameter("Run:RunPartPairAnalysisGen",    false);
+  configuration.addParameter("Run:RunPartPairAnalysisGen",    true);
   configuration.addParameter("Run:RunPartPairAnalysisReco",   false);
+  configuration.addParameter("Run:RunGlobalAnalysisGen",      false);
+  configuration.addParameter("Run:RunGlobalAnalysisReco",     false);
+  configuration.addParameter("Run:RunSpherocityAnalysisGen",  false);
+  configuration.addParameter("Run:RunSpherocityAnalysisReco", false);
+  configuration.addParameter("Run:RunNuDynAnalysisGen",       false);
+  configuration.addParameter("Run:RunNuDynAnalysisReco",      false);
+
 
   configuration.addParameter("Run:RunSubsample",              true);
   configuration.addParameter("Run:RunSubsampleBase",          true);
@@ -107,24 +118,6 @@ int RunSum(TString configFile,
   configuration.addParameter("Run:RunSubsampleBalFct",        false);
   configuration.addParameter("Run:RunSubsampleBalFctGen",     false);
   configuration.addParameter("Run:RunSubsampleBalFctReco",    false);
-
-  configuration.addParameter("Run:Bunched",                   true);
-  configuration.addParameter("Run:nBunches",                  nBunches);
-  configuration.addParameter("Run:MaximumDepth",              2);
-  configuration.addParameter("Run:RunPartSingleAnalysisGen",      true);
-  configuration.addParameter("Run:RunPartSingleAnalysisReco",     false);
-  configuration.addParameter("Run:RunPartPairAnalysisGen",        true);
-  configuration.addParameter("Run:RunPartPairAnalysisReco",       false);
-
-  configuration.addParameter("Run:RunGlobalAnalysisGen",          false);
-  configuration.addParameter("Run:RunGlobalAnalysisReco",         false);
-  configuration.addParameter("Run:RunSpherocityAnalysisGen",      false);
-  configuration.addParameter("Run:RunSpherocityAnalysisReco",     false);
-  configuration.addParameter("Run:RunNuDynAnalysisGen",           false);
-  configuration.addParameter("Run:RunNuDynAnalysisReco",          false);
-
-
-
 
   CAP::RunAnalysis * analysis = new CAP::RunAnalysis("Run", configuration);
   analysis->configure();

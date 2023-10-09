@@ -522,10 +522,10 @@ void BalanceFunctionCalculator::execute()
     histosImportFile  = allFilesToAnalyze[iFile];
     histosExportFile  = removeRootExtension(histosImportFile);
     histosExportFile.ReplaceAll(TString("Derived"),appendedString);
-    TFile & inputFile = openRootFile("",histosImportFile,"OLD");
+    TFile & inputFile = *openRootFile("",histosImportFile,"OLD");
     String option = "NEW";
     if (histosForceRewrite) option = "RECREATE";
-    TFile & outputFile = openRootFile("",histosExportFile,option);
+    TFile & outputFile = *openRootFile("",histosExportFile,option);
     if (reportInfo(__FUNCTION__))
       {
       cout << endl;

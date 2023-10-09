@@ -231,13 +231,25 @@ void RunAnalysis::configure()
   try
   {
   configureLabels();
-  String  histoImportPath = getValueString("Analysis:HistogramsImportPath");
-  String  histoExportPath = getValueString("Analysis:HistogramsExportPath");
-  int nBunches = getValueInt("Analysis:nBunches");
+  String  histoImportPath = getValueString("HistogramsImportPath");
+  String  histoExportPath = getValueString("HistogramsExportPath");
+  int nBunches = getValueInt("nBunches");
+
+//  cout << " nBunches: " << nBunches << endl;
+//  exit(1);
+
   if (reportDebug(__FUNCTION__)) printConfiguration(cout);
 
+  //
+  // task run only once at the beginning...
+  //
   if (getValueBool("RunParticleDbManager")) addSubTask(new ParticleDbManager("ParticleDb",*requestedConfiguration));
   if (getValueBool("RunFilterCreator"))     addSubTask(new FilterCreator("Filter",*requestedConfiguration));
+  
+
+  //
+  // data production or analysis tasks called for each event...
+  //
   if (getValueBool("RunEventAnalysis"))
     {
     if (reportInfo(__FUNCTION__)) cout << "Setting up event analysis" << std::endl;
@@ -268,6 +280,10 @@ void RunAnalysis::configure()
       if (getValueBool("Analysis:RunNuDynAnalysisReco"))       eventAnalysis->addSubTask(new NuDynAnalyzer(labelNuDyn+labelReconstruction,*requestedConfiguration));
       if (getValueBool("Analysis:RunPerformanceAna"))          eventAnalysis->addSubTask(new ParticlePerformanceAnalyzer(labelSimAna,*requestedConfiguration));
       }
+
+    // make sure the subtasks get the right import and export paths for histograms...
+    // this way, we do not have to specify the path in the ini file for eacu sub task.
+    //
     if (eventAnalysis->hasSubTasks())
       for (unsigned int  iTask=0; iTask<eventAnalysis->getNSubTasks(); iTask++)
         {
@@ -278,9 +294,15 @@ void RunAnalysis::configure()
         }
     if (reportInfo(__FUNCTION__)) cout << "Event Analysis Setup Completed" << std::endl;
     }
+
+  //
+  // Run tasks that compute derived histograms. Call once for each type of analysis task.
+  //
   if (getValueBool("RunDerived"))
     {
     if (reportInfo(__FUNCTION__)) cout << "Setting up derived calculation" << std::endl;
+    // here we need to overide the ini file based on the info provided by the user in the call to RunAnalysis.
+
     TString taskName;
     TString configBasePath;
     TString configPath = "Run:Analysis";
@@ -301,6 +323,8 @@ void RunAnalysis::configure()
       dConfig.addParameter(configPath+"ExcludedPattern0",TString("Reco"));
       dConfig.addParameter(configPath+"ExcludedPattern1",TString("BalFct"));
       dConfig.addParameter(configPath+"ExcludedPattern2",TString("Derived"));
+      dConfig.addParameter(configPath+"nBunches",nBunches);
+
       DerivedHistoIterator * derived = new DerivedHistoIterator(taskName,dConfig);
       addSubTask(derived);
 
@@ -327,7 +351,11 @@ void RunAnalysis::configure()
         subConfig.addParameter(subConfigPath+"ExcludedPattern0",TString("Reco"));
         subConfig.addParameter(subConfigPath+"ExcludedPattern2",TString("Derived"));
         subConfig.addParameter(subConfigPath+"ExcludedPattern1",TString("BalFct"));
+        //subConfig.addParameter(configPath+"nBunches",nBunches);
+
         derived->addSubTask(new ParticleSingleAnalyzer(subTaskName, subConfig));
+
+
         }
 
       if (getValueBool("Analysis:RunPartPairAnalysisGen"))
@@ -354,7 +382,7 @@ void RunAnalysis::configure()
       if (reportInfo(__FUNCTION__)) cout << "DerivedGen Setup Completed" << std::endl;
       }
 
-    if (getValueBool("Analysis:RunBalFct"))
+    if (getValueBool("RunBalFct"))
       {
       if (reportInfo(__FUNCTION__)) cout << "Setting up BalFct" << std::endl;
 
@@ -382,14 +410,19 @@ void RunAnalysis::configure()
     if (reportInfo(__FUNCTION__)) cout << "Derived calculation Setup Completed" << std::endl;
     }
 
-  int maximumDepth= 1;
-
+  //
+  // Run tasks that compute subsample sums of  histograms.
+  //
   if (getValueBool("RunSubsample"))
     {
     if (reportInfo(__FUNCTION__)) cout << "Setting up Subsample calculation" << std::endl;
+
+    cout << "RunSubsample w/ histoImportPath = " << histoImportPath << endl;
+    cout << "RunSubsample w/ histoExportPath = " << histoExportPath << endl;
+
     if (getValueBool("RunSubsampleBase"))
       {
-      maximumDepth = 2;
+      int maximumDepth = 2;
       if (getValueBool("RunSubsampleBaseGen"))
         {
         if (getValueBool("RunGlobalAnalysisGen"))     addBaseSubSampleTask(histoImportPath,labelBunch,nBunches,labelSubBunch,maximumDepth,labelGlobal+labelGenerator);
@@ -409,7 +442,7 @@ void RunAnalysis::configure()
       }
     if (getValueBool("RunSubsampleDerived"))
       {
-      maximumDepth = 1;
+      int maximumDepth = 1;
       if (getValueBool("RunSubsampleDerivedGen"))
         {
         if (getValueBool("RunGlobalAnalysisGen"))     addDerivedSubSampleTask(histoImportPath,labelBunch,nBunches,labelSubBunch,maximumDepth,labelGlobal+labelGenerator);
@@ -429,7 +462,7 @@ void RunAnalysis::configure()
       }
     if (getValueBool("RunSubsampleBalFct"))
       {
-      maximumDepth = 1;
+      int maximumDepth = 1;
       if (getValueBool("RunSubsampleBalFctGen"))
         {
         if (getValueBool("RunPartPairAnalysisGen"))   addBalFctSubSampleTask(histoImportPath,labelBunch,nBunches,labelSubBunch,maximumDepth,labelPair+labelGenerator);
@@ -439,16 +472,35 @@ void RunAnalysis::configure()
         if (getValueBool("RunPartPairAnalysisReco"))  addBalFctSubSampleTask(histoImportPath,labelBunch,nBunches,labelSubBunch,maximumDepth,labelPair+labelReconstruction);
         }
       }
+
     if (reportInfo(__FUNCTION__)) cout << "Subsample calculation Setup Completed" << std::endl;
     }
 
+  // He we call configure on all tasks and subtasks. We also make sure all the tasks have the same import
+  // and export paths for histograms.
+  //
   if (hasSubTasks())
-    for (unsigned int  iTask=0; iTask<subTasks.size(); iTask++)
+    {
+    if (reportInfo(__FUNCTION__)) cout << "Start configuration of tasks and their subtasks" << std::endl;
+    for (unsigned int  iTask=0; iTask<getNSubTasks(); iTask++)
       {
-      subTasks[iTask]->addParameter("HistogramsImportPath",histoImportPath);
-      subTasks[iTask]->addParameter("HistogramsExportPath",histoExportPath);
-      subTasks[iTask]->configure();
+      Task * task = getSubTaskAt(iTask);
+      if (reportInfo(__FUNCTION__)) cout << " Task: " << iTask << " Named: " << task->getName() << endl;
+      task->configure();
+      task->addParameter("HistogramsImportPath",histoImportPath);
+      task->addParameter("HistogramsExportPath",histoExportPath);
+      for (unsigned int  kTask=0; kTask<task->getNSubTasks(); kTask++)
+        {
+        Task * subtask = task->getSubTaskAt(kTask);
+        if (reportInfo(__FUNCTION__)) cout << " Subtask: " << kTask << " Named: " << subtask->getName() << endl;
+        subtask->configure();
+        subtask->addParameter("HistogramsImportPath",histoImportPath);
+        subtask->addParameter("HistogramsExportPath",histoExportPath);
+        }
       }
+    if (reportInfo(__FUNCTION__)) cout << "Completed configuration of tasks and their subtasks" << std::endl;
+    }
+
   }
   catch (TaskException te)
   {

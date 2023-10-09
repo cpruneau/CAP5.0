@@ -88,6 +88,8 @@ void ParticleSingleAnalyzer::configure()
     printItem("EventsUseStream2");
     printItem("EventsUseStream3");
     printItem("HistogramsCreate");
+    printItem("HistogramsImport");
+    printItem("HistogramsImportPath");
     printItem("HistogramsExport");
     printItem("HistogramsExportPath");
     printItem("EventsUseStream0");
@@ -386,11 +388,15 @@ void ParticleSingleAnalyzer::calculateDerivedHistograms()
     for (unsigned int iParticleFilter=0; iParticleFilter<nParticleFilters; iParticleFilter++ )
       {
       index = iEventFilter*nParticleFilters + iParticleFilter;
+      if (reportInfo(__FUNCTION__)) cout << " histogramManager.getGroup(0,index) iEventFilter:" << iEventFilter << " iParticleFilter:" << iParticleFilter << endl;
       baseHistos    = (ParticleSingleHistos *)  histogramManager.getGroup(0,index);
+      if (reportInfo(__FUNCTION__)) cout << " histogramManager.getGroup(1,index) " << endl;
       derivedHistos = (ParticleSingleDerivedHistos *)  histogramManager.getGroup(1,index);
       if (!baseHistos) throw TaskException("!baseHistos","ParticleSingleAnalyzer::calculateDerivedHistograms()");
       if (!derivedHistos) throw TaskException("!derivedHistos","ParticleSingleAnalyzer::calculateDerivedHistograms()");
+      if (reportInfo(__FUNCTION__)) cout << " derivedHistos->calculateDerivedHistograms(baseHistos)"  << endl;
       derivedHistos->calculateDerivedHistograms(baseHistos);
+      if (reportInfo(__FUNCTION__)) cout << " done with these event/particle filters"  << endl;
       }
     }
   if (reportEnd(__FUNCTION__))

@@ -61,9 +61,9 @@ void ClosureCalculator::execute()
     }
   String option = "NEW";
   if (histosForceRewrite) option = "RECREATE";
-  TFile & generatorFile = openRootFile("", histosGeneratorFileName, "READ");
-  TFile & detectorFile  = openRootFile("", histosDetectorFileName,  "READ");
-  TFile & closureFile   = openRootFile("", histosClosureFileName,option);
+  TFile & generatorFile = *openRootFile("", histosGeneratorFileName, "READ");
+  TFile & detectorFile  = *openRootFile("", histosDetectorFileName,  "READ");
+  TFile & closureFile   = *openRootFile("", histosClosureFileName,option);
   HistogramCollection * generatorCollection = new HistogramCollection("GeneratorLevel",getSeverityLevel());
   HistogramCollection * detectorCollection  = new HistogramCollection("DetectorLevel", getSeverityLevel());
   HistogramCollection * closureCollection   = new HistogramCollection("Closure",       getSeverityLevel());
