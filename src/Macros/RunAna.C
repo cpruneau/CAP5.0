@@ -86,8 +86,8 @@ int RunAna(TString configFile,
   cout << "Run:Analysis:HistogramsImportPath.......... : " << histogramPath << endl;
   cout << "Run:Analysis:HistogramsExportPath.......... : " << histogramPath << endl;
   cout << "Run:Analysis:nEventsPerSubbunch............ : " << nEventsPerSubbunch << endl;
-  cout << "Run:Analysis:nBunches...................... : " << nSubbunchesPerBunch << endl;
-  cout << "Run:Analysis:nEventsPerSubbunch............ : " << nBunches << endl;
+  cout << "Run:Analysis:nBunches...................... : " << nBunches << endl;
+  cout << "Run:Analysis:nEventsPerSubbunch............ : " << nSubbunchesPerBunch << endl;
   configuration.readFromFile(configurationPath,configurationFile);
   configuration.addParameter("Run:Analysis:isGrid",                  isGrid);
   configuration.addParameter("Run:Analysis:HistogramsImportPath",    histogramPath);
