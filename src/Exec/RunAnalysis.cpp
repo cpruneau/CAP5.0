@@ -231,11 +231,17 @@ void RunAnalysis::configure()
   try
   {
   configureLabels();
+  if (reportInfo(__FUNCTION__)) printConfiguration(cout);
+
   String  histoImportPath = getValueString("HistogramsImportPath");
   String  histoExportPath = getValueString("HistogramsExportPath");
+  
+  cout << " HERE? " << endl;
   int nBunches = getValueInt("Analysis:nBunches");
-  if (reportDebug(__FUNCTION__)) printConfiguration(cout);
+  cout << " NOT HERE? " << endl;
 
+
+  exit(1);
   //
   // task run only once at the beginning...
   //
