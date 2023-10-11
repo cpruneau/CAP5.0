@@ -238,13 +238,8 @@ void RunAnalysis::configure()
 
   String  histoImportPath = getValueString("HistogramsImportPath");
   String  histoExportPath = getValueString("HistogramsExportPath");
-  
-  cout << " HERE? " << endl;
+ 
   int nBunches = getValueInt("Analysis:nBunches");
-  cout << " NOT HERE? " << endl;
-
-
-  exit(1);
   //
   // task run only once at the beginning...
   //
