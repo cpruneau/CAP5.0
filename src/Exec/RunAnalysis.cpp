@@ -225,15 +225,11 @@ void RunAnalysis::configure()
 {
 
   cout << "Startin configuration w/ Task::configure()" << endl;
-  exit(1);
-
-
-
   Task::configure();
   cout << "setSeverity()" << endl;
   setSeverity();
   cout << "configureLabels()" << endl;
-  exit(1);
+ // exit(1);
   try
   {
 
