@@ -208,7 +208,7 @@ void CAP::ConfigurationManager::printConfiguration(ostream & output)
 
 void CAP::ConfigurationManager::generateKeyValuePairs(const char *  keyBaseName, const char *  defaultValue, int nKeysToGenerate)
 {
-  configuration.generateKeyValuePairs("",keyBaseName,defaultValue,nKeysToGenerate);
+  configuration.generateKeyValuePairs(configurationPath,keyBaseName,defaultValue,nKeysToGenerate);
 }
 
 void CAP::ConfigurationManager::generateKeyValuePairs(const char *  path, const char *  keyBaseName, const char *  defaultValue, int nKeysToGenerate)
@@ -218,7 +218,7 @@ void CAP::ConfigurationManager::generateKeyValuePairs(const char *  path, const 
 
 CAP::VectorString  CAP::ConfigurationManager::getSelectedValues(const char *  keyBaseName, const char *  defaultValue) const
 {
-  return configuration.getSelectedValues("",keyBaseName,defaultValue);
+  return configuration.getSelectedValues(configurationPath,keyBaseName,defaultValue);
 }
 
 CAP::VectorString  CAP::ConfigurationManager::getSelectedValues(const char *  path, const char *  keyBaseName, const char *  defaultValue) const
@@ -228,7 +228,7 @@ CAP::VectorString  CAP::ConfigurationManager::getSelectedValues(const char *  pa
 
 int CAP::ConfigurationManager::getNSelectedValues(const char *  keyBaseName, const char *  defaultValue)  const
 {
-  return configuration.getNSelectedValues("",keyBaseName,defaultValue);
+  return configuration.getNSelectedValues(configurationPath,keyBaseName,defaultValue);
 }
 
 int CAP::ConfigurationManager::getNSelectedValues(const char *  path, const char *  keyBaseName, const char *  defaultValue) const

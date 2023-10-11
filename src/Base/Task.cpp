@@ -706,44 +706,55 @@ vector<String> Task::listFilesInDir(const String & pathname,
   String dirname = pathname;
   int depth = currentDepth;
   if (!dirname.EndsWith("/")) dirname += "/";
-  if (verbose) cout << " Searching................: " << dirname << endl;
-  if (verbose) cout << " maximumDepth.............: " << maximumDepth << endl;
-  if (verbose) cout << " currentDepth.............: " << depth << endl;
+  if (verbose && reportDebug(__FUNCTION__))
+    {
+    printItem("Searching",dirname);
+    printItem("maximumDepth",maximumDepth);
+    printItem("currentDepth",depth);
+    }
   TSystemDirectory dir(dirname, dirname);
   TList *files = dir.GetListOfFiles();
   vector<String>  fileNames;
   vector<String>  subdirs;
 
-  if (files)
-  {
-    TSystemFile *file;
-    String fname;
-    TIter next(files);
-    while ((file=(TSystemFile*)next()))
+  if (!files)
     {
-      fname = file->GetName();
-      if (file->IsDirectory() &&  !fname.BeginsWith(".") )
+    if (reportError(__FUNCTION__))
       {
-        subdirs.push_back(fname);
+      cout << "Null TList" << endl;
       }
-      else if (fname.EndsWith(ext))
+    throw TaskException("Null TList","Task::listFilesInDir(...)");
+    }
+
+  TSystemFile *file;
+  String fname;
+  TIter next(files);
+  while ((file=(TSystemFile*)next()))
+    {
+    fname = file->GetName();
+    if (file->IsDirectory() &&  !fname.BeginsWith(".") )
       {
-        if (prependPath)
-          fileNames.push_back(dirname+fname);
-        else
-          fileNames.push_back(fname);
-        //cout << fname.Data() << endl;
-        if (verbose) cout << fname << endl;
+      subdirs.push_back(fname);
+      }
+    else if (fname.EndsWith(ext))
+      {
+      if (prependPath)
+        fileNames.push_back(dirname+fname);
+      else
+        fileNames.push_back(fname);
+      //cout << fname.Data() << endl;
+      //if (verbose) cout << fname << endl;
       }
     }
-  }
-  int nSubdirs = subdirs.size();
-  if (verbose) cout << " Number of subdir found...: " << nSubdirs << endl;
-  ++depth;
 
+  int nSubdirs = subdirs.size();
+  if (verbose && reportDebug(__FUNCTION__))
+    {
+    printItem("Number of subdir found.",nSubdirs);
+    }
+  ++depth;
   if (nSubdirs>0 && depth<=maximumDepth)
   {
-
     for (int iDir=0; iDir<nSubdirs; iDir++)
     {
       vector<String> additionalFiles;
@@ -757,9 +768,11 @@ vector<String> Task::listFilesInDir(const String & pathname,
         fileNames.push_back(additionalFiles[iFile]);
     }
   }
-  if (verbose) cout << " Number of files  found...: " << fileNames.size() << endl;
-  if (verbose) cout << " Returning up one level.... " <<  endl;
-
+  if (verbose && reportDebug(__FUNCTION__))
+    {
+    printItem("Number of files  found",fileNames.size());
+    cout << "Returning up one level.... " <<  endl;
+    }
   return fileNames;
 }
 
@@ -781,11 +794,11 @@ vector<String>  Task::listFilesInDir(const String & pathName,
   vector<String> fileList = listFilesInDir(pathName,".root",prependPath,verbose,maximumDepth,currentDepth);
   unsigned int nNames = fileList.size();
   if (reportDebug(__FUNCTION__))
-  {
-    cout << "      nNames:" << nNames << endl;
-    cout << "   nIncludes:" << includePatterns.size() << endl;
-    cout << "   nExcludes:" << excludePatterns.size() << endl;
-  }
+    {
+    printItem("nNames",nNames);
+    printItem("nIncludes",includePatterns.size());
+    printItem("nExcludes",excludePatterns.size());
+    }
   for (unsigned int k=0; k<fileList.size(); k++)
   {
     String name = fileList[k];

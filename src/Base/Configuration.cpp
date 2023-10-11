@@ -427,7 +427,7 @@ vector<CAP::String> CAP::Configuration::getSelectedValues(const char *  keyBaseN
   vector<Parameter>::const_iterator iter;
   for (iter = parameters.begin(); iter != parameters.end(); iter++)
     {
-    if (iter->keyword.EqualTo(keyBaseName) && !iter->value.Contains(defaultValue) ) selectedValues.push_back(iter->value);
+    if (iter->keyword.Contains(keyBaseName) && !iter->value.Contains(defaultValue) ) selectedValues.push_back(iter->value);
     }
   return selectedValues;
 }

@@ -48,6 +48,7 @@ void SubSampleStatCalculator::setDefaultConfiguration()
   generateKeyValuePairs("IncludedPattern",none,20);
   generateKeyValuePairs("ExcludedPattern",none,20);
   generateKeyValuePairs("InputFile",none,100);
+  //printConfiguration(cout);
 }
 
 void SubSampleStatCalculator::configure()
@@ -66,7 +67,15 @@ void SubSampleStatCalculator::configure()
   appendedString      = getValueString("AppendedString");
   maximumDepth        = getValueInt(   "MaximumDepth");
   defaultGroupSize    = getValueInt(   "DefaultGroupSize");
+}
 
+void SubSampleStatCalculator::execute()
+{
+  if (reportInfo(__FUNCTION__)) cout << "Subsample analysis for task of type :" << getName() << endl;
+  String none  = "none";
+  printConfiguration(cout);
+  VectorString  includePatterns = getSelectedValues("IncludedPattern",none);
+  VectorString  excludePatterns = getSelectedValues("ExcludedPattern",none);
   if (reportInfo(__FUNCTION__))
     {
     cout << endl;
@@ -78,31 +87,14 @@ void SubSampleStatCalculator::configure()
     printItem("DefaultGroupSize",    defaultGroupSize);
     printItem("AppendedString",      appendedString);
     printItem("MaximumDepth",        maximumDepth);
-    cout << endl;
-    }
-  //ex it(1);
-}
-
-void SubSampleStatCalculator::execute()
-{
-  if (reportInfo(__FUNCTION__)) cout << "Subsample analysis for task of type :" << getName() << endl;
-  String none  = "none";
-  VectorString  includePatterns = getSelectedValues("IncludedPattern",none);
-  VectorString  excludePatterns = getSelectedValues("ExcludedPattern",none);
-  if (includePatterns.size()>0)
-    {
-    if (includePatterns[0].Contains("Derived")) histosExportFile += "Derived";
-    if (includePatterns[0].Contains("BalFct")) histosExportFile += "BalFct";
-    }
-  includePatterns.push_back(getName());
-  if (reportInfo(__FUNCTION__))
-    {
-    cout << endl;
     printItem("N included patterns", int(includePatterns.size()));
     for (unsigned int k=0;k<includePatterns.size();k++) printItem("Included",includePatterns[k]);
     printItem("N excluded patterns", int(excludePatterns.size()));
     for (unsigned int k=0;k<excludePatterns.size();k++) printItem("Excluded",excludePatterns[k]);
+    cout << endl;
     }
+
+  
   bool prependPath = true;
   bool verbose = true;
   VectorString  allFilesToSum = listFilesInDir(histosImportPath,includePatterns,excludePatterns, prependPath, verbose, maximumDepth,0);
