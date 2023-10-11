@@ -233,7 +233,7 @@ void RunAnalysis::configure()
   configureLabels();
   String  histoImportPath = getValueString("HistogramsImportPath");
   String  histoExportPath = getValueString("HistogramsExportPath");
-
+  int nBunches = getValueInt("Analysis:nBunches");
   if (reportDebug(__FUNCTION__)) printConfiguration(cout);
 
   //
