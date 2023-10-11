@@ -97,9 +97,12 @@ int RunAna(TString configFile,
   configuration.addParameter("Run:Analysis:nBunches",                nBunches);
 //  configuration.printConfiguration(cout);
   cout << "------------------------------------------------------------------------------------------------------" << endl;
-  cout << "Configure RunAnalysis" << endl;
+  cout << "Instantiate RunAnalysis" << endl;
   cout << "------------------------------------------------------------------------------------------------------" << endl;
   CAP::RunAnalysis * analysis = new CAP::RunAnalysis("Run", configuration);
+  cout << "------------------------------------------------------------------------------------------------------" << endl;
+  cout << "Configure RunAnalysis" << endl;
+  cout << "------------------------------------------------------------------------------------------------------" << endl;
   analysis->configure();
   cout << "------------------------------------------------------------------------------------------------------" << endl;
   cout << "Execute RunAnalysis" << endl;
