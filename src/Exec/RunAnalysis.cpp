@@ -550,8 +550,7 @@ void RunAnalysis::configure()
   e.print(); exit(1);
   }
 
-  if (reportEnd(__FUNCTION__))
-    ;
+  if (reportInfo(__FUNCTION__)) cout << "Configuration completed.";
 }
 
 void RunAnalysis::execute()
@@ -582,35 +581,35 @@ void RunAnalysis::execute()
     }
   }
 
-  catch (TaskException te)
+  catch (TaskException & te)
   {
   te.print(); exit(1);
   }
-  catch (ConfigurationException ce)
+  catch (ConfigurationException & ce)
   {
   ce.print(); exit(1);
   }
-  catch (MathException me)
+  catch (MathException & me)
   {
   me.print(); exit(1);
   }
-  catch (FileException fe)
+  catch (FileException & fe)
   {
   fe.print(); exit(1);
   }
-  catch (MemoryException mme)
+  catch (MemoryException & mme)
   {
   mme.print(); exit(1);
   }
-  catch (HistogramException he)
+  catch (HistogramException & he)
   {
   he.print(); exit(1);
   }
-  catch (FactoryException ffe)
+  catch (FactoryException & ffe)
   {
   ffe.print(); exit(1);
   }
-  catch (Exception e)
+  catch (Exception & e)
   {
   e.print(); exit(1);
   }
