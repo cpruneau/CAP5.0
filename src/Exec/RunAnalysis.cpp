@@ -225,6 +225,10 @@ void RunAnalysis::configure()
 {
 
   cout << "Startin configuration w/ Task::configure()" << endl;
+  exit(1);
+
+
+
   Task::configure();
   cout << "setSeverity()" << endl;
   setSeverity();
