@@ -223,13 +223,16 @@ void RunAnalysis::configureLabels()
 
 void RunAnalysis::configure()
 {
-  if (reportStart(__FUNCTION__))
-    ;
+
+  if (reportInfo(__FUNCTION__)) cout << "Startin configuration w/ Task::configure()" << endl;
   Task::configure();
+  if (reportInfo(__FUNCTION__)) cout << "setSeverity()" << endl;
   setSeverity();
 
   try
   {
+  if (reportInfo(__FUNCTION__)) cout << "configureLabels()" << endl;
+
   configureLabels();
   if (reportInfo(__FUNCTION__)) printConfiguration(cout);
 
