@@ -238,8 +238,12 @@ void RunAnalysis::configure()
 
   String  histoImportPath = getValueString("HistogramsImportPath");
   String  histoExportPath = getValueString("HistogramsExportPath");
- 
   int nBunches = getValueInt("Analysis:nBunches");
+
+  printItem("histoExportPath",histoExportPath);
+  printItem("nBunches",nBunches);
+  exit(1);
+
   //
   // task run only once at the beginning...
   //
