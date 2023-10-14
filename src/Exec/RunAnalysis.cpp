@@ -242,7 +242,6 @@ void RunAnalysis::configure()
 
   printItem("histoExportPath",histoExportPath);
   printItem("nBunches",nBunches);
-  exit(1);
 
   //
   // task run only once at the beginning...
