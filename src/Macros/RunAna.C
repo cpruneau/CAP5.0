@@ -90,6 +90,8 @@ int RunAna(TString configFile,
 
   configuration.readFromFile(configurationPath,configurationFile);
   configuration.addParameter("Run:Analysis:isGrid",                  isGrid);
+  configuration.addParameter("Run:HistogramsImportPath",             histogramPath);
+  configuration.addParameter("Run:HistogramsExportPath",             histogramPath);
   configuration.addParameter("Run:Analysis:HistogramsImportPath",    histogramPath);
   configuration.addParameter("Run:Analysis:HistogramsExportPath",    histogramPath);
   configuration.addParameter("Run:Analysis:nEventsPerSubbunch",      nEventsPerSubbunch);

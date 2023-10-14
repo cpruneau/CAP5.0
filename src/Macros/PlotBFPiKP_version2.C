@@ -15,6 +15,7 @@
 #include <TROOT.h>
 
 void loadBase(const TString & includeBasePath);
+void loadPlotting(const TString & includeBasePath);
 
 void calculateRmsWidth(TH2 * h, double lowEdge, double highEdge, double & mean, double & meanError, double & rmsWidth, double & rmsWidthError)
 {
@@ -225,7 +226,7 @@ TH1 * makeHistoWithNames(const TString & histoName, vector<TString> & entryNames
   return h;
 }
 
-TFile * openRootFile(Plotter * plotter, const TString & inputPath, const TString & fileName)
+TFile * openRootFile(CAP::Plotter * plotter, const TString & inputPath, const TString & fileName)
 {
   TFile * f =  plotter->openRootFile(inputPath,fileName,"OLD");
   if (!f)
@@ -236,57 +237,57 @@ TFile * openRootFile(Plotter * plotter, const TString & inputPath, const TString
   return f;
 }
 
-vector<GraphConfiguration*> createGraphConfigurationPalette(int n, int dim)
+vector<CAP::GraphConfiguration*> createGraphConfigurationPalette(int n, int dim)
 {
-  vector<GraphConfiguration*>  gc = GraphConfiguration::createConfigurationPalette(n,dim);
+  vector<CAP::GraphConfiguration*>  gc = CAP::GraphConfiguration::createConfigurationPalette(n,dim);
   for (int k=0;k<n;k++)
     {
-    gc[k]->setParameter("xTitleSize",   0.08);
-    gc[k]->setParameter("xTitleOffset", 0.8);
-    gc[k]->setParameter("yTitleSize",   0.08);
-    gc[k]->setParameter("yTitleOffset", 0.8);
-    gc[k]->setParameter("xLabelSize",   0.07);
-    gc[k]->setParameter("yLabelSize",   0.07);
-    gc[k]->setParameter("lineColor",    41+k);
-    gc[k]->setParameter("markerColor",  41+k);
-    gc[k]->setParameter("markerStyle",  kFullSquare);
-    gc[k]->setParameter("markerSize",   0.9);
+    gc[k]->addParameter("xTitleSize",   0.08);
+    gc[k]->addParameter("xTitleOffset", 0.8);
+    gc[k]->addParameter("yTitleSize",   0.08);
+    gc[k]->addParameter("yTitleOffset", 0.8);
+    gc[k]->addParameter("xLabelSize",   0.07);
+    gc[k]->addParameter("yLabelSize",   0.07);
+    gc[k]->addParameter("lineColor",    41+k);
+    gc[k]->addParameter("markerColor",  41+k);
+    gc[k]->addParameter("markerStyle",  kFullSquare);
+    gc[k]->addParameter("markerSize",   0.9);
     }
   return gc;
 }
 
-GraphConfiguration* create1DGraphConfiguration(double size= 0.07)
+CAP::GraphConfiguration* create1DGraphConfiguration(double size= 0.07)
 {
-  GraphConfiguration * gc = new GraphConfiguration(1,0);
-  gc->setParameter("markerColor",  kBlack);
-  gc->setParameter("markerStyle",  kFullSquare);
-  gc->setParameter("markerSize",   1.2);
-  gc->setParameter("xLabelSize",   size);
-  gc->setParameter("xLabelSize",   0.06);
-  gc->setParameter("yTitleSize",   size);
-  gc->setParameter("yTitleOffset", 0.7);
-  gc->setParameter("yLabelSize",   0.07);
+  CAP::GraphConfiguration * gc = new CAP::GraphConfiguration(1,0);
+  gc->addParameter("markerColor",  kBlack);
+  gc->addParameter("markerStyle",  kFullSquare);
+  gc->addParameter("markerSize",   1.2);
+  gc->addParameter("xLabelSize",   size);
+  gc->addParameter("xLabelSize",   0.06);
+  gc->addParameter("yTitleSize",   size);
+  gc->addParameter("yTitleOffset", 0.7);
+  gc->addParameter("yLabelSize",   0.07);
   return gc;
 }
 
 
-GraphConfiguration* create2DGraphConfiguration(double size= 0.07)
+CAP::GraphConfiguration* create2DGraphConfiguration(double size= 0.07)
 {
-  GraphConfiguration * gc = new GraphConfiguration(2,0);
-  gc->setParameter("xTitleOffset",  1.2);
-  gc->setParameter("xTitleSize",   size);
-  gc->setParameter("xLabelOffset", 0.01);
-  gc->setParameter("xLabelSize",   size);
+  CAP::GraphConfiguration * gc = new CAP::GraphConfiguration(2,0);
+  gc->addParameter("xTitleOffset",  1.2);
+  gc->addParameter("xTitleSize",   size);
+  gc->addParameter("xLabelOffset", 0.01);
+  gc->addParameter("xLabelSize",   size);
 
-  gc->setParameter("yTitleOffset", 1.2);
-  gc->setParameter("yTitleSize",   size);
-  gc->setParameter("yLabelOffset", 0.01);
-  gc->setParameter("yLabelSize",   size);
+  gc->addParameter("yTitleOffset", 1.2);
+  gc->addParameter("yTitleSize",   size);
+  gc->addParameter("yLabelOffset", 0.01);
+  gc->addParameter("yLabelSize",   size);
 
-  gc->setParameter("zTitleOffset", 1.2);
-  gc->setParameter("zTitleSize",   size);
-  gc->setParameter("zLabelOffset", 0.01);
-  gc->setParameter("zLabelSize",   size);
+  gc->addParameter("zTitleOffset", 1.2);
+  gc->addParameter("zTitleSize",   size);
+  gc->addParameter("zLabelOffset", 0.01);
+  gc->addParameter("zLabelSize",   size);
   return gc;
 }
 
@@ -348,14 +349,14 @@ void createSumGraphs(vector<TGraph*> & source, vector<TGraph*> & target)
 
 
 
-int plotSet(Plotter * plotter,
+int plotSet(CAP::Plotter * plotter,
             const TString & inputPath,
             vector<TString> & histoInputFileNames,
             vector<int>     & balFct_Types,
             vector<TString> & balFct_DeltaYDeltaPhi_Histo_Names,
             vector<TString> & balFct_DeltaY_Histo_Names,
             vector<TString> & balFct_DeltaPhi_Histo_Names,
-            vector<LegendConfiguration*> & balFct_LegendConfigs,
+            vector<CAP::LegendConfiguration*> & balFct_LegendConfigs,
             vector<double>  & balFct_Minima,
             vector<double>  & balFct_Maxima,
             const TString   & outFileNameBase,
@@ -368,12 +369,12 @@ int plotSet(Plotter * plotter,
             int  plotWidths    = 1,
             int  plotIntegralVsLogY=1)
 {
-  CanvasConfiguration landscapeLinear(CanvasConfiguration::LandscapeWide,CanvasConfiguration::Linear);
-  CanvasConfiguration landscapeLogX(CanvasConfiguration::Landscape,CanvasConfiguration::LogX);
-  CanvasConfiguration landscapeLogY(CanvasConfiguration::LandscapeWide,CanvasConfiguration::LogY);
-  vector<GraphConfiguration*>  graphConfigurations1D = createGraphConfigurationPalette(15,1);
-  GraphConfiguration * graphConfiguration2D    = create2DGraphConfiguration(0.07);
-  GraphConfiguration * widthGraphConfiguration = create1DGraphConfiguration();
+  CAP::CanvasConfiguration landscapeLinear(CAP::CanvasConfiguration::LandscapeWide,CAP::CanvasConfiguration::Linear);
+  CAP::CanvasConfiguration landscapeLogX(CAP::CanvasConfiguration::Landscape,CAP::CanvasConfiguration::LogX);
+  CAP::CanvasConfiguration landscapeLogY(CAP::CanvasConfiguration::LandscapeWide,CAP::CanvasConfiguration::LogY);
+  vector<CAP::GraphConfiguration*>  graphConfigurations1D = createGraphConfigurationPalette(15,1);
+  CAP::GraphConfiguration * graphConfiguration2D    = create2DGraphConfiguration(0.07);
+  CAP::GraphConfiguration * widthGraphConfiguration = create1DGraphConfiguration();
 
   vector<TH2*>    balFct1Bar2_DeltaYDeltaPhi_Histos;
   vector<TH1*>    balFct1Bar2_DeltaY_Histos;
@@ -453,8 +454,9 @@ int plotSet(Plotter * plotter,
   for (unsigned int iFile=0; iFile<histoInputFileNames.size(); iFile++)
     {
     cout << " iFile  ==  " << iFile << endl;
-    TFile * f =  openRootFile(plotter,inputPath,histoInputFileNames[iFile]);
-    if (!f) return -1;
+    TFile * fptr =  openRootFile(plotter,inputPath,histoInputFileNames[iFile]);
+    if (!fptr) return -1;
+    TFile & f = *fptr;
     TH2 * h2  = plotter->getHistogramCollection().loadH2(f,balFct_DeltaYDeltaPhi_Histo_Names[iFile]);
     if (!h2)  return -1;
     if (rebin) rebin2D(h2);
@@ -675,6 +677,7 @@ int PlotBFPiKP_version2()
   bool doPrint  = true;
   bool printGif = 0;
   bool printPdf = 1;
+  bool printPng = 0;
   bool printSvg = 0;
   bool printC   = 1;
   bool useColor = true;
@@ -697,9 +700,9 @@ int PlotBFPiKP_version2()
 
   TString includeBasePath = getenv("CAP_SRC");
   loadBase(includeBasePath);
-  MessageLogger::LogLevel infoLevel = MessageLogger::Info;
-  MessageLogger::LogLevel debugLevel = MessageLogger::Info;
-  MessageLogger::LogLevel selectLevel = infoLevel;
+//  CAP::MessageLogger::reportLevel infoLevel = CAP::MessageLogger::Info;
+//  CAP::MessageLogger::reportLevel debugLevel = CAP::MessageLogger::Info;
+//  CAP::MessageLogger::reportLevel selectLevel = infoLevel;
 
 
   TString inputPath       = "/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/";
@@ -726,7 +729,7 @@ int PlotBFPiKP_version2()
   // B1Bar2(Y), B1Bar2(phi), I1Bar2, I1Bar2Sum, B1Bar2Width
   // B12Bar(Y), B12Bar(phi), I12Bar, I12BarSum, B12BarWidth
   // B12s(Y),   B12s(phi),   I12s,   I12sSum,   B12sWidth
-  vector<LegendConfiguration*> balFct_LegendConfigs;
+  vector<CAP::LegendConfiguration*> balFct_LegendConfigs;
 
   vector<TString> speciesNames;
   vector<TString> speciesTitles;
@@ -740,7 +743,7 @@ int PlotBFPiKP_version2()
       case 1:
       speciesNames.push_back(TString("PiP"));  speciesTitles.push_back(TString("#pi"));
       speciesNames.push_back(TString("KP"));   speciesTitles.push_back(TString("K"));
-      speciesNames.push_back(TString("PP"));   speciesTitles.push_back(TString("P"));
+      speciesNames.push_back(TString("PP"));   speciesTitles.push_back(TString("p"));
       break;
 
       case 2:
@@ -748,8 +751,8 @@ int PlotBFPiKP_version2()
     }
   int nSpecies = speciesNames.size();
 
-  Configuration plotterConfig;
-  Plotter * plotter = new Plotter("Plotter",plotterConfig);
+  CAP::Configuration plotterConfig;
+  CAP::Plotter * plotter = new CAP::Plotter("Plotter",plotterConfig);
   plotter->setDefaultOptions(useColor);
 
   // setOption == 0 B2 based BalcFct
@@ -832,40 +835,40 @@ int PlotBFPiKP_version2()
       balFct_LegendConfigs.clear();
 
       // B2D
-      LegendConfiguration* lc;
-      lc = new LegendConfiguration(0.65, 0.85, 0.5, 0.9, 0.05);
-      lc->setParameter("useLegend",false);
-      lc->setParameter("useLabels",true);
-      lc->setParameter("useTitles",false);
-      lc->setParameter("textIndex",42);
+      CAP::LegendConfiguration* lc;
+      lc = new CAP::LegendConfiguration(0.65, 0.85, 0.5, 0.9, 0.05);
+      lc->addParameter("useLegend",false);
+      lc->addParameter("useLabels",true);
+      lc->addParameter("useTitles",false);
+      lc->addParameter("textIndex",42);
       balFct_LegendConfigs.push_back(lc);
       // B vs Delta y
-      lc = new LegendConfiguration(0.65, 0.85, 0.5, 0.9, 0.06);
-      lc->setParameter("useLegend",true);
-      lc->setParameter("useLabels",true);
-      lc->setParameter("useTitles",false);
-      lc->setParameter("textIndex",42);
+      lc = new CAP::LegendConfiguration(0.65, 0.85, 0.5, 0.9, 0.06);
+      lc->addParameter("useLegend",true);
+      lc->addParameter("useLabels",true);
+      lc->addParameter("useTitles",false);
+      lc->addParameter("textIndex",42);
       balFct_LegendConfigs.push_back(lc);
       // B vs Delta phi
-      lc = new LegendConfiguration(0.65, 0.85, 0.5, 0.9, 0.06);
-      lc->setParameter("useLegend",true);
-      lc->setParameter("useLabels",true);
-      lc->setParameter("useTitles",false);
-      lc->setParameter("textIndex",42);
+      lc = new CAP::LegendConfiguration(0.65, 0.85, 0.5, 0.9, 0.06);
+      lc->addParameter("useLegend",true);
+      lc->addParameter("useLabels",true);
+      lc->addParameter("useTitles",false);
+      lc->addParameter("textIndex",42);
       balFct_LegendConfigs.push_back(lc);
       // I vs Delta y
-      lc = new LegendConfiguration(0.2, 0.45, 0.5, 0.8, 0.06);
-      lc->setParameter("useLegend",true);
-      lc->setParameter("useLabels",true);
-      lc->setParameter("useTitles",false);
-      lc->setParameter("textIndex",42);
+      lc = new CAP::LegendConfiguration(0.2, 0.45, 0.5, 0.8, 0.06);
+      lc->addParameter("useLegend",true);
+      lc->addParameter("useLabels",true);
+      lc->addParameter("useTitles",false);
+      lc->addParameter("textIndex",42);
       balFct_LegendConfigs.push_back(lc);
       // Isum vs Delta y
-      lc = new LegendConfiguration(0.2, 0.45, 0.5, 0.8, 0.06);
-      lc->setParameter("useLegend",true);
-      lc->setParameter("useLabels",true);
-      lc->setParameter("useTitles",false);
-      lc->setParameter("textIndex",42);
+      lc = new CAP::LegendConfiguration(0.2, 0.45, 0.5, 0.8, 0.06);
+      lc->addParameter("useLegend",true);
+      lc->addParameter("useLabels",true);
+      lc->addParameter("useTitles",false);
+      lc->addParameter("textIndex",42);
       balFct_LegendConfigs.push_back(lc);
 
       for (int iSpecies1=0; iSpecies1<nSpecies; iSpecies1++)
@@ -896,7 +899,7 @@ int PlotBFPiKP_version2()
       }
     }
 
-  if (doPrint) plotter->printAllCanvas(outputPath, printGif, printPdf, printSvg, printC);
+  if (doPrint) plotter->printAllCanvas(outputPath, printGif, printPdf, printSvg, printPng, printC);
   return 0;
 }
 
@@ -908,9 +911,9 @@ void loadBase(const TString & includeBasePath)
   gSystem->Load(includePath+"Task.hpp");
   gSystem->Load(includePath+"TaskIterator.hpp");
   gSystem->Load(includePath+"Collection.hpp");
-  gSystem->Load(includePath+"CanvasCollection.hpp");
-  gSystem->Load(includePath+"GraphConfiguration.hpp");
-  gSystem->Load(includePath+"CanvasConfiguration.hpp");
+//  gSystem->Load(includePath+"CanvasCollection.hpp");
+//  gSystem->Load(includePath+"GraphConfiguration.hpp");
+//  gSystem->Load(includePath+"CanvasConfiguration.hpp");
   gSystem->Load(includePath+"HistogramCollection.hpp");
   gSystem->Load(includePath+"Histograms.hpp");
   gSystem->Load(includePath+"Particle.hpp");
@@ -920,5 +923,16 @@ void loadBase(const TString & includeBasePath)
   gSystem->Load(includePath+"Plotter.hpp");
   gSystem->Load(includePath+"DerivedHistoIterator.hpp");
   gSystem->Load("libBase.dylib");
+}
+
+void loadPlotting(const TString & includeBasePath)
+{
+  TString includePath = includeBasePath + "/Plotting/";
+  gSystem->Load(includePath+"CanvasCollection.hpp");
+  gSystem->Load(includePath+"CanvasConfiguration.hpp");
+  gSystem->Load(includePath+"GraphConfiguration..hpp");
+  gSystem->Load(includePath+"LegendConfiguration.hpp");
+  gSystem->Load(includePath+"Plotter.hpp");
+  gSystem->Load("libPlotting.dylib");
 }
 
