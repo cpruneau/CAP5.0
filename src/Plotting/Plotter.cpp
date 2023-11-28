@@ -14,12 +14,11 @@ using CAP::Plotter;
 
 ClassImp(Plotter);
 
-Plotter::Plotter(const String & _name,
-                 const Configuration & _configuration)
+Plotter::Plotter()
 :
-Task(_name,_configuration),
+Task(),
 canvasCollection(),
-histogramCollection("HistoS",Severity::Info)
+histogramCollection("Histos",Severity::Info)
 {
   appendClassName("Plotter");
 }
@@ -46,209 +45,7 @@ void Plotter::configure()
 }
 
 
-TCanvas *  Plotter::plot(TH1 * h,
-                         const String & canvasName,
-                         const Configuration & cc,
-                         const GraphConfiguration  & gc,
-                         const String & xTitle,  double xMin, double xMax,
-                         const String & yTitle,  double yMin, double yMax,
-                         const String & legendText,
-                         double xMinLeg, double yMinLeg, double xMaxLeg, double yMaxLeg,
-                         double legendSize)
-{
-  if (reportDebug(__FUNCTION__)) cout << "Creating canvas named:" << canvasName << endl;
-  TCanvas * canvas  = canvasCollection.createCanvas(canvasName,cc);
-  canvas->SetTicky(1);
-  canvas->SetTickx(1);
-  setProperties(h,gc);
-  h->GetXaxis()->SetTitle(xTitle);
-  h->GetYaxis()->SetTitle(yTitle);
-  h->SetMinimum(yMin);
-  h->SetMaximum(yMax);
-  h->GetXaxis()->SetRangeUser(xMin,xMax);
-  h->DrawCopy(gc.getValueString("PlotOption"));
-//  String plotOption = graphConfigurations[0]->getValueString("PlotOption");
-//  h->DrawCopy(plotOption);
-  if (!legendText.IsNull() && legendSize>0) createLegend(h,legendText,xMinLeg, yMinLeg, xMaxLeg, yMaxLeg,0, legendSize);
-  return canvas;
-}
 
-TCanvas *  Plotter::plot(TH2 * h,
-                         const String & canvasName,
-                         const Configuration & cc,
-                         const GraphConfiguration  & gc,
-                         const String & xTitle,  double xMin, double xMax,
-                         const String & yTitle,  double yMin, double yMax,
-                         const String & zTitle,  double zMin, double zMax)
-{
-  if (reportDebug(__FUNCTION__)) cout << "Creating canvas named:" << canvasName << endl;
-  TCanvas * canvas  = canvasCollection.createCanvas(canvasName,cc);
-  setProperties(h,gc);
-  h->GetXaxis()->SetTitle(xTitle);
-  h->GetYaxis()->SetTitle(yTitle);
-  h->GetZaxis()->SetTitle(zTitle);
-
-  if (xMin < xMax) h->GetXaxis()->SetRangeUser(xMin,xMax);
-  if (yMin < yMax) h->GetYaxis()->SetRangeUser(yMin,yMax);
-  if (zMin < zMax)
-    {
-    //cout << "Setting z range: " << zMin << " to: " << zMax << endl;
-    h->SetMinimum(zMin);
-    h->SetMaximum(zMax);
-    }
-  h->DrawCopy(gc.getValueString("PlotOption"));
-//  if (!text1.IsNull()) createLabel(text1, x1,y1,color1, fontSize1, true);
-//  if (!text2.IsNull()) createLabel(text2, x2,y2,color2, fontSize2, true);
-  return canvas;
-}
-
-
-TCanvas *  Plotter::plot(vector<TH1*> histograms,
-                         const vector<GraphConfiguration*> & graphConfigurations,
-                         const VectorString   &  legendTexts,
-                         const String & canvasName,
-                         const Configuration & canvasConfiguration,
-                         const String & xTitle,  double xMin, double xMax,
-                         const String & yTitle,  double yMin, double yMax,
-                         double xMinLeg, double yMinLeg, double xMaxLeg, double yMaxLeg,
-                         double legendSize)
-{
-  if (reportDebug(__FUNCTION__)) cout << "Creating canvas named:" << canvasName << endl;
-  TCanvas * canvas = canvasCollection.createCanvas(canvasName,canvasConfiguration);
-  unsigned int nGraphs = histograms.size();
-  canvas->SetTicky(1);
-  canvas->SetTickx(1);
-  TH1 * h;
-  for (unsigned int iGraph=0; iGraph<nGraphs; iGraph++)
-    {
-    h = histograms[iGraph];
-    setProperties(h,*(graphConfigurations[iGraph]) );
-    h->GetXaxis()->SetTitle(xTitle);
-    h->GetYaxis()->SetTitle(yTitle);
-    if (yMin>=yMax) findMinMax(h,yMin,yMax);
-    if (yMin>=yMax) yMax = yMin + 1.0E1;
-    }
-  h = histograms[0];
-  h->SetMinimum(yMin);
-  h->SetMaximum(yMax);
-  if (xMin<xMax) h->GetXaxis()->SetRangeUser(xMin,xMax);
-  String plotOption = graphConfigurations[0]->getValueString("PlotOption");
-  h->DrawCopy(plotOption);
-  for (unsigned int iGraph=1; iGraph<nGraphs; iGraph++)
-    {
-    plotOption = graphConfigurations[iGraph]->getValueString("PlotOption");
-    histograms[iGraph]->DrawCopy(plotOption+" SAME");
-    }
-  if (nGraphs<6 && legendSize>0)
-    createLegend(histograms,legendTexts,xMinLeg, yMinLeg, xMaxLeg, yMaxLeg,legendSize);
-  else
-    {
-    unsigned int n1 = nGraphs/2;
-    unsigned int n2 = nGraphs - n1;
-    vector<TH1*> h1;
-    vector<TH1*> h2;
-    VectorString  lg1;
-    VectorString  lg2;
-    for (unsigned int k=0; k<n1; k++)
-      {
-      h1.push_back( histograms[k]);
-      lg1.push_back( legendTexts[k]);
-      }
-    for (unsigned int k=0; k<n2; k++)
-      {
-      h2.push_back( histograms[n1+k]);
-      lg2.push_back( legendTexts[n1+k]);
-      }
-    if (legendSize>0)
-      {
-      createLegend(h1,lg1,xMinLeg, yMinLeg, xMaxLeg, yMaxLeg,legendSize);
-      createLegend(h2,lg2,xMaxLeg, yMinLeg, 2.0*xMaxLeg-xMinLeg, yMaxLeg,legendSize);
-      }
-    }
-
-//  if (label1) createLabel(text1, x1,y1,color1,true);
-//  if (label2) createLabel(text2, x2,y2,color2,true);
-
-  return canvas;
-}
-
-
-
-TCanvas *  Plotter::plot(vector<TGraph*> graphs,
-                         const vector<GraphConfiguration*> & graphConfigurations,
-                         const VectorString   &  legendTexts,
-                         const String & canvasName,
-                         const Configuration & canvasConfiguration,
-                         const String & xTitle,  double xMin, double xMax,
-                         const String & yTitle,  double yMin, double yMax,
-                         double xMinLeg, double yMinLeg, double xMaxLeg, double yMaxLeg,
-                         double legendSize)
-{
-  if (reportInfo(__FUNCTION__)) cout << "Creating canvas named:" << canvasName << endl;
-  TCanvas * canvas = canvasCollection.createCanvas(canvasName,canvasConfiguration);
-  unsigned int nGraphs = graphs.size();
-  TGraph * h;
-  canvas->SetTicky(1);
-  canvas->SetTickx(1);
-  if (reportInfo(__FUNCTION__)) cout << "nGraphs:" << nGraphs << endl;
-
-  for (unsigned int iGraph=0; iGraph<nGraphs; iGraph++)
-    {
-    if (reportInfo(__FUNCTION__)) cout << "iGraph:" << iGraph << endl;
-    h = graphs[iGraph];
-    setProperties(h,*(graphConfigurations[iGraph]) );
-    h->GetXaxis()->SetTitle(xTitle);
-    h->GetYaxis()->SetTitle(yTitle);
-//    if (yMin>=yMax) findMinMax(h,yMin,yMax);
-//    if (yMin>=yMax) yMax = yMin + 1.0E1;
-    }
-  h = graphs[0];
-  h->SetMinimum(yMin);
-  h->SetMaximum(yMax);
-  if (xMin<xMax) h->GetXaxis()->SetLimits(xMin,xMax);
-  //if (xMin<xMax) h->GetXaxis()->SetRangeUser(xMin,xMax);
-  String plotOption = "ALP"; // graphConfigurations[0]->getValueString(getName(),"PlotOption");
-  h->Draw(plotOption);
-  //nGraphs = 1;
-  for (unsigned int iGraph=1; iGraph<nGraphs; iGraph++)
-    {
-    plotOption = "SAME LP"; //graphConfigurations[iGraph]->getValueString(getName(),"PlotOption");
-    graphs[iGraph]->Draw(plotOption);
-    }
-  if (nGraphs<6 && legendSize>0)
-    createLegend(graphs,legendTexts,xMinLeg, yMinLeg, xMaxLeg, yMaxLeg,legendSize);
-  else
-    {
-    unsigned int n1 = nGraphs/2;
-    unsigned int n2 = nGraphs - n1;
-    vector<TGraph*> h1;
-    vector<TGraph*> h2;
-    VectorString  lg1;
-    VectorString  lg2;
-    for (unsigned int k=0; k<n1; k++)
-      {
-      h1.push_back( graphs[k]);
-      lg1.push_back( legendTexts[k]);
-      }
-    for (unsigned int k=0; k<n2; k++)
-      {
-      h2.push_back( graphs[n1+k]);
-      lg2.push_back( legendTexts[n1+k]);
-      }
-    if (legendSize>0)
-      {
-      createLegend(h1,lg1,xMinLeg, yMinLeg, xMaxLeg, yMaxLeg,legendSize);
-      createLegend(h2,lg2,xMaxLeg, yMinLeg, 2.0*xMaxLeg-xMinLeg, yMaxLeg,legendSize);
-      }
-    }
-
-  //  if (label1) createLabel(text1, x1,y1,color1,true);
-  //  if (label2) createLabel(text2, x2,y2,color2,true);
-
-  return canvas;
-}
-
-//// new stuff
 ///
 TCanvas *  Plotter::plot(const String & canvasName,
                          const CanvasConfiguration  & cc,
@@ -307,20 +104,53 @@ TCanvas *  Plotter::plot(const String & canvasName,
 
 TCanvas *  Plotter::plot(const String & canvasName,
                          const CanvasConfiguration  & cc,
+                         const GraphConfiguration   & gc,
+                         LegendConfiguration  & lc,
+                         TGraph * h,
+                         const String & xTitle,  double xMin, double xMax,
+                         const String & yTitle,  double yMin, double yMax)
+{
+  if (reportDebug(__FUNCTION__)) cout << "Creating canvas named:" << canvasName << endl;
+  TCanvas * canvas  = canvasCollection.createCanvas(canvasName,cc);
+  canvas->SetTicky(1);
+  canvas->SetTickx(1);
+  setProperties(h,gc);
+  h->GetXaxis()->SetTitle(xTitle);
+  h->GetYaxis()->SetTitle(yTitle);
+  h->SetMinimum(yMin);
+  h->SetMaximum(yMax);
+  if (xMin<xMax) h->GetXaxis()->SetRangeUser(xMin,xMax);
+  String plotOption = gc.getValueString("PlotOption");
+  h->Draw(plotOption);
+
+  if (lc.useLegend()) createLegend(h,lc);
+  if (lc.useLabels()) lc.drawLabels();
+  return canvas;
+}
+
+
+TCanvas *  Plotter::plot(const String & canvasName,
+                         const CanvasConfiguration  & cc,
                          const vector<GraphConfiguration*> & gc,
                          LegendConfiguration  & lc,
                          vector<TH1*> histograms,
                          const String & xTitle,  double xMin, double xMax,
                          const String & yTitle,  double yMin, double yMax)
 {
-  if (reportDebug(__FUNCTION__)) cout << "Creating canvas named:" << canvasName << endl;
   TCanvas * canvas = canvasCollection.createCanvas(canvasName,cc);
   canvas->SetTicky(1);
   canvas->SetTickx(1);
   TH1 * h;
-  unsigned int nGraphs = histograms.size();
-  for (unsigned int iGraph=0; iGraph<nGraphs; iGraph++)
+  Size_t nGraphs = histograms.size();
+  if (reportInfo(__FUNCTION__)) 
     {
+    printItem("Creating canvas named",canvasName);
+    printItem("nGraphs",nGraphs);
+    printItem("gc.size",gc.size());
+    }
+  for (Size_t iGraph=0; iGraph<nGraphs; iGraph++)
+    {
+    printItem("iGraph",iGraph);
     h = histograms[iGraph];
     setProperties(h,*gc[iGraph]);
     h->GetXaxis()->SetTitle(xTitle);
@@ -329,15 +159,17 @@ TCanvas *  Plotter::plot(const String & canvasName,
     if (yMin>=yMax) yMax = yMin + 1.0E1;
     }
   h = histograms[0];
+  h->GetXaxis()->SetTitle(xTitle);
+  h->GetYaxis()->SetTitle(yTitle);
   h->SetMinimum(yMin);
   h->SetMaximum(yMax);
   if (xMin<xMax) h->GetXaxis()->SetRangeUser(xMin,xMax);
   String plotOption = gc[0]->getValueString("PlotOption");
-  h->DrawCopy(plotOption);
+  h->Draw(plotOption);
   for (unsigned int iGraph=1; iGraph<nGraphs; iGraph++)
     {
     plotOption = gc[iGraph]->getValueString("PlotOption");
-    histograms[iGraph]->DrawCopy(plotOption+" SAME");
+    histograms[iGraph]->Draw(plotOption+" SAME");
     }
   if (lc.useLegend()) createLegend(histograms,lc);
   if (lc.useLabels()) lc.drawLabels();
@@ -505,8 +337,26 @@ TLegend * Plotter::createLegend(const LegendConfiguration & legendConfig)
   double xRight      = legendConfig.getValueDouble("xRight");
   double yLow        = legendConfig.getValueDouble("yLow");
   double yHigh       = legendConfig.getValueDouble("yHigh");
-  String header     = legendConfig.getValueString("header");
-  TLegend *legend = new TLegend(xLeft,yLow,xRight,yHigh);
+  String header      = legendConfig.getValueString("header");
+  bool   useNDC      = legendConfig.getValueBool("useNDC");
+
+  cout << " Leg xLeft  :" << xLeft << endl;
+  cout << " Leg xRight :" << xRight << endl;
+  cout << " Leg yLow   :" << yLow << endl;
+  cout << " Leg yHigh  :" << yHigh << endl;
+
+  TLegend *legend;
+  if (useNDC)
+    {
+    cout << " -- useNDC -- " << endl;
+    legend = new TLegend(xLeft,yLow,xRight,yHigh,header,"NDC");
+    }
+  else
+    {
+    cout << " -- usePAD -- " << endl;
+    legend = new TLegend(xLeft,yLow,xRight,yHigh,header,"PAD");
+    }
+
   if (nColumns>1) legend->SetNColumns(nColumns);
   legend->SetLineColor(borderColor);
   legend->SetBorderSize(borderSize);
@@ -797,4 +647,406 @@ void Plotter::setDefaultOptions(bool color)
   gStyle->SetOptTitle(0);
   gStyle->SetPadBorderMode(0);
 
+}
+
+double Plotter::findHistoMinimum(TH1 * h)
+{
+  return h->GetBinContent(h->GetMinimumBin());
+}
+
+double Plotter::findHistoMaximum(TH1 * h)
+{
+  return h->GetBinContent(h->GetMaximumBin());
+}
+
+double Plotter::findHistoMinimum2D(TH2 * h)
+{
+  int x, y, z;
+  h->GetMinimumBin(x,y,z);
+  return h->GetBinContent(x,y);
+}
+
+double Plotter::findHistoMaximum2D(TH2 * h)
+{
+  int x, y, z;
+  h->GetMaximumBin(x,y,z);
+  return h->GetBinContent(x,y);
+}
+
+double Plotter::findGraphMinimum(TGraph * h)
+{
+  double min = 1.0E100;
+  int n = h->GetN();
+  for (int k=0; k<n; k++)
+    {
+    double y = h->GetPointY(k);
+    if (y<min) min = y;
+    }
+  return min;
+}
+
+double Plotter::findGraphMaximum(TGraph * h)
+{
+  double max = -1.0E100;
+  int n = h->GetN();
+  for (int k=0; k<n; k++)
+    {
+    double y = h->GetPointY(k);
+    if (y>max) max = y;
+    }
+  return max;
+}
+
+double Plotter::findMinimum(vector<double> & values)
+{
+  double min = 1.0E100;
+  for (Size_t k=0; k<values.size(); k++)
+    {
+    if (values[k]<min) min = values[k];
+    cout << "k   " << k << " v: " << values[k] << " min: " << min << endl;
+    }
+  return min;
+}
+
+double Plotter::findMaximum(vector<double> & values)
+{
+  double max = -1.0E100;
+  for (Size_t k=0; k<values.size(); k++)
+    {
+    if (values[k]>max) max = values[k];
+    cout << "k   " << k << " v: " << values[k] << " max: " << max << endl;
+    }
+  return max;
+}
+
+CAP::String  Plotter::makeName(const String  & s1, const String  & s2)
+{
+  String  s = s1;
+  s += "_";
+  s += s2;
+  return s;
+}
+
+CAP::String  Plotter::makeName(const String  & s1, const String  & s2, const String  & s3)
+{
+  String  s = s1;
+  s += "_";
+  s += s2;
+  s += "_";
+  s += s3;
+  return s;
+}
+
+CAP::String  Plotter::makeName(const String  & s1, const String  & s2, const String  & s3, const String  & s4)
+{
+  String  s = s1;
+  s += "_";
+  s += s2;
+  s += "_";
+  s += s3;
+  s += "_";
+  s += s4;
+  return s;
+}
+
+CAP::String  Plotter::makeName(const String  & s1,
+                               const String  & s2,
+                               const String  & s3,
+                               const String  & s4,
+                               const String  & s5)
+{
+  String  s = s1;
+  s += "_";
+  s += s2;
+  s += "_";
+  s += s3;
+  s += "_";
+  s += s4;
+  s += "_";
+  s += s5;
+  return s;
+}
+
+
+TGraph * Plotter::makeGraph(vector<double> vx,
+                            vector<double> vex,
+                            vector<double> vy,
+                            vector<double> vey)
+{
+  auto n = vx.size();
+  if ( vex.size()!=n || vy.size()!=n || vey.size()!=n )
+      throw TaskException("Arguments provided have incompatible sizes","makeGraph(vx,vex,vy,vey)");
+  double * x  = new double[n];
+  double * ex = new double[n];
+  double * y  = new double[n];
+  double * ey = new double[n];
+  for (unsigned long k=0;k<n;k++)
+    {
+    x[k]  = vx[k];
+    ex[k] = vex[k];
+    y[k]  = vy[k];
+    ey[k] = vey[k];
+    }
+  return new TGraphErrors(n,x,y,ex,ey);
+}
+
+
+vector<CAP::GraphConfiguration*> Plotter::createGraphConfigurationPalette(int n, int dim)
+{
+  vector<CAP::GraphConfiguration*>  gc = CAP::GraphConfiguration::createConfigurationPalette(n,dim);
+  for (int k=0;k<n;k++)
+    {
+
+    gc[k]->addParametersWith(1, k);
+
+//    gc[k]->addParameter("xTitleSize",   double(0.08));
+//    gc[k]->addParameter("xTitleOffset", double(0.8));
+//    gc[k]->addParameter("yTitleSize",   double(0.08));
+//    gc[k]->addParameter("yTitleOffset", double(0.8));
+//    gc[k]->addParameter("xLabelSize",   double(0.07));
+//    gc[k]->addParameter("yLabelSize",   double(0.07));
+//    gc[k]->addParameter("lineColor",    int(21+2*k));
+//    gc[k]->addParameter("markerColor",  int(21+2*k));
+//    gc[k]->addParameter("markerStyle",  int(kFullSquare));
+//    gc[k]->addParameter("markerSize",   double(0.9));
+    }
+  return gc;
+}
+
+
+TGraph *  Plotter::sumGraphs(TGraph * g1, TGraph * g2)
+{
+  if (reportInfo(__FUNCTION__)) cout << "Summing two graphs" << endl;
+  int  n1 = g1->GetN();
+  int  n2 = g2->GetN();
+  if (n1 != n2)
+    throw TaskException("Args do not have same number of points","sumGraphs(TGraph * g1, TGraph * g2)");
+  double * x  = new double[n1];
+  double * ex = new double[n1];
+  double * y  = new double[n1];
+  double * ey = new double[n1];
+  for (int index=0; index<n1; index++)
+    {
+    double x1  = g1->GetPointX(index);
+    double ex1 = g1->GetErrorX(index);
+    double y1  = g1->GetPointY(index);
+    double ey1 = g1->GetErrorY(index);
+    double x2  = g2->GetPointX(index);
+    //double ex2 = g2->GetErrorX(index);
+    double y2  = g2->GetPointY(index);
+    double ey2 = g2->GetErrorY(index);
+    if (x1!=x2)
+      {
+      //cout << "sumGraphs(TGraph * g1, TGraph * g2, TGraph * gSum) x1 ne x2" << endl;
+      delete[] x;
+      delete[] ex;
+      delete[] y;
+      delete[] ey;
+      return nullptr;
+      }
+    x[index]  = x1;
+    ex[index] = ex1;
+    y[index]  = y1 + y2;
+    ey[index] = sqrt(ey1*ey1 + ey2*ey2);
+    }
+  TGraph * g = new TGraphErrors(n1, x,y,ex,ey);
+  //cout << "sumGraphs(...) Ends" << endl;
+  return g;
+}
+
+TGraph* Plotter::calculateIntegral1D(TH1* h,
+                                     double etaLow,
+                                     double etaHigh,
+                                     double etaStep,
+                                     int size)
+{
+  if (!h)
+    throw TaskException("Given h is a null ptr","calculateIntegral1D(TH1* h,...)");
+  if (reportInfo(__FUNCTION__))
+  {
+    cout << endl;
+    printItem("Histo Name", h->GetName());
+    printItem("etaLow", etaLow);
+    printItem("etaHigh",etaHigh);
+    printItem("etaStep",etaStep);
+    printItem("size", size);
+  }
+  double * x  = new double[size];
+  double * ex = new double[size];
+  double * y  = new double[size];
+  double * ey = new double[size];
+
+  const TAxis * xAxis  = h->GetXaxis();
+  int xLow;
+  int xHigh;
+  int nPoints = 0;
+  double sum  = 0;
+  double esum = 0;
+  for (double eta=etaLow; eta<etaHigh; eta+=etaStep)
+  {
+    xLow  = xAxis->FindBin(-eta);
+    xHigh = xAxis->FindBin( eta);
+    sum = h->IntegralAndError(xLow,xHigh,esum,"WIDTH");
+    x[nPoints]  = eta;
+    ex[nPoints] = 0.001;
+    y[nPoints]  = sum; ///TMath::TwoPi();
+    ey[nPoints] = esum; ///TMath::TwoPi();
+    nPoints++;
+  }
+  TGraph * g = new TGraphErrors(nPoints, x,y,ex,ey);
+  return g;
+}
+
+
+TGraph* Plotter::calculateIntegral(TH2* h2,
+                                   double etaLow,
+                                   double etaHigh,
+                                   double etaStep,
+                                   int size)
+{
+  if (!h2)
+    throw TaskException("Given h2 is a null ptr","calculateIntegral1D(TH2* h,...)");
+  if (reportInfo(__FUNCTION__))
+  {
+    cout << endl;
+    printItem("Histo Name", h2->GetName());
+    printItem("etaLow", etaLow);
+    printItem("etaHigh",etaHigh);
+    printItem("etaStep",etaStep);
+    printItem("size", size);
+  }
+  double * x  = new double[size];
+  double * ex = new double[size];
+  double * y  = new double[size];
+  double * ey = new double[size];
+
+  const TAxis * xAxis  = h2->GetXaxis();
+  const TAxis * yAxis  = h2->GetYaxis();
+  int xLow;
+  int xHigh;
+  int yLow  = yAxis->GetXmin();
+  int yHigh = yAxis->GetXmax();
+  int nPoints = 0;
+  double sum  = 0;
+  double esum = 0;
+  for (double eta=etaLow; eta<etaHigh; eta+=etaStep)
+  {
+    xLow  = xAxis->FindBin(-eta);
+    xHigh = xAxis->FindBin( eta);
+    // this needs to be fixed...
+    //double factor = 1-eta/xHigh;
+    sum = h2->IntegralAndError(xLow,xHigh,yLow,yHigh,esum,"WIDTH");
+    x[nPoints]  = eta;
+    ex[nPoints] = 0.001;
+    y[nPoints]  = sum; ///TMath::TwoPi();
+    ey[nPoints] = esum; ///TMath::TwoPi();
+    nPoints++;
+  }
+  TGraph * g = new TGraphErrors(nPoints, x,y,ex,ey);
+  return g;
+}
+
+// ============================================================================================================
+// 4 parameters function
+// ============================================================================================================
+// 0  : a        : peak amplitude
+// 1  : omegaEta : longitudinal peak width (eta)
+// 2  : gammaEta : generalized gaussian exponent -- eta
+// 3  : a0       : constant offset
+// ============================================================================================================
+double Plotter::GeneralizedGaussian(double *x, double *par)
+{
+  double eta = x[0];
+  //double etaSq = eta*eta;
+  double a        = par[0];
+  double omegaEta = par[1];
+  double gammaEta = par[2];
+  double a0       = par[3];
+
+  // generalized gaussian peak
+  double norm   = gammaEta/2.0/omegaEta/TMath::Gamma(1.0/gammaEta);
+  double arg1   = TMath::Abs(eta/omegaEta);
+  double peak   = norm * TMath::Exp(-(TMath::Power(arg1,gammaEta) ));
+  double result = a*peak;
+  result += a0;
+  return result;
+}
+
+
+void Plotter::calculateRmsWidth(TH2 * h,
+                                double xLowEdge, double xHighEdge,
+                                double yLowEdge, double yHighEdge,
+                                double & mean, double & meanError,
+                                double & rmsWidth,
+                                double & rmsWidthError,
+                                int direction)
+{
+  int nx = h->GetXaxis()->GetNbins();
+  int xLowBin  = h->GetXaxis()->FindBin(xLowEdge);
+  int xHighBin = h->GetXaxis()->FindBin(xHighEdge);
+  if (xLowBin<1) xLowBin = 1;
+  if (xHighBin>nx)  xHighBin = nx;
+
+  int ny = h->GetNbinsY();
+  int yLowBin  = h->GetYaxis()->FindBin(yLowEdge);
+  int yHighBin = h->GetYaxis()->FindBin(yHighEdge);
+  if (yLowBin<1) yLowBin = 1;
+  if (yHighBin>ny)  yHighBin = ny;
+
+  double sum    = 0.0;
+  double xSum   = 0.0;
+  double x2Sum  = 0.0;
+  //  double eXSum  = 0.0;
+  //  double eX2Sum = 0.0;
+  double m1  = 0.0;
+  double m2  = 0.0;
+  mean       = 0.0;
+  meanError  = 0.0;
+  rmsWidth   = 0.0;
+  rmsWidthError  = 0.0;
+  double c, v, ev, arg;
+
+
+  // two passes: pass 1 to get the mean, pass 2 to get the rms error,
+  for (int iY=yLowBin; iY<=yHighBin; iY++)
+    {
+    for (int  iX=xLowBin; iX<xHighBin; iX++ )
+      {
+      switch (direction)
+        {
+          case 1: c = h->GetXaxis()->GetBinCenter(iX); break;
+          case 2: c = h->GetYaxis()->GetBinCenter(iY); break;
+        }
+      v  = h->GetBinContent(iX,iY);
+      sum   += v;
+      xSum  += c*v;
+      x2Sum += c*c*v;
+      }
+    }
+
+  if (sum>0)
+    {
+    m1 = xSum/sum;
+    m2 = x2Sum/sum - m1*m1;
+    if (m2>0.0) rmsWidth = sqrt(m2);
+
+    for (int iY=yLowBin; iY<=yHighBin; iY++)
+      {
+      for (int iX=xLowBin; iX<xHighBin; iX++ )
+        {
+        switch (direction)
+          {
+            case 1: c = h->GetXaxis()->GetBinCenter(iX); break;
+            case 2: c = h->GetYaxis()->GetBinCenter(iY); break;
+          }
+        v  = h->GetBinContent(iX,iY);
+        ev  = h->GetBinError(iX,iY);
+        xSum  += c*c*ev*ev;
+        x2Sum += c*c*v;
+        arg = c*c - 2*m1*c;
+        x2Sum += arg*arg * ev*ev;
+        }
+      }
+    // need to compute and output error
+    }
 }

@@ -23,7 +23,7 @@
 #include "TF1.h"
 #include "TF2.h"
 #include "TRandom.h"
-#include "TString.h"
+#include "Aliases.hpp"
 #include "TLatex.h"
 #include "TLine.h"
 #include "TArrow.h"

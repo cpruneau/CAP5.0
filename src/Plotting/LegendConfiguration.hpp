@@ -79,6 +79,11 @@ public:
   String getLegendAt(int index) const;
   void setLegendAt(int index,const String & legend);
 
+  void clearLegend()
+  {
+  legends.clear();
+  }
+
   bool useLegend() const
   {
   return getValueBool("useLegend");
@@ -89,6 +94,12 @@ public:
   {
     return getValueBool("useLabels") && labels.size()>0;
   }
+
+  void clearLabels()
+  {
+  labels.clear();
+  }
+
 
   int getNLabels() const
   {

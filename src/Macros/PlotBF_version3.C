@@ -17,181 +17,10 @@
 void loadBase(const TString & includeBasePath);
 void loadPlotting(const TString & includeBasePath);
 
-void calculateRmsWidth(TH2 * h, double lowEdge, double highEdge, double & mean, double & meanError, double & rmsWidth, double & rmsWidthError)
-{
-  int nBins   = h->GetXaxis()->GetNbins();
-  int lowBin  = h->GetXaxis()->FindBin(lowEdge);
-  int highBin = h->GetXaxis()->FindBin(highEdge);
-  if (lowBin<1) lowBin = 1;
-  if (highBin>nBins)  highBin = nBins;
-  double sum    = 0.0;
-  double xSum   = 0.0;
-  double x2Sum  = 0.0;
-  double eXSum  = 0.0;
-  double eX2Sum = 0.0;
-  double m1  = 0.0;
-  double m2  = 0.0;
-  mean       = 0.0;
-  meanError  = 0.0;
-  rmsWidth   = 0.0;
-  rmsWidthError  = 0.0;
-  double x, v, ev, arg;
-
-  int ny = h->GetNbinsY();
-
-  // two passes: pass 1 to get the mean, pass 2 to get the rms error,
-  for (int j=1; j<=ny; j++)
-    {
-    for (int k=lowBin; k<highBin; k++ )
-      {
-      x  = h->GetXaxis()->GetBinCenter(k);
-      v  = h->GetBinContent(k,j);
-      sum   += v;
-      xSum  += x*v;
-      x2Sum += x*x*v;
-      }
-    }
-
-  if (sum>0)
-    {
-    m1 = xSum/sum;
-    m2 = x2Sum/sum - m1*m1;
-    if (m2>0.0) rmsWidth = sqrt(m2);
-
-    for (int j=1; j<=ny; j++)
-      {
-      for (int k=lowBin; k<highBin; k++ )
-        {
-        x  = h->GetXaxis()->GetBinCenter(k);
-        v  = h->GetBinContent(k);
-        ev = h->GetBinError(k,j);
-        xSum  += x*x*ev*ev;
-        arg = x*x - 2*m1*x;
-        x2Sum += arg*arg * ev*ev;
-        }
-      }
-    meanError = sqrt(xSum)/sum;
-    rmsWidthError = sqrt(x2Sum)/sum;
-    }
-}
-
-void calculateWidths(TH2 * h, double lowEdge, double highEdge, vector<double> & rmsWidths, vector<double> & rmsWidthErrors)
-{
-  double mean          = 0;
-  double meanError     = 0;
-  double rmsWidth      = 0;
-  double rmsWidthError = 0;
-  calculateRmsWidth(h,lowEdge,highEdge,mean,meanError,rmsWidth,rmsWidthError);
-  rmsWidths.push_back(rmsWidth);
-  rmsWidthErrors.push_back(rmsWidthError);
-}
-
-void calculateIntegrals(TH2* h2,
-                        vector<TGraph*> & integralGraphs,
-                        double etaLow,
-                        double etaHigh,
-                        double etaStep,
-                        int size=500)
-{
-  cout << "calculateIntegrals(...) Begins" << endl;
-  double * x  = new double[size];
-  double * ex = new double[size];
-  double * y  = new double[size];
-  double * ey = new double[size];
-
-  const TAxis * xAxis  = h2->GetXaxis();
-  const TAxis * yAxis  = h2->GetYaxis();
-  int xLow  = xAxis->GetXmin();
-  int xHigh = xAxis->GetXmax();
-  int yLow  = yAxis->FindBin(-0.5*TMath::Pi());
-  int yHigh = yAxis->FindBin( 1.5*TMath::Pi());
-  int nPoints = 0;
-  double sum  = 0;
-  double esum = 0;
-  for (double eta=etaLow; eta<etaHigh; eta+=etaStep)
-    {
-    int xLow  = xAxis->FindBin(-eta);
-    int xHigh = xAxis->FindBin( eta);
-    double factor = 1-eta/xHigh;
-    sum = h2->IntegralAndError(xLow,xHigh,yLow,yHigh,esum,"WIDTH");
-    x[nPoints]  = eta;
-    ex[nPoints] = 0.001;
-    y[nPoints]  = sum; ///TMath::TwoPi();
-    ey[nPoints] = esum; ///TMath::TwoPi();
-    nPoints++;
-    }
-  TGraph * g = new TGraphErrors(nPoints, x,y,ex,ey);
-  integralGraphs.push_back(g);
-  cout << "calculateIntegrals(...) Ends" << endl;
-}
-
-
-TGraph *  sumGraphs(TGraph * g1, TGraph * g2)
-{
-  cout << "sumGraphs(...) Begins" << endl;
-  int  n1 = g1->GetN();
-  int  n2 = g2->GetN();
-  if (n1 != n2)
-    {
-    cout << "sumGraphs(TGraph * g1, TGraph * g2, TGraph * gSum) args do not have same number of points" << endl;
-    return nullptr;
-    }
-  double * x  = new double[n1];
-  double * ex = new double[n1];
-  double * y  = new double[n1];
-  double * ey = new double[n1];
-  for (int index=0; index<n1; index++)
-    {
-    double x1  = g1->GetPointX(index);
-    double ex1 = g1->GetErrorX(index);
-    double y1  = g1->GetPointY(index);
-    double ey1 = g1->GetErrorY(index);
-    double x2  = g2->GetPointX(index);
-    double ex2 = g2->GetErrorX(index);
-    double y2  = g2->GetPointY(index);
-    double ey2 = g2->GetErrorY(index);
-    if (x1!=x2)
-      {
-      cout << "sumGraphs(TGraph * g1, TGraph * g2, TGraph * gSum) x1 ne x2" << endl;
-      delete[] x;
-      delete[] ex;
-      delete[] y;
-      delete[] ey;
-      return nullptr;
-      }
-    x[index]  = x1;
-    ex[index] = ex1;
-    y[index]  = y1 + y2;
-    ey[index] = sqrt(ey1*ey1 + ey2*ey2);
-    }
-  TGraph * g = new TGraphErrors(n1, x,y,ex,ey);
-  cout << "sumGraphs(...) Ends" << endl;
-  return g;
-}
 
 
 
-TGraph * makeGraph(vector<double> vx, vector<double> vex, vector<double> vy,  vector<double> vey)
-{
-  int n = vx.size();
-  if ( vex.size()!=n || vy.size()!=n || vey.size()!=n )
-    {
-    cout << "<E> makeGraph(vx,vex,vy,vey) arguments provided have incompatible sizes)" << endl;
-    return 0;
-    }
-  double * x  = new double[n];
-  double * ex = new double[n];
-  double * y  = new double[n];
-  double * ey = new double[n];
-  for (int k=0;k<n;k++)
-    {
-    x[k]  = vx[k];
-    ex[k] = vex[k];
-    y[k]  = vy[k];
-    ey[k] = vey[k];
-    }
-  return new TGraphErrors(n,x,y,ex,ey);
-}
+
 
 TH1 * makeHistoWithNames(const TString & histoName, vector<TString> & entryNames, vector<double> & vy,  vector<double> & vey)
 {
@@ -226,6 +55,38 @@ TH1 * makeHistoWithNames(const TString & histoName, vector<TString> & entryNames
   return h;
 }
 
+TFile *  Task::openRootFile(const String & inputPath, const String & fileName, const String & ioOption)
+{
+  if (reportStart(__FUNCTION__))
+    ;
+
+
+  // sometimes the caller sets the path within the file name... so one
+  // should not prepend the path to the name... By convention, we assume that
+  // if the file name begins with '/', it is an absolute path.
+  String inputFileName;
+  if (fileName.BeginsWith("/"))
+    inputFileName = fileName;
+  else
+    {
+    // make sure that if an inputPath is given, it ends with '/'
+    String inputFilePath = inputPath;
+    int slash = inputFilePath.First('/');
+    int len   = inputFilePath.Length();
+    if (len>0 && (len-1)!=slash) inputFilePath += "/";
+    inputFileName = inputFilePath;
+    inputFileName += fileName;
+    }
+  // make sure the root extension is included in the file name
+  if (!inputFileName.EndsWith(".root")) inputFileName += ".root";
+  if (reportDebug (__FUNCTION__))  cout << "Opening file: " << inputFileName << " with option: " << ioOption << endl;
+  TFile * inputFile = new TFile(inputFileName,ioOption);
+  if (!inputFile) throw  FileException(inputFileName,"File not found","Task::openRootFile()");
+  if (!inputFile->IsOpen())  throw  FileException(inputFileName,"File not found/opened","Task::openRootFile()");
+  if (reportDebug(__FUNCTION__)) cout << "File opened successfully." << endl;
+  return inputFile;
+}
+
 TFile * openRootFile(CAP::Plotter * plotter, const TString & inputPath, const TString & fileName)
 {
   TFile * f =  plotter->openRootFile(inputPath,fileName,"OLD");
@@ -237,59 +98,6 @@ TFile * openRootFile(CAP::Plotter * plotter, const TString & inputPath, const TS
   return f;
 }
 
-vector<CAP::GraphConfiguration*> createGraphConfigurationPalette(int n, int dim)
-{
-  vector<CAP::GraphConfiguration*>  gc = CAP::GraphConfiguration::createConfigurationPalette(n,dim);
-  for (int k=0;k<n;k++)
-    {
-    gc[k]->addParameter("xTitleSize",   0.08);
-    gc[k]->addParameter("xTitleOffset", 0.8);
-    gc[k]->addParameter("yTitleSize",   0.08);
-    gc[k]->addParameter("yTitleOffset", 0.8);
-    gc[k]->addParameter("xLabelSize",   0.07);
-    gc[k]->addParameter("yLabelSize",   0.07);
-    gc[k]->addParameter("lineColor",    41+k);
-    gc[k]->addParameter("markerColor",  41+k);
-    gc[k]->addParameter("markerStyle",  kFullSquare);
-    gc[k]->addParameter("markerSize",   0.9);
-    }
-  return gc;
-}
-
-CAP::GraphConfiguration* create1DGraphConfiguration(double size= 0.07)
-{
-  CAP::GraphConfiguration * gc = new CAP::GraphConfiguration(1,0);
-  gc->addParameter("markerColor",  kBlack);
-  gc->addParameter("markerStyle",  kFullSquare);
-  gc->addParameter("markerSize",   1.2);
-  gc->addParameter("xLabelSize",   size);
-  gc->addParameter("xLabelSize",   0.06);
-  gc->addParameter("yTitleSize",   size);
-  gc->addParameter("yTitleOffset", 0.7);
-  gc->addParameter("yLabelSize",   0.07);
-  return gc;
-}
-
-
-CAP::GraphConfiguration* create2DGraphConfiguration(double size= 0.07)
-{
-  CAP::GraphConfiguration * gc = new CAP::GraphConfiguration(2,0);
-  gc->addParameter("xTitleOffset",  1.2);
-  gc->addParameter("xTitleSize",   size);
-  gc->addParameter("xLabelOffset", 0.01);
-  gc->addParameter("xLabelSize",   size);
-
-  gc->addParameter("yTitleOffset", 1.2);
-  gc->addParameter("yTitleSize",   size);
-  gc->addParameter("yLabelOffset", 0.01);
-  gc->addParameter("yLabelSize",   size);
-
-  gc->addParameter("zTitleOffset", 1.2);
-  gc->addParameter("zTitleSize",   size);
-  gc->addParameter("zLabelOffset", 0.01);
-  gc->addParameter("zLabelSize",   size);
-  return gc;
-}
 
 TString makeName(const TString & s1, const TString & s2)
 {
@@ -322,117 +130,10 @@ TString makeName(const TString & s1, const TString & s2, const TString & s3, con
 }
 
 
-void rebin2D(TH2 * h2)
+int PlotBF_version3()
 {
-  h2->Rebin2D(4,2);
-  h2->Scale(0.25);
-}
 
-void createSumGraphs(vector<TGraph*> & source, vector<TGraph*> & target)
-{
-  TGraph * g;
-  TGraph * gs;
-  for (int iGraph=0; iGraph<source.size(); iGraph++)
-    {
-    g = source[iGraph];
-    if (iGraph==0)
-      {
-      gs = (TGraph *)g->Clone();
-      }
-    else
-      {
-      gs = sumGraphs(gs, g);
-      }
-    target.push_back(gs);
-    }
-}
-
-
-
-int plotSet(CAP::Plotter * plotter,
-            const TString & inputPath,
-            vector<TString> & histoInputFileNames,
-            vector<int>     & balFct_Types,
-            vector<TString> & balFct_DeltaYDeltaPhi_Histo_Names,
-            vector<TString> & balFct_DeltaY_Histo_Names,
-            vector<TString> & balFct_DeltaPhi_Histo_Names,
-            vector<CAP::LegendConfiguration*> & balFct_LegendConfigs,
-            vector<double>  & balFct_Minima,
-            vector<double>  & balFct_Maxima,
-            const TString   & outFileNameBase,
-            bool rebin         = false,
-            int  rapidityType  = 1,
-            int  plot2D        = 1,
-            int  plot1D        = 1,
-            int  plot1DType    = 0,
-            int  plot1DHighRes = 0,
-            int  plotWidths    = 1,
-            int  plotIntegralVsLogY=1)
-{
-  CAP::CanvasConfiguration landscapeLinear(CAP::CanvasConfiguration::LandscapeWide,CAP::CanvasConfiguration::Linear);
-  CAP::CanvasConfiguration landscapeLogX(CAP::CanvasConfiguration::Landscape,CAP::CanvasConfiguration::LogX);
-  CAP::CanvasConfiguration landscapeLogY(CAP::CanvasConfiguration::LandscapeWide,CAP::CanvasConfiguration::LogY);
-  vector<CAP::GraphConfiguration*>  graphConfigurations1D = createGraphConfigurationPalette(15,1);
-  CAP::GraphConfiguration * graphConfiguration2D    = create2DGraphConfiguration(0.07);
-  CAP::GraphConfiguration * widthGraphConfiguration = create1DGraphConfiguration();
-
-  vector<TH2*>    balFct1Bar2_DeltaYDeltaPhi_Histos;
-  vector<TH1*>    balFct1Bar2_DeltaY_Histos;
-  vector<TH1*>    balFct1Bar2_DeltaPhi_Histos;
-  vector<TGraph*> balFct1Bar2_Integral_DeltaY_Graphs;
-  vector<TGraph*> balFct1Bar2_IntegralSum_DeltaY_Graphs;
-  vector<TString> balFct1Bar2_DeltaYDeltaPhi_Names;
-  vector<TString> balFct1Bar2_DeltaY_Names;
-  vector<TString> balFct1Bar2_DeltaPhi_Names;
-  vector<TString> balFct1Bar2_Integral_DeltaY_Names;
-
-  vector<TH2*>    balFct12Bar_DeltaYDeltaPhi_Histos;
-  vector<TH1*>    balFct12Bar_DeltaY_Histos;
-  vector<TH1*>    balFct12Bar_DeltaPhi_Histos;
-  vector<TGraph*> balFct12Bar_Integral_DeltaY_Graphs;
-  vector<TGraph*> balFct12Bar_IntegralSum_DeltaY_Graphs;
-
-  vector<TString> balFct12Bar_DeltaYDeltaPhi_Names;
-  vector<TString> balFct12Bar_DeltaY_Names;
-  vector<TString> balFct12Bar_DeltaPhi_Names;
-  vector<TString> balFct12Bar_Integral_DeltaY_Names;
-
-  vector<TH2*>    balFct12s_DeltaYDeltaPhi_Histos;
-  vector<TH1*>    balFct12s_DeltaY_Histos;
-  vector<TH1*>    balFct12s_DeltaPhi_Histos;
-  vector<TGraph*> balFct12s_Integral_DeltaY_Graphs;
-  vector<TGraph*> balFct12s_IntegralSum_DeltaY_Graphs;
-  vector<TString> balFct12s_DeltaYDeltaPhi_Names;
-  vector<TString> balFct12s_DeltaY_Names;
-  vector<TString> balFct12s_DeltaPhi_Names;
-  vector<TString> balFct12s_Integral_DeltaY_Names;
-
-  TString DeltaY_Name    = "DeltaY";
-  TString DeltaPhi_Name  = "DeltaPhi";
-  TString DeltaY_Title   = "#Delta y";
-  TString DeltaPhi_Title = "#Delta #varphi";
-
-  TString balFct_Name;
-  TString balFct_Integral_Name;
-  TString balFct_IntegralSum_Name;
-  TString balFct_DeltaYDeltaPhi_Name;
-  TString balFct_DeltaY_Name;
-  TString balFct_DeltaPhi_Name;
-  TString balFct_Integral_DeltaY_Name;
-  TString balFct_IntegralSum_DeltaY_Name;
-  TString balFct_Title;
-  TString balFct_Integral_Title;
-  TString balFct_IntegralSum_Title;
-
-  TString prefix = "";
-
-  double minRapidity     = -20.0;
-  double maxRapidity     =  20.0;
-  double minRapidityInt  =  0.0;
-  double maxRapidityInt  =  20.0;
-  double etaLow   =  0.1;
-  double etaHigh  =  maxRapidityInt-0.05;
-  double etaStep  =  0.2;
+  
 
   if (plot1DHighRes>0)
     {
@@ -451,22 +152,8 @@ int plotSet(CAP::Plotter * plotter,
   cout << "minRapidity......:" << minRapidity << endl;
   cout << "maxRapidity......:" << maxRapidity << endl;
 
-  for (unsigned int iFile=0; iFile<histoInputFileNames.size(); iFile++)
-    {
-    cout << " iFile  ==  " << iFile << endl;
-    TFile * fptr =  openRootFile(plotter,inputPath,histoInputFileNames[iFile]);
-    if (!fptr) return -1;
-    TFile & f = *fptr;
-    TH2 * h2  = plotter->getHistogramCollection().loadH2(f,balFct_DeltaYDeltaPhi_Histo_Names[iFile]);
-    if (!h2)  return -1;
-    if (rebin) rebin2D(h2);
-    double dx = h2->GetXaxis()->GetBinWidth(1);
-    double dy = h2->GetYaxis()->GetBinWidth(1);
-    h2->Scale(1.0/dy);
-    TH1 * h1x = plotter->getHistogramCollection().loadH1(f,balFct_DeltaY_Histo_Names[iFile]);
-    if (!h1x)  return -1;
-    TH1 * h1y = plotter->getHistogramCollection().loadH1(f,balFct_DeltaPhi_Histo_Names[iFile]);
-    if (!h1y)  return -1;
+
+
 
     switch (balFct_Types[iFile])
       {
@@ -541,8 +228,7 @@ int plotSet(CAP::Plotter * plotter,
 
   if (plotWidths)
     {
-    vector<double>  rmsWidths;
-    vector<double>  rmsWidthErrors;
+
 
 //    balFct12s_Width_name = "PythiaWidthsVsAcceptance";
 //    TH1 * balFct12s_Width_Histos = makeHistoWithNames(balFct12s_Width_name, widthTitles, rmsWidths, rmsWidthErrors);
@@ -647,6 +333,7 @@ int plotSet(CAP::Plotter * plotter,
 
       createSumGraphs(balFct12s_Integral_DeltaY_Graphs,balFct12s_IntegralSum_DeltaY_Graphs);
 
+      plotBf2D(bf)
       plotter->plot(balFct_DeltaY_Name,landscapeLinear, graphConfigurations1D, *balFct_LegendConfigs[1],
                     balFct12s_DeltaY_Histos,
                     DeltaY_Title, minRapidity, maxRapidity,
@@ -672,102 +359,30 @@ int plotSet(CAP::Plotter * plotter,
   return 0;
 }
 
-int PlotBFPiKP_version2()
+
+
+
+// setOption == 0 B2 based BalcFct
+// setOption == 1 A2 based BalcFct
+//
+void setBfOption(int setOption,
+                 TString & outputPathBase,
+                 TString & outputPath,
+                 TString & outFileNameBase,
+                 vector<TString> & corrNames,
+                 vector<double>  & balFct_Minima,
+                 vector<double>  & balFct_Maxima)
 {
-  bool doPrint  = true;
-  bool printGif = 0;
-  bool printPdf = 1;
-  bool printPng = 0;
-  bool printSvg = 0;
-  bool printC   = 1;
-  bool useColor = true;
-  bool rebin    = false;
-  int  rapidityType       = 1;
-  int  plot2D             = 0;
-  int  plot1D             = 1;
-  int  plot1DHighRes      = 0;
-  int  plotWidths         = 0;
-  int  plotIntegralVsLogY = 1;
-  // 0 : HP, HM
-  // 1 : Pi, K, P
-  // 2 : Baryons
-  // 3 : Strange particles
-  int  speciesSet = 1;
-  // 0 : B2 based correlations
-  // 1 : A2 based correlations
-  int  setOption = 1;
-
-
-  TString includeBasePath = getenv("CAP_SRC");
-  loadBase(includeBasePath);
-//  CAP::MessageLogger::reportLevel infoLevel = CAP::MessageLogger::Info;
-//  CAP::MessageLogger::reportLevel debugLevel = CAP::MessageLogger::Info;
-//  CAP::MessageLogger::reportLevel selectLevel = infoLevel;
-
-
-  TString inputPath       = "/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/";
-  TString inFileName      = "PP/13000/PiKp/y10/PairGenBalFctSum0TO9.root";
-  TString outputPathBase  = "/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/";
-  TString outputPath;
-  TString titleBase       = "#sqrt{s}=13.0 TeV; ";
-  TString histoNameBase   = "PairGen_All_";
-
-  vector<TString> histoInputFileNames;
-  vector<TString> balFct_DeltaYDeltaPhi_Histo_Names;
-  vector<TString> balFct_DeltaY_Histo_Names;
-  vector<TString> balFct_DeltaPhi_Histo_Names;
-  vector<TString> balFct_Titles;
-  vector<TString> balFct_Output_Names;
-  vector<int>     balFct_Types; // 0, 1, 2 : B1Bar2, B12Bar, Bs
-  vector<double>  balFct_Minima;
-  vector<double>  balFct_Maxima;
-  TString         outFileNameBase;
-  TString         outFileNameBase2;
-  TString         balFct_Output_Name;
-
-  // create 15 legends:
-  // B1Bar2(Y), B1Bar2(phi), I1Bar2, I1Bar2Sum, B1Bar2Width
-  // B12Bar(Y), B12Bar(phi), I12Bar, I12BarSum, B12BarWidth
-  // B12s(Y),   B12s(phi),   I12s,   I12sSum,   B12sWidth
-  vector<CAP::LegendConfiguration*> balFct_LegendConfigs;
-
-  vector<TString> speciesNames;
-  vector<TString> speciesTitles;
-  vector<TString> corrNames;
-
-  switch (speciesSet)
-    {
-      case 0:
-      break;
-
-      case 1:
-      speciesNames.push_back(TString("PiP"));  speciesTitles.push_back(TString("#pi"));
-      speciesNames.push_back(TString("KP"));   speciesTitles.push_back(TString("K"));
-      speciesNames.push_back(TString("PP"));   speciesTitles.push_back(TString("p"));
-      break;
-
-      case 2:
-      break;
-    }
-  int nSpecies = speciesNames.size();
-
-  CAP::Configuration plotterConfig;
-  CAP::Plotter * plotter = new CAP::Plotter("Plotter",plotterConfig);
-  plotter->setDefaultOptions(useColor);
-
-  // setOption == 0 B2 based BalcFct
-  // setOption == 1 A2 based BalcFct
-  //
   switch (setOption)
     {
       case 0:
       {
-      outFileNameBase = "PYTHIA_pp_13.0TeV_B2Based";
       corrNames.push_back(TString("_B2_DyDphi_shft_B2_1Bar_2"));
       corrNames.push_back(TString("_B2_DyDphi_shft_B2_1_2Bar"));
       corrNames.push_back(TString("_B2_DyDphi_shft_B2_12Sum"));
       outputPath = outputPathBase;
       outputPath += "/PiKP/Y10/B2Derived/";
+      outFileNameBase = "PYTHIA_pp_13.0TeV_B2Based";
       // B vs Y,Phi
       balFct_Minima.push_back(-0.05);
       balFct_Maxima.push_back( 0.4);
@@ -817,6 +432,297 @@ int PlotBFPiKP_version2()
       balFct_Maxima.push_back( 1.19);
       }
     }
+}
+
+
+
+
+
+class BfPlotter
+{
+public:
+// methods
+  BfPlotter();
+  ~BfPlotter();
+  void plot();
+
+  void selectSources(int option=0);
+  void createSpeciesName(int speciesSet=0);
+  void createAxisNames(int option = 0);
+  void createObservableNames(int option);
+
+  CAP::LegendConfiguration * createLegendConfiguration(float xLow, float xHigh,
+                                                      float yLow, float yHigh,
+                                                      float fontSize=0.05,
+                                                      bool useLegend=true,
+                                                      bool useLabels=true,
+                                                      bool useTitles=true,
+                                                       bool textIndex=42);
+
+// data members
+  bool doPrint  = true;
+  bool printGif = 0;
+  bool printPdf = 1;
+  bool printPng = 0;
+  bool printSvg = 0;
+  bool printC   = 1;
+  bool useColor = true;
+  bool rebin             = false;
+  int  rapidityType      = 1;
+  bool doPlot1Bar2       = true;
+  bool doPlot12Bar       = false;
+  bool doPlot12s         = false;
+  bool doPlotBf2D        = false;
+  bool doPlotBfDy        = true;
+  bool doPlotBfDphi      = false;
+  bool doPlotIDy         = false;
+  bool doPlotIsumDy      = false;
+  bool doPlotBfWidthDphi = false;
+  bool doPlotBfWidthDy   = false;
+  int  plotIntegralVsLogY = 1;
+
+  // 0 : HP, HM
+  // 1 : Pi, K, P
+  // 2 : Baryons
+  // 3 : Strange particles
+  int  speciesSet = 1;
+  // 0 : B2 based correlations
+  // 1 : A2 based correlations
+  int  setOption = 1;
+
+
+  TString inputPath;
+  TString outputPathBase;
+  TString outputPath;
+  TString titleBase;
+  TString histoNameBase;
+  vector<TString> histoInputFileNames;
+  vector<TString> balFct_DeltaYDeltaPhi_Histo_Names;
+  vector<TString> balFct_DeltaY_Histo_Names;
+  vector<TString> balFct_DeltaPhi_Histo_Names;
+  vector<TString> balFct_Titles;
+  vector<TString> balFct_Output_Names;
+  vector<int>     balFct_Types; // 0, 1, 2 : B1Bar2, B12Bar, Bs
+  vector<double>  balFct_Minima;
+  vector<double>  balFct_Maxima;
+  TString         outFileNameBase;
+  TString         outFileNameBase2;
+  TString         balFct_Output_Name;
+  vector<TString> speciesNames;
+  vector<TString> speciesTitles;
+  vector<TString> corrNames;
+  vector<CAP::LegendConfiguration*> balFct_LegendConfigs;
+
+  vector<TString> bf_Names,
+  vector<TString> bf_Integral_Names,
+  vector<TString> bf_IntegralSum_Name,
+  TString DeltaY_Name,
+  TString DeltaPhi_Name,
+  TString DeltaY_Title,
+  TString DeltaPhi_Title
+  TString DeltaYWidth_Title;
+  TString DeltaPhiWidth_Title;
+
+  vector<TString> & speciesNames;
+  vector<TString> & speciesTitles;
+
+  vector<TString> & corrNames;
+  int iCorrType;
+  vector<TString> & pairNames;
+  vector<TString> & pairTitles;
+  vector<TString> & pairNameCorrs;
+
+  vector<double>  rmsWidths;
+  vector<double>  rmsWidthErrors;
+
+};
+
+void BfPlotter::createSpeciesName(int speciesSet)
+{
+  switch (speciesSet)
+    {
+      case 0:
+      speciesNames.push_back(TString("HP"));  speciesTitles.push_back(TString("h^{+}"));
+      speciesNames.push_back(TString("HM"));  speciesTitles.push_back(TString("h^{+}"));
+      break;
+
+      case 1:
+      speciesNames.push_back(TString("PiP"));  speciesTitles.push_back(TString("#pi^{+}"));
+      speciesNames.push_back(TString("KP"));   speciesTitles.push_back(TString("K"));
+      speciesNames.push_back(TString("PP"));   speciesTitles.push_back(TString("p"));
+      speciesNames.push_back(TString("PiM"));  speciesTitles.push_back(TString("#pi"));
+      speciesNames.push_back(TString("KM"));   speciesTitles.push_back(TString("K"));
+      speciesNames.push_back(TString("PM"));   speciesTitles.push_back(TString("p"));
+      break;
+
+      case 2:
+      break;
+    }
+}
+
+void BfPlotter::createSpeciesPairNames()
+{
+  int nSpecies = speciesNames.size();
+  for (int iSpecies2=0; iSpecies2<nSpecies; iSpecies2++)
+    {
+    for (int iSpecies1=0; iSpecies1<nSpecies; iSpecies1++)
+      {
+      TString pairName      = (speciesNames[iSpecies1]+"_")+speciesNames[iSpecies2];
+      TString pairTitle     = speciesTitles[iSpecies1] + speciesTitles[iSpecies2];
+      TString pairNameCorr  = pairName+corrNames[iCorrType];
+      pairNames.push_back(pairName);
+      pairTitles.push_back(pairTitle);
+      pairNameCorrs.push_back(pairNameCorr);
+      balFct_Titles.push_back(                     titleBase+pairTitle);
+      balFct_Types.push_back(                      iCorrType);
+      balFct_DeltaYDeltaPhi_Histo_Names.push_back( histoNameBase+pairNameCorr     );
+      balFct_DeltaY_Histo_Names.push_back(         histoNameBase+pairNameCorr+"_x");
+      balFct_DeltaPhi_Histo_Names.push_back(       histoNameBase+pairNameCorr+"_y");
+      }
+    }
+}
+
+
+
+void BfPlotter::selectSources(int option)
+{
+  switch (option)
+    {
+      case 1:
+      {
+      inputPath       = "/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/";
+      histoInputFileNames.push_back(TString("PP/13000/PiKp/y10/PairGenBalFctSum0TO9.root"));
+      outputPathBase  = "/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/";
+      outputPath;
+      titleBase       = "#sqrt{s}=13.0 TeV; ";
+      histoNameBase   = "PairGen_All_";
+
+      histoInputFileNames;
+      vector<TString> balFct_DeltaYDeltaPhi_Histo_Names;
+      vector<TString> balFct_DeltaY_Histo_Names;
+      vector<TString> balFct_DeltaPhi_Histo_Names;
+      vector<TString> balFct_Titles;
+      vector<TString> balFct_Output_Names;
+      vector<int>     balFct_Types; // 0, 1, 2 : B1Bar2, B12Bar, Bs
+      vector<double>  balFct_Minima;
+      vector<double>  balFct_Maxima;
+      TString         outFileNameBase;
+      TString         outFileNameBase2;
+      TString         balFct_Output_Name;
+
+      break;
+      }
+    }
+
+}
+
+void BfPlotter::createAxisNames(int option)
+{
+  switch (option)
+    {
+      case 0:
+      DeltaY_Name          = "DeltaY";
+      DeltaPhi_Name        = "DeltaPhi";
+      DeltaY_Title         = "#Delta y";
+      DeltaPhi_Title       = "#Delta #varphi";
+      DeltaYWidth_Title    = "#sigma_{#Delta y}";
+      DeltaPhiWidth_Title  = "#sigma_{#Delta #varphi}";
+      break;
+
+      case 1:
+      DeltaY_Name          = "DeltaEta";
+      DeltaPhi_Name        = "DeltaPhi";
+      DeltaY_Title         = "#Delta #eta";
+      DeltaPhi_Title       = "#Delta #varphi";
+      DeltaYWidth_Title    = "#sigma_{#Delta #eta}";
+      DeltaPhiWidth_Title  = "#sigma_{#Delta #varphi}";
+      break;
+
+    }
+}
+
+
+void BfPlotter::createObservableNames(int option)
+{
+  bf_Names.push_back(TString("B1Bar2"));
+  bf_Names.push_back(TString("B12Bar"));
+  bf_Names.push_back(TString("B12s"));
+
+  bf_Integral_Names.push_back(TString("I1Bar2"));
+  bf_Integral_Names.push_back(TString("I12Bar"));
+  bf_Integral_Names.push_back(TString("I12s"));
+
+  bf_IntegralSum_Names.push_back(TString("I1Bar2Sum"));
+  bf_IntegralSum_Names.push_back(TString("I2BarSum"));
+  bf_IntegralSum_Names.push_back(TString("I2sSum"));
+}
+
+
+
+
+CAP::LegendConfiguration * BfPlotter::createLegendConfiguration(float xLow, float xHigh,
+                                                                float yLow, float yHigh,
+                                                                float fontSize=0.05,
+                                                                bool useLegend=true,
+                                                                bool useLabels=true,
+                                                                bool useTitles=true,
+                                                                bool textIndex=42)
+{
+  lc = new CAP::LegendConfiguration(xLow,xHigh,yLow,yHigh,fontSize);
+  lc->addParameter("useLegend",useLegend);
+  lc->addParameter("useLabels",useLabels);
+  lc->addParameter("useTitles",useTitles);
+  lc->addParameter("textIndex",textIndex);
+}
+
+void plot()
+{
+  selectSources(sourceOption);
+  setBfOption(setOption);
+  createSpeciesName(speciesSet);
+  createSpeciesPairNames();
+  createAxisNames(axisOption);
+  createObservableNames(observableNameOption);
+
+}
+
+
+int PlotBF_version3()
+{
+  TString includeBasePath = getenv("CAP_SRC");
+  cout << "PlotBF() Loading *hpp and lib from: " << includeBasePath << endl;
+  loadBase(includeBasePath);
+
+  BfPlotter * bfPlotter = new BfPlotter();
+  bfPlotter->sourceOption = 0;
+  bfPlotter->setOption    = 0;
+  bfPlotter->speciesSet = 0;
+  bfPlotter->observableNameOption = 0;
+  bfPlotter->plot();
+
+
+  createSpeciesName(speciesSet, speciesNames, speciesTitles);
+  setBfOption(setOption,outputPathBase, outputPath,outFileNameBase,corrNames,balFct_Minima,balFct_Maxima);
+
+  createSpeciesPairNames(histoNameBase,
+                         titleBase,
+                         speciesNames,
+                         speciesTitles,
+                         corrNames,
+                         iCorrType,
+                         pairNames,
+                         pairTitles,
+                         pairNameCorrs,
+                         balFct_Titles,
+                         balFct_Types,
+                         balFct_DeltaYDeltaPhi_Histo_Names,
+                         balFct_DeltaY_Histo_Names,
+                         balFct_DeltaPhi_Histo_Names);
+  CAP::Configuration plotterConfig;
+  CAP::Plotter * plotter = new CAP::Plotter("Plotter",plotterConfig);
+  plotter->setDefaultOptions(useColor);
+
+
 
   for (int iType=2; iType<3; iType++)
     {
@@ -834,70 +740,101 @@ int PlotBFPiKP_version2()
       balFct_Output_Name = makeName(outFileNameBase,speciesNames[iSpecies2]);
       balFct_LegendConfigs.clear();
 
-      // B2D
-      CAP::LegendConfiguration* lc;
-      lc = new CAP::LegendConfiguration(0.65, 0.85, 0.5, 0.9, 0.05);
-      lc->addParameter("useLegend",false);
-      lc->addParameter("useLabels",true);
-      lc->addParameter("useTitles",false);
-      lc->addParameter("textIndex",42);
-      balFct_LegendConfigs.push_back(lc);
-      // B vs Delta y
-      lc = new CAP::LegendConfiguration(0.65, 0.85, 0.5, 0.9, 0.06);
-      lc->addParameter("useLegend",true);
-      lc->addParameter("useLabels",true);
-      lc->addParameter("useTitles",false);
-      lc->addParameter("textIndex",42);
-      balFct_LegendConfigs.push_back(lc);
-      // B vs Delta phi
-      lc = new CAP::LegendConfiguration(0.65, 0.85, 0.5, 0.9, 0.06);
-      lc->addParameter("useLegend",true);
-      lc->addParameter("useLabels",true);
-      lc->addParameter("useTitles",false);
-      lc->addParameter("textIndex",42);
-      balFct_LegendConfigs.push_back(lc);
-      // I vs Delta y
-      lc = new CAP::LegendConfiguration(0.2, 0.45, 0.5, 0.8, 0.06);
-      lc->addParameter("useLegend",true);
-      lc->addParameter("useLabels",true);
-      lc->addParameter("useTitles",false);
-      lc->addParameter("textIndex",42);
-      balFct_LegendConfigs.push_back(lc);
-      // Isum vs Delta y
-      lc = new CAP::LegendConfiguration(0.2, 0.45, 0.5, 0.8, 0.06);
-      lc->addParameter("useLegend",true);
-      lc->addParameter("useLabels",true);
-      lc->addParameter("useTitles",false);
-      lc->addParameter("textIndex",42);
-      balFct_LegendConfigs.push_back(lc);
+      // B2D, B vs Delta y, B vs Delta phi, I vs Delta y, Isum vs Delta y
+      balFct_LegendConfigs.push_back( createLegendConfiguration(0.65, 0.85, 0.5, 0.9, 0.05,false,true,false,42) );
+      balFct_LegendConfigs.push_back( createLegendConfiguration(0.65, 0.85, 0.5, 0.9, 0.05,true,true,false,42) );
+      balFct_LegendConfigs.push_back( createLegendConfiguration(0.65, 0.85, 0.5, 0.9, 0.05,true,true,false,42) );
+      balFct_LegendConfigs.push_back( createLegendConfiguration(0.20, 0.45, 0.5, 0.8, 0.06,true,true,false,42) );
+      balFct_LegendConfigs.push_back( createLegendConfiguration(0.20, 0.45, 0.5, 0.8, 0.06,true,true,false,42) );
 
-      for (int iSpecies1=0; iSpecies1<nSpecies; iSpecies1++)
+
+
+
+
+      CAP::CanvasConfiguration landscapeLinear(CAP::CanvasConfiguration::LandscapeWide,CAP::CanvasConfiguration::Linear);
+      CAP::CanvasConfiguration landscapeLogX(CAP::CanvasConfiguration::Landscape,CAP::CanvasConfiguration::LogX);
+      CAP::CanvasConfiguration landscapeLogY(CAP::CanvasConfiguration::LandscapeWide,CAP::CanvasConfiguration::LogY);
+      vector<CAP::GraphConfiguration*>  graphConfigurations1D = createGraphConfigurationPalette(15,1);
+      CAP::GraphConfiguration * graphConfiguration2D    = create2DGraphConfiguration(0.07);
+      CAP::GraphConfiguration * widthGraphConfiguration = create1DGraphConfiguration();
+
+
+      TString DeltaY_Name    = "DeltaY";
+      TString DeltaPhi_Name  = "DeltaPhi";
+      TString DeltaY_Title   = "#Delta y";
+      TString DeltaPhi_Title = "#Delta #varphi";
+      TString prefix = "";
+      double minRapidity     = -20.0;
+      double maxRapidity     =  20.0;
+      double minRapidityInt  =  0.0;
+      double maxRapidityInt  =  20.0;
+      double etaLow   =  0.1;
+      double etaHigh  =  maxRapidityInt-0.05;
+      double etaStep  =  0.2;
+
+      vector<BalFctPlots *>  bfPLots;
+
+      if (doPlot1Bar2)
         {
-        TString pairTitle     = speciesTitles[iSpecies1] + speciesTitles[iSpecies2];
-        TString pairName      = (speciesNames[iSpecies1]+"_")+speciesNames[iSpecies2];
-        TString pairNameCorr  = pairName+corrNames[iType];
-        for (int k=0;k<5;k++)
-          {
-          balFct_LegendConfigs[k]->addLegend(pairTitle);
-          }
-        histoInputFileNames.push_back(               inFileName);
-        balFct_Titles.push_back(                     titleBase+pairTitle);
-        balFct_Types.push_back(                      iType);
-        balFct_DeltaYDeltaPhi_Histo_Names.push_back( histoNameBase+pairNameCorr     );
-        balFct_DeltaY_Histo_Names.push_back(         histoNameBase+pairNameCorr+"_x");
-        balFct_DeltaPhi_Histo_Names.push_back(       histoNameBase+pairNameCorr+"_y");
+        BalFctPlots * plots = new BalFctPlots();
+        plots->addPlot(file, bf_rebin2D,
+                       makeName(prefix,bf_Names[0], DeltaY_Name,DeltaPhi_Name);,
+                       makeTitle(bf_DeltaYDeltaPhi_Title),
+                       makeName(prefix,bf_Names[0], DeltaY_Name),
+                       makeTitle(bf_DeltaYDeltaPhi_Title),
+                       makeName(prefix,bf_Names[0], DeltaY_Name),
+                       makeTitle(bf_DeltaYDeltaPhi_Title),
+                       makeName(bf_Integral_DeltaY_Name),
+                       makeName(bf_Integral_DeltaY_Title ));
+        plots->loadHistograms();
+        bfPLots.push_back(plots);
         }
-      plotSet(plotter,
-              inputPath,
-              histoInputFileNames,
-              balFct_Types,
-              balFct_DeltaYDeltaPhi_Histo_Names,balFct_DeltaY_Histo_Names,balFct_DeltaPhi_Histo_Names,
-              balFct_LegendConfigs,
-              balFct_Minima, balFct_Maxima,
-              balFct_Output_Name,
-              rebin,rapidityType,plot2D,plot1D,plot1DHighRes,plotWidths,plotIntegralVsLogY);
-      }
-    }
+      if (doPlot12Bar)
+        {
+        BalFctPlots * plots = new BalFctPlots();
+        plots->addPlot(file, bf_rebin2D,
+                       makeName(prefix,bf_Names[0], DeltaY_Name,DeltaPhi_Name);,
+                       makeTitle(bf_DeltaYDeltaPhi_Title),
+                       makeName(prefix,bf_Names[0], DeltaY_Name),
+                       makeTitle(bf_DeltaYDeltaPhi_Title),
+                       makeName(prefix,bf_Names[0], DeltaY_Name),
+                       makeTitle(bf_DeltaYDeltaPhi_Title),
+                       makeName(bf_Integral_DeltaY_Name),
+                       makeName(bf_Integral_DeltaY_Title ));
+        plots->loadHistograms();
+        bfPLots.push_back(plots);
+        }
+
+      if (doPlot12s)
+        {
+        BalFctPlots * plots = new BalFctPlots();
+        plots->addPlot(file, bf_rebin2D,
+                       makeName(prefix,bf_Names[0], DeltaY_Name,DeltaPhi_Name);,
+                       makeTitle(bf_DeltaYDeltaPhi_Title),
+                       makeName(prefix,bf_Names[0], DeltaY_Name),
+                       makeTitle(bf_DeltaYDeltaPhi_Title),
+                       makeName(prefix,bf_Names[0], DeltaY_Name),
+                       makeTitle(bf_DeltaYDeltaPhi_Title),
+                       makeName(bf_Integral_DeltaY_Name),
+                       makeName(bf_Integral_DeltaY_Title ));
+        plots->loadHistograms();
+        bfPLots.push_back(plots);
+        }
+
+
+
+      TString bfPlotBaseName = "Bftest";
+      int nSets = bfPLots.size();
+      for (int k=0;k<nSets;k++)
+        {
+        if (doPlotBf2D)        plotBf2D(bfPlotBaseName,bfPlots[k],landscapeLinear, graphConfigurations2D, *balFct_LegendConfigs[k]);
+        if (doPlotBfDy)        plotBfDy(bfPlotBaseName,bfPlots[k],landscapeLinear, graphConfigurations1D, *balFct_LegendConfigs[k]);
+        if (doPlotBfDphi)      plotBfDphi(bfPlotBaseName,bfPlots[k],landscapeLinear, graphConfigurations1D, *balFct_LegendConfigs[k]);
+        if (doPlotIDy)         plotIDy(bfPlotBaseName,bfPlots[k],landscapeLinear, graphConfigurations1D, *balFct_LegendConfigs[k]);
+        if (doPlotIsumDy)      plotIsumDy(bfPlotBaseName,bfPlots[k],landscapeLinear, graphConfigurations1D, *balFct_LegendConfigs[k]);
+        if (doPlotBfWidthDphi) plotBfWidthDphi(bfPlotBaseName,bfPlots[k],landscapeLinear, graphConfigurations1D, *balFct_LegendConfigs[k]);
+        if (doPlotBfWidthDy)   plotBfWidthDy(bfPlotBaseName,bfPlots[k],landscapeLinear, graphConfigurations1D, *balFct_LegendConfigs[k]);
+        }
 
   if (doPrint) plotter->printAllCanvas(outputPath, printGif, printPdf, printSvg, printPng, printC);
   return 0;
@@ -911,9 +848,6 @@ void loadBase(const TString & includeBasePath)
   gSystem->Load(includePath+"Task.hpp");
   gSystem->Load(includePath+"TaskIterator.hpp");
   gSystem->Load(includePath+"Collection.hpp");
-//  gSystem->Load(includePath+"CanvasCollection.hpp");
-//  gSystem->Load(includePath+"GraphConfiguration.hpp");
-//  gSystem->Load(includePath+"CanvasConfiguration.hpp");
   gSystem->Load(includePath+"HistogramCollection.hpp");
   gSystem->Load(includePath+"Histograms.hpp");
   gSystem->Load(includePath+"Particle.hpp");

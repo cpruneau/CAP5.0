@@ -389,7 +389,8 @@ void RunAnalysis::configure()
       {
       if (reportInfo(__FUNCTION__)) cout << "Setting up BalFct" << std::endl;
 
-      if (getValueBool("Analysis:RunBalFctGen") && getValueBool("Analysis:RunPartPairAnalysisGen"))
+     if (getValueBool("RunBalFctGen") && getValueBool("Analysis:RunPartPairAnalysisGen"))
+     //   if (getValueBool("RunBalFctGen") && getValueBool("RunPartPairAnalysisGen"))
         {
         Configuration & dConfig = * new Configuration(configuration);
         taskName       = "PairGen";

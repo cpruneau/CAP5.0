@@ -57,7 +57,9 @@ void CanvasCollection::createDirectory(const String & dirName)
 // =================================================
 // Create a canvas
 // =================================================
-TCanvas * CanvasCollection::createCanvas(const String & canvasName, const Configuration & configuration, int inc)
+TCanvas * CanvasCollection::createCanvas(const String & canvasName,
+                                         const Configuration & configuration,
+                                         int inc)
 {
   int xInc = inc*getCollectionSize();
   TCanvas * canvas = new TCanvas(canvasName,
@@ -73,13 +75,16 @@ TCanvas * CanvasCollection::createCanvas(const String & canvasName, const Config
   canvas->SetLeftMargin(  configuration.getValueDouble("windowLeftMargin") );
   canvas->SetBottomMargin(configuration.getValueDouble("windowBottomMargin") );
   canvas->SetTopMargin(   configuration.getValueDouble("windowTopMargin") );
-//  canvas->SetTheta(       configuration.getValueDouble("windowTheta") );
-//  canvas->SetPhi(         configuration.getValueDouble("windowPhi") );
-//
-//  canvas->SetFillColor(  configuration.getValueInt("windowFillColor") );
-//  canvas->SetFillStyle(  configuration.getValueInt("windowFillStyle") );
-//  canvas->SetBorderSize( configuration.getValueInt("windowBorderSize") );
-//  canvas->SetBorderMode( configuration.getValueInt("windowBorderMode") );
+  canvas->SetTicky(       configuration.getValueBool("useTickx") );
+  canvas->SetTickx(       configuration.getValueBool("useTicky") );
+  canvas->SetGridx(       configuration.getValueBool("useGridx") );
+  canvas->SetGridy(       configuration.getValueBool("useGridy") );
+  canvas->SetTheta(       configuration.getValueDouble("windowTheta") );
+  canvas->SetPhi(         configuration.getValueDouble("windowPhi") );
+  canvas->SetFillColor(   configuration.getValueInt("windowFillColor") );
+  canvas->SetFillStyle(   configuration.getValueInt("windowFillStyle") );
+  canvas->SetBorderSize(  configuration.getValueInt("windowBorderSize") );
+  canvas->SetBorderMode(  configuration.getValueInt("windowBorderMode") );
   append(canvas);
 
   return canvas;
@@ -121,7 +126,13 @@ TCanvas * CanvasCollection::createCanvasXX(int nx, int ny, const String & canvas
 // Print Canvas
 ////////////////////////////////////////////////////
 ///
-void CanvasCollection::printCanvas(TCanvas * canvas, const String & directoryName, bool printGif, bool printPdf, bool printSvg, bool printPng, bool printC)
+void CanvasCollection::printCanvas(TCanvas * canvas,
+                                   const String & directoryName,
+                                   bool printGif,
+                                   bool printPdf,
+                                   bool printSvg,
+                                   bool printPng,
+                                   bool printC)
 {
   createDirectory(directoryName);
   String fileName = directoryName;
@@ -132,16 +143,21 @@ void CanvasCollection::printCanvas(TCanvas * canvas, const String & directoryNam
   if (printSvg) canvas->Print(fileName+".svg");
   if (printPng) canvas->Print(fileName+".png");
   if (printC)   canvas->Print(fileName+".C");
-  //canvas->Print(fileName+".png");
 }
 
 // /////////////////////////////////////////////////
 // Print Canvases
 // /////////////////////////////////////////////////
-void CanvasCollection::printAllCanvas(const String & outputPath, bool printGif, bool printPdf, bool printSvg, bool printPng, bool printC)
+void CanvasCollection::printAllCanvas(const String & outputPath,
+                                      bool printGif,
+                                      bool printPdf,
+                                      bool printSvg,
+                                      bool printPng,
+                                      bool printC)
 {
-  for (int k=0; k<getNCanvas(); k++)
+  for (Size_t k=0; k<size(); k++)
     {
+    cout << "k:" << k << "   printing " << getObjectAt(k)->GetName() << "  to " << outputPath << endl;
     printCanvas(getObjectAt(k),outputPath,printGif,printPdf,printSvg,printPng,printC);
     }
 }

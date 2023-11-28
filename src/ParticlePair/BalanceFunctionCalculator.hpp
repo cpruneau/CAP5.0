@@ -145,28 +145,28 @@ public:
                                 TH2* obs_LS,
                                 HistogramGroup * histogramGroup);
 
-  virtual TH2* calculate_BalFct2(const TString & histoBaseName,
-                                 const TString & eventClassName,
-                                 const TString & particleName1,
-                                 const TString & particleName2,
-                                 const TString & obsName,
-                                 const TString & comboName,
-                                 TH1* rho1_1,
-                                 TH1* rho1_2,
-                                 TH2* obs_US,
-                                 TH2* obs_LS,
-                                 HistogramGroup * histogramGroup);
-
-  virtual TH2* calculate_BalFct3(const TString & histoBaseName,
-                                 const TString & eventClassName,
-                                 const TString & particleName1,
-                                 const TString & particleName2,
-                                 const TString & obsName,
-                                 const TString & comboName,
-                                 TH1* rho1_2,
-                                 TH2* obs_US,
-                                 TH2* obs_LS,
-                                 HistogramGroup * histogramGroup);
+//  virtual TH2* calculate_BalFct2(const TString & histoBaseName,
+//                                 const TString & eventClassName,
+//                                 const TString & particleName1,
+//                                 const TString & particleName2,
+//                                 const TString & obsName,
+//                                 const TString & comboName,
+//                                 TH1* rho1_1,
+//                                 TH1* rho1_2,
+//                                 TH2* obs_US,
+//                                 TH2* obs_LS,
+//                                 HistogramGroup * histogramGroup);
+//
+//  virtual TH2* calculate_BalFct3(const TString & histoBaseName,
+//                                 const TString & eventClassName,
+//                                 const TString & particleName1,
+//                                 const TString & particleName2,
+//                                 const TString & obsName,
+//                                 const TString & comboName,
+//                                 TH1* rho1_2,
+//                                 TH2* obs_US,
+//                                 TH2* obs_LS,
+//                                 HistogramGroup * histogramGroup);
 
   virtual TH2* calculate_BalFctSum(const TString & histoBaseName,
                                     const TString & eventClassName,

@@ -270,90 +270,90 @@ TH2* BalanceFunctionCalculator::calculate_BalFctSum(const TString & histoBaseNam
   return obs;
 }
 
-TH2* BalanceFunctionCalculator::calculate_BalFct2(const TString & histoBaseName,
-                                                  const TString & eventClassName,
-                                                  const TString & particleName1,
-                                                  const TString & particleName2,
-                                                  const TString & obsName,
-                                                  const TString & comboName,
-                                                  TH1* rho1_1,
-                                                  TH1* rho1_2,
-                                                  TH2* obs_US,
-                                                  TH2* obs_LS,
-                                                  HistogramGroup * histogramGroup)
-{
-  TString name = CAP::createName(histoBaseName,eventClassName,particleName1,particleName2,obsName,comboName);
-  TH2 * obs;
-  TH1 * obs_x;
-  TH1 * obs_y;
-  double rho1_1_Integral = rho1_1->Integral();
-  //double rho1_2_Integral = rho1_2->Integral();
+//TH2* BalanceFunctionCalculator::calculate_BalFct2(const TString & histoBaseName,
+//                                                  const TString & eventClassName,
+//                                                  const TString & particleName1,
+//                                                  const TString & particleName2,
+//                                                  const TString & obsName,
+//                                                  const TString & comboName,
+//                                                  TH1* rho1_1,
+//                                                  TH1* rho1_2,
+//                                                  TH2* obs_US,
+//                                                  TH2* obs_LS,
+//                                                  HistogramGroup * histogramGroup)
+//{
+//  TString name = CAP::createName(histoBaseName,eventClassName,particleName1,particleName2,obsName,comboName);
+//  TH2 * obs;
+//  TH1 * obs_x;
+//  TH1 * obs_y;
+//  double rho1_1_Integral = rho1_1->Integral();
+//  //double rho1_2_Integral = rho1_2->Integral();
+//
+////  double low  = rho1_1->GetXaxis()->GetXmin();
+////  double high = rho1_1->GetXaxis()->GetXmax();
+////  double yieldA = yieldA/(high-low)/CAP::Math::twoPi();
+////  double yieldB = yieldB/(high-low)/CAP::Math::twoPi();
+//
+//
+//  obs = (TH2*) obs_US->Clone();
+//  obs->SetName(name);
+//  obs->SetTitle(name);
+//  obs->Add(obs_LS, -1.0);
+//  obs->Scale(rho1_1_Integral);
+//  histogramGroup->push_back(obs);
+//
+//  name = CAP::createName(histoBaseName,eventClassName,particleName1,particleName2,obsName,comboName+"_x");
+//  obs_x = obs->ProjectionX();
+//  obs_x->SetName(name);
+//  obs_x->SetTitle(name);
+//  histogramGroup->push_back(obs_x);
+//
+//  name = CAP::createName(histoBaseName,eventClassName,particleName1,particleName2,obsName,comboName+"_y");
+//  obs_y = obs->ProjectionY();
+//  obs_y->SetName(name);
+//  obs_y->SetTitle(name);
+//  histogramGroup->push_back(obs_y);
+//
+//  return obs;
+//}
 
-//  double low  = rho1_1->GetXaxis()->GetXmin();
-//  double high = rho1_1->GetXaxis()->GetXmax();
-//  double yieldA = yieldA/(high-low)/CAP::Math::twoPi();
-//  double yieldB = yieldB/(high-low)/CAP::Math::twoPi();
-
-
-  obs = (TH2*) obs_US->Clone();
-  obs->SetName(name);
-  obs->SetTitle(name);
-  obs->Add(obs_LS, -1.0);
-  obs->Scale(rho1_1_Integral);
-  histogramGroup->push_back(obs);
-
-  name = CAP::createName(histoBaseName,eventClassName,particleName1,particleName2,obsName,comboName+"_x");
-  obs_x = obs->ProjectionX();
-  obs_x->SetName(name);
-  obs_x->SetTitle(name);
-  histogramGroup->push_back(obs_x);
-
-  name = CAP::createName(histoBaseName,eventClassName,particleName1,particleName2,obsName,comboName+"_y");
-  obs_y = obs->ProjectionY();
-  obs_y->SetName(name);
-  obs_y->SetTitle(name);
-  histogramGroup->push_back(obs_y);
-
-  return obs;
-}
-
-TH2* BalanceFunctionCalculator::calculate_BalFct3(const TString & histoBaseName,
-                                                  const TString & eventClassName,
-                                                  const TString & particleName1,
-                                                  const TString & particleName2,
-                                                  const TString & obsName,
-                                                  const TString & comboName,
-                                                  TH1* rho1_2 __attribute__((unused)),
-                                                  TH2* obs_US,
-                                                  TH2* obs_LS,
-                                                  HistogramGroup * histogramGroup)
-{
-  TString name = CAP::createName(histoBaseName,eventClassName,particleName1,particleName2,obsName,comboName);
-  TH2 * obs;
-  TH1 * obs_x;
-  TH1 * obs_y;
-  obs = (TH2*) obs_US->Clone();
-  obs->SetName(name);
-  obs->SetTitle(name);
-  obs->Add(obs_LS, -1.0);
-//  double rho1Integral = rho1_2->Integral("Width");
-//  obs->Scale(rho1Integral);
-  histogramGroup->push_back(obs);
-
-  name = CAP::createName(histoBaseName,eventClassName,particleName1,particleName2,obsName,comboName+"_x");
-  obs_x = obs->ProjectionX();
-  obs_x->SetName(name);
-  obs_x->SetTitle(name);
-  histogramGroup->push_back(obs_x);
-
-  name = CAP::createName(histoBaseName,eventClassName,particleName1,particleName2,obsName,comboName+"_y");
-  obs_y = obs->ProjectionY();
-  obs_y->SetName(name);
-  obs_y->SetTitle(name);
-  histogramGroup->push_back(obs_y);
-
-  return obs;
-}
+//TH2* BalanceFunctionCalculator::calculate_BalFct3(const TString & histoBaseName,
+//                                                  const TString & eventClassName,
+//                                                  const TString & particleName1,
+//                                                  const TString & particleName2,
+//                                                  const TString & obsName,
+//                                                  const TString & comboName,
+//                                                  TH1* rho1_2 __attribute__((unused)),
+//                                                  TH2* obs_US,
+//                                                  TH2* obs_LS,
+//                                                  HistogramGroup * histogramGroup)
+//{
+//  TString name = CAP::createName(histoBaseName,eventClassName,particleName1,particleName2,obsName,comboName);
+//  TH2 * obs;
+//  TH1 * obs_x;
+//  TH1 * obs_y;
+//  obs = (TH2*) obs_US->Clone();
+//  obs->SetName(name);
+//  obs->SetTitle(name);
+//  obs->Add(obs_LS, -1.0);
+////  double rho1Integral = rho1_2->Integral("Width");
+////  obs->Scale(rho1Integral);
+//  histogramGroup->push_back(obs);
+//
+//  name = CAP::createName(histoBaseName,eventClassName,particleName1,particleName2,obsName,comboName+"_x");
+//  obs_x = obs->ProjectionX();
+//  obs_x->SetName(name);
+//  obs_x->SetTitle(name);
+//  histogramGroup->push_back(obs_x);
+//
+//  name = CAP::createName(histoBaseName,eventClassName,particleName1,particleName2,obsName,comboName+"_y");
+//  obs_y = obs->ProjectionY();
+//  obs_y->SetName(name);
+//  obs_y->SetTitle(name);
+//  histogramGroup->push_back(obs_y);
+//
+//  return obs;
+//}
 
 
 

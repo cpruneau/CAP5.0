@@ -15,6 +15,7 @@
 #include <TROOT.h>
 
 void loadBase(const TString & includeBasePath);
+void loadPlotting(const TString & includeBasePath);
 
 void calculateRmsWidth(TH2 * h, double lowEdge, double highEdge, double & mean, double & meanError, double & rmsWidth, double & rmsWidthError)
 {
@@ -774,6 +775,9 @@ int PlotBFBaryons(int option = 1)
 
   TString includeBasePath = getenv("CAP_SRC");
   loadBase(includeBasePath);
+  loadPlotting(includeBasePath);
+
+  using namespace CAP;
   MessageLogger::LogLevel infoLevel = MessageLogger::Info;
   MessageLogger::LogLevel debugLevel = MessageLogger::Info;
   MessageLogger::LogLevel selectLevel = infoLevel;
@@ -964,6 +968,7 @@ void loadBase(const TString & includeBasePath)
   TString includePath = includeBasePath + "/Base/";
   gSystem->Load(includePath+"Timer.hpp");
   gSystem->Load(includePath+"MessageLogger.hpp");
+  gSystem->Load(includePath+"Configuration.hpp");
   gSystem->Load(includePath+"Task.hpp");
   gSystem->Load(includePath+"TaskIterator.hpp");
   gSystem->Load(includePath+"Collection.hpp");
@@ -980,6 +985,18 @@ void loadBase(const TString & includeBasePath)
   gSystem->Load(includePath+"DerivedHistoIterator.hpp");
   gSystem->Load("libBase.dylib");
 }
+
+void loadPlotting(const TString & includeBasePath)
+{
+  TString includePath = includeBasePath + "/Plotting/";
+  gSystem->Load(includePath+"CanvasCollection.hpp");
+  gSystem->Load(includePath+"GraphConfiguration.hpp");
+  gSystem->Load(includePath+"CanvasConfiguration.hpp");
+  gSystem->Load(includePath+"HistogramCollection.hpp");
+  gSystem->Load(includePath+"Plotter.hpp");
+  gSystem->Load("libPlotting.dylib");
+}
+
 
 
 //      names.push_back(TString("PYTHIA_pp_13.0TeV_B2Based_PiP_PiP_B1Bar2"));

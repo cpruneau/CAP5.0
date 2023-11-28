@@ -41,6 +41,8 @@ Makefile
 *.sql
 *.sqlite
 *.pdf
+*.svg
+*.png
 .DS_Store
 .DS_Store?
 ._*

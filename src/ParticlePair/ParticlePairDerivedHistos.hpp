@@ -108,6 +108,7 @@ public:
   TH2* h_A2_DetaDphi;
   TH2* h_B2_DetaDphi;
   TH2* h_C2_DetaDphi;
+  TH2* h_D2_DetaDphi;
   TH2* h_R2_DetaDphi;
   TH2* h_P2_DetaDphi;
   TH2* h_G2_DetaDphi;
@@ -120,6 +121,7 @@ public:
   TH2* h_A2_DetaDphi_shft;
   TH2* h_B2_DetaDphi_shft;
   TH2* h_C2_DetaDphi_shft;
+  TH2* h_D2_DetaDphi_shft;
   TH2* h_R2_DetaDphi_shft;
   TH2* h_DptDpt_DetaDphi_shft;
   TH2* h_P2_DetaDphi_shft;
@@ -141,6 +143,7 @@ public:
   TH2* h_A2_DyDphi;
   TH2* h_B2_DyDphi;
   TH2* h_C2_DyDphi;
+  TH2* h_D2_DyDphi;
   TH2* h_R2_DyDphi;
   TH2* h_P2_DyDphi;
   TH2* h_G2_DyDphi;
@@ -149,15 +152,16 @@ public:
   TH2* h_A2_DyDphi_shft;
   TH2* h_B2_DyDphi_shft;
   TH2* h_C2_DyDphi_shft;
+  TH2* h_D2_DyDphi_shft;
   TH2* h_R2_DyDphi_shft;
   TH2* h_DptDpt_DyDphi_shft;
   TH2* h_P2_DyDphi_shft;
   TH2* h_G2_DyDphi_shft;
 
-  TH2* h_A2A_DyDphi_shft;
-  TH2* h_B2A_DyDphi_shft;
-  TH2* h_C2A_DyDphi_shft;
-  TH2* h_R2A_DyDphi_shft;
+//  TH2* h_A2A_DyDphi_shft;
+//  TH2* h_B2A_DyDphi_shft;
+//  TH2* h_C2A_DyDphi_shft;
+//  TH2* h_R2A_DyDphi_shft;
 
   TH2* h_pt1pt1_DyDphi;
   TH2* h_DptDpt_DyDphi;

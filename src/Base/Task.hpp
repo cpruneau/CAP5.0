@@ -331,6 +331,16 @@ public:
   //!
   TFile * openRootFile(const String & inputPath, const String & fileName, const String & ioOption) ;
 
+  void openRootFiles(vector<TString> & fileNames,
+                     vector<TFile *> & files,
+                     const TString   & ioOption);
+  void openRootFiles(vector<TString> & pathNames,
+                     vector<TString> & fileNames,
+                     vector<TFile *> & files,
+                     const TString   & ioOption);
+  void closeRootFiles(vector<TFile *> & files);
+
+
   //!
   //! Open the root file named "fileName" located on the path "inputPath", using options specified by "ioOption".
   //! @param inputPath path where to find or create the file.

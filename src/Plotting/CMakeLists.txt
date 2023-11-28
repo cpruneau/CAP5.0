@@ -2,7 +2,7 @@
 # Project CAP/Plotting
 ################################################################################################
 ROOT_GENERATE_DICTIONARY(G__Plotting CanvasCollection.hpp CanvasConfiguration.hpp DataGraph.hpp FunctionCollection.hpp GraphConfiguration.hpp  Plotter.hpp  LegendConfiguration.hpp
-LINKDEF PlottingLinkDef.h)
+BalFctPlotter.hpp LINKDEF PlottingLinkDef.h)
 
 ### tempo: BidimGaussFitResult.hpp BidimGaussFitConfiguration.hpp BidimGaussFitter.hpp
 
@@ -10,10 +10,8 @@ LINKDEF PlottingLinkDef.h)
 # Create a shared library with geneated dictionary
 ################################################################################################
 add_compile_options(-Wall -Wextra -pedantic)
-add_library(Plotting SHARED CanvasCollection.cpp CanvasConfiguration.cpp  DataGraph.cpp   FunctionCollection.cpp  GraphConfiguration.cpp Plotter.cpp LegendConfiguration.cpp
+add_library(Plotting SHARED CanvasCollection.cpp CanvasConfiguration.cpp  DataGraph.cpp   FunctionCollection.cpp  GraphConfiguration.cpp Plotter.cpp LegendConfiguration.cpp BalFctPlotter.cpp
  G__Plotting.cxx)
-
-#BidimGaussFitResult.cpp BidimGaussFitConfiguration.cpp BidimGaussFitter.cpp
 
 target_link_libraries(Plotting Base ${ROOT_LIBRARIES} ${EXTRA_LIBS} )
 target_include_directories(Plotting  PUBLIC Plotting Base ${EXTRA_INCLUDES} )

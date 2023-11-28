@@ -44,23 +44,23 @@ void GraphConfiguration::setDefaultConfiguration()
   addParameter("nXDivisions", 5);
   addParameter("xTitleSize", 0.06);
   addParameter("xTitleOffset", 1.1);
-  addParameter("xLabelSize",  0.05);
+  addParameter("xLabelSize",  0.06);
   addParameter("xLabelOffset", 0.01);
-  addParameter("xTitle",       TString("x"));
+  addParameter("xTitle",       String("x"));
   addParameter("nYDivisions",     5);
   addParameter("yTitleSize",   0.06);
-  addParameter("yTitleOffset",  1.2);
-  addParameter("yLabelSize",   0.05);
+  addParameter("yTitleOffset",  0.8);
+  addParameter("yLabelSize",   0.06);
   addParameter("yLabelOffset", 0.01);
-  addParameter("yTitle",        TString("y"));
+  addParameter("yTitle",        String("y"));
   addParameter("nZDivisions",     5);
   addParameter("zTitleSize",   0.06);
   addParameter("zTitleOffset",  1.5);
   addParameter("zLabelSize",   0.05);
   addParameter("zLabelOffset", 0.01);
   addParameter("zLabelOffset", 0.01);
-  addParameter("zTitle",        TString("z"));
-  addParameter("PlotOption",    TString("E0"));
+  addParameter("zTitle",        String("z"));
+  addParameter("PlotOption",    String("E0"));
 
   addParameter("systsColor",1);
   addParameter("systsStyle",1001);
@@ -101,16 +101,18 @@ void GraphConfiguration::addParametersWith(int dim, int type)
         break;
         
         case  2:
-        addParameter("lineColor",   kGreen);
+        addParameter("lineColor",   kBlue);
         addParameter("lineStyle",   kSolid);
         addParameter("lineWidth",   2);
-        addParameter("markerColor", kGreen);
+        addParameter("markerColor", kBlue);
         addParameter("markerStyle", kFullSquare);
         addParameter("markerSize",  1.1);
-        addParameter("systsColor",  kGreen);
+        addParameter("systsColor",  kBlue);
         addParameter("systsStyle",  3003);
         addParameter("systsWidth",  1);
         break;
+
+
         
         case  3:
         addParameter("lineColor",   kMagenta);
@@ -125,17 +127,17 @@ void GraphConfiguration::addParametersWith(int dim, int type)
         break;
         
         case  4:
-        addParameter("lineColor",   kBlue);
+        addParameter("lineColor",   kGreen);
         addParameter("lineStyle",   kSolid);
         addParameter("lineWidth",   2);
-        addParameter("markerColor", kBlue);
+        addParameter("markerColor", kGreen);
         addParameter("markerStyle", kFullSquare);
         addParameter("markerSize",  1.1);
-        addParameter("systsColor",  kBlue);
+        addParameter("systsColor",  kGreen);
         addParameter("systsStyle",  3003);
         addParameter("systsWidth",  1);
         break;
-        
+
         case  5:
         addParameter("lineColor",   kYellow);
         addParameter("lineStyle",   kSolid);
@@ -153,7 +155,7 @@ void GraphConfiguration::addParametersWith(int dim, int type)
         addParameter("lineStyle",   kSolid);
         addParameter("lineWidth",   2);
         addParameter("markerColor", kPink);
-        addParameter("markerStyle", kFullSquare);
+        addParameter("markerStyle", kFullCircle);
         addParameter("markerSize",  1.1);
         addParameter("systsColor",  kPink);
         addParameter("systsStyle",  3003);
@@ -165,7 +167,7 @@ void GraphConfiguration::addParametersWith(int dim, int type)
         addParameter("lineStyle",   kSolid);
         addParameter("lineWidth",   2);
         addParameter("markerColor", kBlue+2);
-        addParameter("markerStyle", kFullSquare);
+        addParameter("markerStyle", kFullCircle);
         addParameter("markerSize",  1.1);
         addParameter("systsColor",  kBlue+2);
         addParameter("systsStyle",  3003);
@@ -177,7 +179,7 @@ void GraphConfiguration::addParametersWith(int dim, int type)
         addParameter("lineStyle",   kSolid);
         addParameter("lineWidth",   2);
         addParameter("markerColor", kRed+2);
-        addParameter("markerStyle", kFullSquare);
+        addParameter("markerStyle", kFullCircle);
         addParameter("markerSize",  1.1);
         addParameter("systsColor",  kRed+2);
         addParameter("systsStyle",  3003);
@@ -189,7 +191,7 @@ void GraphConfiguration::addParametersWith(int dim, int type)
         addParameter("lineStyle",   kSolid);
         addParameter("lineWidth",   2);
         addParameter("markerColor", kGreen+2);
-        addParameter("markerStyle", kFullSquare);
+        addParameter("markerStyle", kFullCircle);
         addParameter("markerSize",  1.1);
         addParameter("systsColor",  kGreen+2);
         addParameter("systsStyle",  3003);
@@ -446,20 +448,20 @@ void GraphConfiguration::addParametersWith(int dim, int type)
     addParameter("xTitleOffset", 1.3);
     addParameter("xLabelSize",  0.05);
     addParameter("xLabelOffset", 0.002);
-    addParameter("xTitle",        TString("x"));
+    addParameter("xTitle",        String("x"));
     addParameter("nYDivisions",     5);
     addParameter("yTitleSize",   0.05);
     addParameter("yTitleOffset",  1.5);
     addParameter("yLabelSize",   0.05);
     addParameter("yLabelOffset", 0.05);
-    addParameter("yTitle",        TString("y"));
+    addParameter("yTitle",        String("y"));
     addParameter("nZDivisions",     5);
     addParameter("zTitleSize",   0.05);
     addParameter("zTitleOffset",  1.5);
     addParameter("zLabelSize",   0.05);
     addParameter("zLabelOffset",0.005);
-    addParameter("zTitle",        TString("z"));
-    addParameter("PlotOption",TString("SURF3"));
+    addParameter("zTitle",        String("z"));
+    addParameter("PlotOption",String("SURF3"));
     }
 }
 

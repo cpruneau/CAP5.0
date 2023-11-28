@@ -57,6 +57,7 @@ labels()
   addParameter("xRight",  _xRight);
   addParameter("yLow",    _yLow);
   addParameter("yHigh",   _yHigh);
+
   int n = _entries.size();
   if (n>0) addParameter("useTitles",false);
   for (int k=0; k<n; k++)
@@ -71,6 +72,8 @@ void LegendConfiguration::setDefaultConfiguration()
   addParameter("useLegend",    false);
   addParameter("useLabels",    false);
   addParameter("drawLegend",   true);
+  addParameter("useNDC",false); // use PAD coordinates by defaul not NDC
+
   //addParameter("drawBorder",   false);
   addParameter("useTitles",    true);
   addParameter("nColumns",     1);
@@ -86,7 +89,7 @@ void LegendConfiguration::setDefaultConfiguration()
   addParameter("xRight",       0.2);
   addParameter("yLow",         0.1);
   addParameter("yHigh",        0.2);
-  addParameter("header",       TString(""));
+  addParameter("header",       String(""));
 }
 
 LegendConfiguration::LegendConfiguration(const LegendConfiguration & source)
@@ -118,7 +121,7 @@ void LegendConfiguration::addLegend(const String & legend)
 String LegendConfiguration::getLegendAt(int index)  const
 {
   if (index<0 || index>=int(legends.size()))
-    return TString("NotDefined");
+    return String("NotDefined");
   else
     return legends[index];
 }
@@ -131,7 +134,7 @@ void LegendConfiguration::setLegendAt(int index,const String & legend)
     legends[index] = legend;
   else
     {
-    for (int k=0; k<(index-int(legends.size())); k++) legends.push_back(TString(""));
+    for (int k=0; k<(index-int(legends.size())); k++) legends.push_back(String(""));
     legends.push_back(legend);
     }
 }

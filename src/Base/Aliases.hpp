@@ -19,7 +19,7 @@
 
 namespace CAP
 {
-
+using Size_t        = unsigned long;
 using String        = TString;
 using Histogram1D   = TH1;
 using Histogram2D   = TH2;

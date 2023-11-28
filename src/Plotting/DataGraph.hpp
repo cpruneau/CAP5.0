@@ -13,7 +13,7 @@
 #define CAP__DataGraph
 
 #include <vector>
-#include "TString.h"
+#include "Aliases.hpp"
 #include "TFile.h"
 #include "TGraph.h"
 #include "TGraphErrors.h"

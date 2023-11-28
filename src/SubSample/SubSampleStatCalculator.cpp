@@ -153,8 +153,16 @@ void SubSampleStatCalculator::execute()
     TFile * firstFile = openRootFile("", histosImportFile, "READ");
     collectionAvg  = new HistogramCollection("Sum",getSeverityLevel());
     collectionAvg->loadCollection(*firstFile);
-    parameterName      = "taskExecuted";
-    nEventsProcessed   = readParameter(*firstFile,parameterName);
+    try
+      {
+      parameterName      = "nTaskExecuted";
+      nEventsProcessed   = readParameter(*firstFile,parameterName);
+      }
+    catch (...)
+      {
+      parameterName      = "taskExecuted";
+      nEventsProcessed   = readParameter(*firstFile,parameterName);
+      }
     sumEventsProcessed = nEventsProcessed;
     parameterName      = "nEventFilters";
     nEventFilters      = readParameter(*firstFile,parameterName);
@@ -182,8 +190,16 @@ void SubSampleStatCalculator::execute()
       collection = new HistogramCollection(histosImportFile,getSeverityLevel());;
       collection->loadCollection(*inputFile);
       collectionAvg->squareDifferenceCollection(*collection, double(sumEventsProcessed), double(nEventsProcessed), (iFile==(last-1)) ? nInputFile : -iFile);
+      try
+      {
+      parameterName      = "nTaskExecuted";
+      nEventsProcessed   = readParameter(*inputFile,parameterName);
+      }
+      catch (...)
+      {
       parameterName      = "taskExecuted";
       nEventsProcessed   = readParameter(*inputFile,parameterName);
+      }
       sumEventsProcessed += nEventsProcessed;
       if (nEventFilters>0)
         {

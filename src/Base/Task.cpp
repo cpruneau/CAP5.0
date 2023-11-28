@@ -468,8 +468,17 @@ long Task::loadNEexecutedTask(TFile & inputFile)
 {
   if (reportStart(__FUNCTION__))
     ;
-  String name = "taskExecuted";
-  taskExecuted = readParameter(inputFile,name);
+  String parameterName;
+  try
+  {
+  parameterName  = "nTaskExecuted";
+  taskExecuted   = readParameter(inputFile,parameterName);
+  }
+  catch (...)
+  {
+  parameterName  = "taskExecuted";
+  taskExecuted   = readParameter(inputFile,parameterName);
+  }
   if (reportEnd(__FUNCTION__))
     ;
   return taskExecuted;
@@ -530,6 +539,49 @@ TFile *  Task::openRootFile(const String & inputPath, const String & fileName, c
   if (reportDebug(__FUNCTION__)) cout << "File opened successfully." << endl;
   return inputFile;
 }
+
+
+void Task::openRootFiles(vector<TString> & fileNames,
+                         vector<TFile *> & files,
+                         const TString   & ioOption)
+{
+  int nFiles = fileNames.size();
+  if (reportDebug (__FUNCTION__))  cout << "Opening nFiles: " << nFiles << " with option: " << ioOption << endl;
+  if (nFiles<1)  throw  Exception("No file names supplied","Task::openRootFiles(...)");
+  for (unsigned int iFile=0; iFile<nFiles; iFile++)
+    {
+    files.push_back( openRootFile("",fileNames[iFile],ioOption));
+    }
+  if (reportDebug (__FUNCTION__))  cout << "Completed successfully" << endl;
+}
+
+void Task::openRootFiles(vector<TString> & pathNames,
+                         vector<TString> & fileNames,
+                         vector<TFile *> & files,
+                         const TString   & ioOption)
+{
+  int nFiles = fileNames.size();
+  if (reportDebug (__FUNCTION__))  cout << "Opening nFiles: " << nFiles << " with option: " << ioOption << endl;
+  if (nFiles<1)  throw  Exception("No file names supplied","Task::openRootFiles(...)");
+  for (unsigned int iFile=0; iFile<nFiles; iFile++)
+    {
+    files.push_back( openRootFile(pathNames[iFile],fileNames[iFile],ioOption));
+    }
+  if (reportDebug (__FUNCTION__))  cout << "Completed successfully" << endl;
+}
+
+void Task::closeRootFiles(vector<TFile *> & files)
+{
+  int nFiles = files.size();
+  if (reportDebug (__FUNCTION__))  cout << "Closing nFiles: " << nFiles << endl;
+  if (nFiles<1)  throw  Exception("No file supplied","Task::closeRootFiles(...)");
+  for (unsigned int iFile=0; iFile<nFiles; iFile++)
+    {
+    files[iFile]->Close();
+    }
+  if (reportDebug (__FUNCTION__))  cout << "Close Completed successfully" << endl;
+}
+
 
 ifstream & Task::openInputAsciiFile(const String & inputPath, const String & fileName, const String & extension, const String & ioOption)
 {
@@ -706,8 +758,9 @@ vector<String> Task::listFilesInDir(const String & pathname,
   String dirname = pathname;
   int depth = currentDepth;
   if (!dirname.EndsWith("/")) dirname += "/";
-  if (verbose && reportDebug(__FUNCTION__))
+  if (verbose && reportInfo(__FUNCTION__))
     {
+    cout << endl;
     printItem("Searching",dirname);
     printItem("maximumDepth",maximumDepth);
     printItem("currentDepth",depth);
@@ -748,8 +801,9 @@ vector<String> Task::listFilesInDir(const String & pathname,
     }
 
   int nSubdirs = subdirs.size();
-  if (verbose && reportDebug(__FUNCTION__))
+  if (verbose && reportInfo(__FUNCTION__))
     {
+    cout << endl;
     printItem("Number of subdir found.",nSubdirs);
     }
   ++depth;
@@ -768,9 +822,14 @@ vector<String> Task::listFilesInDir(const String & pathname,
         fileNames.push_back(additionalFiles[iFile]);
     }
   }
-  if (verbose && reportDebug(__FUNCTION__))
+  if (verbose && reportInfo(__FUNCTION__))
     {
+    cout << endl;
     printItem("Number of files  found",fileNames.size());
+    for (Size_t k=0; k<fileNames.size();k++)
+      {
+      cout << "  k: " << k << " : " << fileNames[k] << endl;
+      }
     cout << "Returning up one level.... " <<  endl;
     }
   return fileNames;
@@ -793,8 +852,9 @@ vector<String>  Task::listFilesInDir(const String & pathName,
   vector<String> outputList;
   vector<String> fileList = listFilesInDir(pathName,".root",prependPath,verbose,maximumDepth,currentDepth);
   unsigned int nNames = fileList.size();
-  if (reportDebug(__FUNCTION__))
+  if (reportInfo(__FUNCTION__))
     {
+    cout << endl;
     printItem("nNames",nNames);
     printItem("nIncludes",includePatterns.size());
     printItem("nExcludes",excludePatterns.size());

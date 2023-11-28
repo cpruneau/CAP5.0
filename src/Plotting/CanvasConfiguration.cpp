@@ -66,12 +66,16 @@ void CanvasConfiguration::setDefaultConfiguration()
   addParameter("windowTopMargin",   0.03);
   addParameter("windowRightMargin", 0.03);
   addParameter("windowBottomMargin",0.15);
-  addParameter("windowLogX", false);
-  addParameter("windowLogY", false);
-  addParameter("windowLogZ", false);
+  addParameter("windowLogX",  false);
+  addParameter("windowLogY",  false);
+  addParameter("windowLogZ",  false);
   addParameter("windowTheta", 35.0);
   addParameter("windowPhi",   25.0);
-  
+  addParameter("useTickx",    true);
+  addParameter("useTicky",    true);
+  addParameter("useGridx",    false);
+  addParameter("useGridy",    false);
+
   addParameter("windowFillColor", kWhite);
   addParameter("windowFillStyle", 1001);
   addParameter("windowBorderSize",0);
