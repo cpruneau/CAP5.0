@@ -5,7 +5,7 @@ namespace CAP
 namespace Math
 {
 
-template double CAP::Math::arithmeticMean<double,double*>(double* first, double*last);
+//template double CAP::Math::arithmeticMean<double,double*>(double* first, double*last);
 
 //template <typename T, typename Iterator, typename WeightIterator> T arithmeticMean(Iterator first, Iterator last, WeightIterator wfirst)
 //template <typename T> T arithmeticMean(long n, const T *a, const double *w=0);
