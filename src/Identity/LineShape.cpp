@@ -31,7 +31,7 @@ void LineShape::setDefaultConfiguration()
   addParameter("nBins_p",          300);
   addParameter("Min_p",            0.00);
   addParameter("Max_p",            3.00);
-  addParameter("nBins_dEdx",       100);
+  addParameter("nBins_dEdx",       200);
   addParameter("Min_dEdx",         0.0);
   addParameter("Max_dEdx",         1.0); // arbitrary units for now.
 }
@@ -92,7 +92,7 @@ void LineShape::createHistograms()
   double m_pi = 0.139;
   double m_k  = 0.4500;
   double m_p  = 0.9380;
-  double a    = 0.10;
+  double a    = 0.005;
   double b    = 0.00;
 
   cout << " FILL HISTOS" << endl;
@@ -100,13 +100,16 @@ void LineShape::createHistograms()
     {
     double p = min_p + (double(k)+0.5)*width_p;
     double dedx = dedxExpectation(m_pi,p,a,b);
-    cout << " p:" << p << " pi dedx: " << dedx << endl;
+    double dedxRms = dedxRms(m_pi,p,a,b);
+    //cout << " p:" << p << " pi dedx: " << dedx << endl;
     h_lineShapeVsDedx_pi->Fill(p,dedx);
     dedx = dedxExpectation(m_k,p,a,b);
-    cout << " p:" << p << " K  dedx: " << dedx << endl;
+    dedxRms = dedxRms(m_k,p,a,b);
+    //cout << " p:" << p << " K  dedx: " << dedx << endl;
     h_lineShapeVsDedx_k->Fill(p,dedx);
     dedx = dedxExpectation(m_p,p,a,b);
-    cout << " p:" << p << " p  dedx: " << dedx << endl;
+    dedxRms = dedxRms(m_p,p,a,b);
+    //cout << " p:" << p << " p  dedx: " << dedx << endl;
     h_lineShapeVsDedx_p->Fill(p,dedx);
     }
   TFile * outputFile = openRootFile("","test.root","RECREATE");
@@ -117,6 +120,14 @@ void LineShape::createHistograms()
 }
 
 double LineShape::dedxExpectation(double m, double p, double a, double b)
+{
+  // assume a/beta + b for now...
+  double energy = sqrt(m*m+p*p);
+  double beta = p/energy;
+  return a/beta + b;
+}
+
+double LineShape::dedxRms(double m, double p, double a, double b)
 {
   // assume a/beta + b for now...
   double energy = sqrt(m*m+p*p);

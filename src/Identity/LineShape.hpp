@@ -43,7 +43,7 @@ public:
   virtual void initialize();
 
   double dedxExpectation(double m, double p, double a, double b);
-
+  double dedxRms(double m, double p, double a, double b);
   //!
   //! Creates the histograms  filled by this task at execution
   //!

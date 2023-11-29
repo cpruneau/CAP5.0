@@ -46,7 +46,7 @@ fi
 #
 # =============================================================================================================
 
-export CAP_CONDA="CProot"
+#export CAP_CONDA="CProot"
 export CAP_ROOT="/wsu/home/aa/aa75/aa7526/CAP5.0/"
 export CAP_SRC="$CAP_ROOT/src/"
 export CAP_BIN="$CAP_ROOT/bin/"

@@ -1,11 +1,12 @@
 #!/bin/bash
-conda init bash
-conda activate CAP_CONDA
-echo Using CONDA environment $CAP_CONDA
-echo The root version is:
-echo `which root` 
+#conda init bash
+#conda activate CAP_CONDA
+#echo Using CONDA environment $CAP_CONDA
+#echo The root version is:
+module load  root
 module load  pythia
 module load  gsl
+echo `which root`
 TASKIX=$SLURM_ARRAY_TASK_ID
 SEED=$(( SLURM_ARRAY_TASK_ID + SLURM_ARRAY_JOB_ID*100 ))
 CAP_HISTOPATH=$CAP_WORKINGDIRECTORY_Output/$(printf "%02d/" $TASKIX )
