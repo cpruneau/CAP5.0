@@ -142,7 +142,7 @@ TCanvas *  Plotter::plot(const String & canvasName,
   canvas->SetTickx(1);
   TH1 * h;
   Size_t nGraphs = histograms.size();
-  if (reportInfo(__FUNCTION__)) 
+  if (reportInfo(__FUNCTION__))
     {
     printItem("Creating canvas named",canvasName);
     printItem("nGraphs",nGraphs);
@@ -199,7 +199,7 @@ TCanvas *  Plotter::plot(const String & canvasName,
     setProperties(h,*gc[iGraph]);
     h->GetXaxis()->SetTitle(xTitle);
     h->GetYaxis()->SetTitle(yTitle);
-     }
+    }
   h = graphs[0];
   h->SetMinimum(yMin);
   h->SetMaximum(yMax);
@@ -775,7 +775,7 @@ TGraph * Plotter::makeGraph(vector<double> vx,
 {
   auto n = vx.size();
   if ( vex.size()!=n || vy.size()!=n || vey.size()!=n )
-      throw TaskException("Arguments provided have incompatible sizes","makeGraph(vx,vex,vy,vey)");
+    throw TaskException("Arguments provided have incompatible sizes","makeGraph(vx,vex,vy,vey)");
   double * x  = new double[n];
   double * ex = new double[n];
   double * y  = new double[n];
@@ -799,16 +799,16 @@ vector<CAP::GraphConfiguration*> Plotter::createGraphConfigurationPalette(int n,
 
     gc[k]->addParametersWith(1, k);
 
-//    gc[k]->addParameter("xTitleSize",   double(0.08));
-//    gc[k]->addParameter("xTitleOffset", double(0.8));
-//    gc[k]->addParameter("yTitleSize",   double(0.08));
-//    gc[k]->addParameter("yTitleOffset", double(0.8));
-//    gc[k]->addParameter("xLabelSize",   double(0.07));
-//    gc[k]->addParameter("yLabelSize",   double(0.07));
-//    gc[k]->addParameter("lineColor",    int(21+2*k));
-//    gc[k]->addParameter("markerColor",  int(21+2*k));
-//    gc[k]->addParameter("markerStyle",  int(kFullSquare));
-//    gc[k]->addParameter("markerSize",   double(0.9));
+    //    gc[k]->addParameter("xTitleSize",   double(0.08));
+    //    gc[k]->addParameter("xTitleOffset", double(0.8));
+    //    gc[k]->addParameter("yTitleSize",   double(0.08));
+    //    gc[k]->addParameter("yTitleOffset", double(0.8));
+    //    gc[k]->addParameter("xLabelSize",   double(0.07));
+    //    gc[k]->addParameter("yLabelSize",   double(0.07));
+    //    gc[k]->addParameter("lineColor",    int(21+2*k));
+    //    gc[k]->addParameter("markerColor",  int(21+2*k));
+    //    gc[k]->addParameter("markerStyle",  int(kFullSquare));
+    //    gc[k]->addParameter("markerSize",   double(0.9));
     }
   return gc;
 }
@@ -862,14 +862,14 @@ TGraph* Plotter::calculateIntegral1D(TH1* h,
   if (!h)
     throw TaskException("Given h is a null ptr","calculateIntegral1D(TH1* h,...)");
   if (reportInfo(__FUNCTION__))
-  {
+    {
     cout << endl;
     printItem("Histo Name", h->GetName());
     printItem("etaLow", etaLow);
     printItem("etaHigh",etaHigh);
     printItem("etaStep",etaStep);
     printItem("size", size);
-  }
+    }
   double * x  = new double[size];
   double * ex = new double[size];
   double * y  = new double[size];
@@ -882,7 +882,7 @@ TGraph* Plotter::calculateIntegral1D(TH1* h,
   double sum  = 0;
   double esum = 0;
   for (double eta=etaLow; eta<etaHigh; eta+=etaStep)
-  {
+    {
     xLow  = xAxis->FindBin(-eta);
     xHigh = xAxis->FindBin( eta);
     sum = h->IntegralAndError(xLow,xHigh,esum,"WIDTH");
@@ -891,7 +891,7 @@ TGraph* Plotter::calculateIntegral1D(TH1* h,
     y[nPoints]  = sum; ///TMath::TwoPi();
     ey[nPoints] = esum; ///TMath::TwoPi();
     nPoints++;
-  }
+    }
   TGraph * g = new TGraphErrors(nPoints, x,y,ex,ey);
   return g;
 }
@@ -906,14 +906,14 @@ TGraph* Plotter::calculateIntegral(TH2* h2,
   if (!h2)
     throw TaskException("Given h2 is a null ptr","calculateIntegral1D(TH2* h,...)");
   if (reportInfo(__FUNCTION__))
-  {
+    {
     cout << endl;
     printItem("Histo Name", h2->GetName());
     printItem("etaLow", etaLow);
     printItem("etaHigh",etaHigh);
     printItem("etaStep",etaStep);
     printItem("size", size);
-  }
+    }
   double * x  = new double[size];
   double * ex = new double[size];
   double * y  = new double[size];
@@ -929,7 +929,7 @@ TGraph* Plotter::calculateIntegral(TH2* h2,
   double sum  = 0;
   double esum = 0;
   for (double eta=etaLow; eta<etaHigh; eta+=etaStep)
-  {
+    {
     xLow  = xAxis->FindBin(-eta);
     xHigh = xAxis->FindBin( eta);
     // this needs to be fixed...
@@ -940,7 +940,7 @@ TGraph* Plotter::calculateIntegral(TH2* h2,
     y[nPoints]  = sum; ///TMath::TwoPi();
     ey[nPoints] = esum; ///TMath::TwoPi();
     nPoints++;
-  }
+    }
   TGraph * g = new TGraphErrors(nPoints, x,y,ex,ey);
   return g;
 }

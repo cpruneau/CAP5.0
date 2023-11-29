@@ -43,7 +43,7 @@ find_library(PYTHIA8_LIB pythia8 PATHS $ENV{PYTHIA8}/lib)
 
 #---Define useful ROOT functions and macros (e.g. ROOT_GENERATE_DICTIONARY)
 include(${ROOT_USE_FILE})
-include_directories(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} "Base" "Math" "Particles" "BasicGen" "SubSample" "Cluster" "CollGeom" "ThermalGas" "Ampt"  "CAPPythia"  "Eccentricity"  "Performance" "Global" "ParticleSingle" "ParticlePair" "NuDyn" "Plotting" "Therminator"  "Exec" "$ENV{ROOTSYS}/include" "$ENV{PYTHIA8}/include" "$ENV{PYTHIA8}/include/Pythia8")
+include_directories(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} "Base" "Math" "Particles" "BasicGen" "SubSample" "Cluster" "CollGeom" "ThermalGas" "Ampt"  "CAPPythia"  "Eccentricity"  "Performance" "Global" "ParticleSingle" "ParticlePair" "NuDyn" "Plotting" "Therminator"  "Exec" "Identity" "$ENV{ROOTSYS}/include" "$ENV{PYTHIA8}/include" "$ENV{PYTHIA8}/include/Pythia8")
 
 ##include_directories(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} "Base"  "Math" "Particles" "BasicGen" "SubSample" "Cluster" "CollGeom" "ThermalGas" "Ampt" "CAPPythia" "Eccentricity"  "Performance" "Global" "ParticleSingle" "ParticlePair" "NuDyn" "Plotting" "Therminator"  "Exec" "$ENV{ROOTSYS}/include" "$ENV{PYTHIA8}/include" "$ENV{PYTHIA8}/include/Pythia8")
 
@@ -80,4 +80,4 @@ add_subdirectory(Exec)
 #add_subdirectory(Blastwave)
 #add_subdirectory(LambdaAnalysis)
 #add_subdirectory(Music)
-
+add_subdirectory(Identity)
