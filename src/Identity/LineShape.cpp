@@ -100,15 +100,15 @@ void LineShape::createHistograms()
     {
     double p = min_p + (double(k)+0.5)*width_p;
     double dedx = dedxExpectation(m_pi,p,a,b);
-    double dedxRms = dedxRms(m_pi,p,a,b);
+    double dedxRms = dedxRmsExpectation(m_pi,p,a,b);
     //cout << " p:" << p << " pi dedx: " << dedx << endl;
     h_lineShapeVsDedx_pi->Fill(p,dedx);
     dedx = dedxExpectation(m_k,p,a,b);
-    dedxRms = dedxRms(m_k,p,a,b);
+    dedxRms = dedxRmsExpectation(m_k,p,a,b);
     //cout << " p:" << p << " K  dedx: " << dedx << endl;
     h_lineShapeVsDedx_k->Fill(p,dedx);
     dedx = dedxExpectation(m_p,p,a,b);
-    dedxRms = dedxRms(m_p,p,a,b);
+    dedxRms = dedxRmsExpectation(m_p,p,a,b);
     //cout << " p:" << p << " p  dedx: " << dedx << endl;
     h_lineShapeVsDedx_p->Fill(p,dedx);
     }
@@ -127,7 +127,7 @@ double LineShape::dedxExpectation(double m, double p, double a, double b)
   return a/beta + b;
 }
 
-double LineShape::dedxRms(double m, double p, double a, double b)
+double LineShape::dedxRmsExpectation(double m, double p, double a, double b)
 {
   // assume a/beta + b for now...
   double energy = sqrt(m*m+p*p);

@@ -8,7 +8,6 @@
 #pragma link C++ class CAP::CanvasConfiguration+;
 #pragma link C++ class CAP::DataGraph+;
 #pragma link C++ class CAP::Collection<TF1>+;
-#pragma link C++ class CAP::Collection<TH1>+;
 #pragma link C++ class CAP::Collection<TCanvas>+;
 #pragma link C++ class CAP::FunctionCollection+;
 #pragma link C++ class CAP::GraphConfiguration+;

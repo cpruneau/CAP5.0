@@ -4,8 +4,6 @@
 ROOT_GENERATE_DICTIONARY(G__Plotting CanvasCollection.hpp CanvasConfiguration.hpp DataGraph.hpp FunctionCollection.hpp GraphConfiguration.hpp  Plotter.hpp  LegendConfiguration.hpp
 BalFctPlotter.hpp LINKDEF PlottingLinkDef.h)
 
-### tempo: BidimGaussFitResult.hpp BidimGaussFitConfiguration.hpp BidimGaussFitter.hpp
-
 ################################################################################################
 # Create a shared library with geneated dictionary
 ################################################################################################
