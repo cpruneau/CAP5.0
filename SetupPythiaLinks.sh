@@ -10,9 +10,9 @@ echo "  "
 echo " Running SetupPythiaLinks.sh"
 echo "  "
 echo "========================================================================================"
-load module pythia
-load module cmake
-load module root
+module load pythia
+module load cmake
+module load root
 ##################################################
 # Load modules and setup
 ##################################################
