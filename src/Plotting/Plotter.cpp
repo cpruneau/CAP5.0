@@ -825,16 +825,15 @@ TGraph *  Plotter::sumGraphs(TGraph * g1, TGraph * g2)
   double * ex = new double[n1];
   double * y  = new double[n1];
   double * ey = new double[n1];
+  double x1, ex1, y1, ey1, x2, y2, ey2;
+
   for (int index=0; index<n1; index++)
     {
-    double x1  = g1->GetPointX(index);
-    double ex1 = g1->GetErrorX(index);
-    double y1  = g1->GetPointY(index);
-    double ey1 = g1->GetErrorY(index);
-    double x2  = g2->GetPointX(index);
-    //double ex2 = g2->GetErrorX(index);
-    double y2  = g2->GetPointY(index);
-    double ey2 = g2->GetErrorY(index);
+    g1->GetPoint(index,x1,y1);
+    ex1 = g1->GetErrorX(index);
+    ey1 = g1->GetErrorY(index);
+    g2->GetPoint(index,x2,y2);
+    ey2 = g2->GetErrorY(index);
     if (x1!=x2)
       {
       //cout << "sumGraphs(TGraph * g1, TGraph * g2, TGraph * gSum) x1 ne x2" << endl;
