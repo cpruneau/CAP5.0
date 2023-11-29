@@ -28,7 +28,7 @@ HistogramCollection(_name)
 void LineShape::setDefaultConfiguration()
 {
   Task::setDefaultConfiguration();
-  addParameter("nBins_p",          30);
+  addParameter("nBins_p",          300);
   addParameter("Min_p",            0.00);
   addParameter("Max_p",            3.00);
   addParameter("nBins_dEdx",       100);
@@ -89,20 +89,24 @@ void LineShape::createHistograms()
   h_lineShapeVsDedx_p  = createHistogram("lineShape_p",  nBins_p,  min_p,  max_p, nBins_dEdx, min_dEdx, max_dEdx, "p (GeV/c)", "dE/dx", "P(dE/dx)");
 
   //double m_e = 0.51;
-  double m_pi = 139.0;
-  double m_k  = 450.0;
-  double m_p  = 938.0;
+  double m_pi = 0.139;
+  double m_k  = 0.4500;
+  double m_p  = 0.9380;
   double a    = 0.10;
-  double b    = 0.10;
+  double b    = 0.00;
 
+  cout << " FILL HISTOS" << endl;
   for (int k=0; k<nBins_p; k++)
     {
     double p = min_p + (double(k)+0.5)*width_p;
     double dedx = dedxExpectation(m_pi,p,a,b);
+    cout << " p:" << p << " pi dedx: " << dedx << endl;
     h_lineShapeVsDedx_pi->Fill(p,dedx);
     dedx = dedxExpectation(m_k,p,a,b);
+    cout << " p:" << p << " K  dedx: " << dedx << endl;
     h_lineShapeVsDedx_k->Fill(p,dedx);
     dedx = dedxExpectation(m_p,p,a,b);
+    cout << " p:" << p << " p  dedx: " << dedx << endl;
     h_lineShapeVsDedx_p->Fill(p,dedx);
     }
   TFile * outputFile = openRootFile("","test.root","RECREATE");

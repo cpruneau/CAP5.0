@@ -679,7 +679,8 @@ double Plotter::findGraphMinimum(TGraph * h)
   int n = h->GetN();
   for (int k=0; k<n; k++)
     {
-    double y = h->GetPointY(k);
+    double x, y;
+    h->GetPoint(k,x,y);
     if (y<min) min = y;
     }
   return min;
@@ -691,7 +692,8 @@ double Plotter::findGraphMaximum(TGraph * h)
   int n = h->GetN();
   for (int k=0; k<n; k++)
     {
-    double y = h->GetPointY(k);
+    double x, y;
+    h->GetPoint(k,x,y);
     if (y>max) max = y;
     }
   return max;
