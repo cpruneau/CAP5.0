@@ -56,6 +56,9 @@ public:
   
 protected:
 
+  int nMc;
+  int nParts;
+  
   int nBins_p;
   double min_p;
   double max_p;
@@ -66,10 +69,28 @@ protected:
   double max_dEdx;
   double range_dEdx;
 
+  TH1 * h_yield_pi;
+  TH1 * h_yield_k;
+  TH1 * h_yield_p;
+  TH1 * h_yield_sum;
+  TH1 * h_frac_pi;
+  TH1 * h_frac_k;
+  TH1 * h_frac_p;
+  TH1 * h_frac_sum;
+
   TH2 * h_lineShapeVsDedx_pi;
   TH2 * h_lineShapeVsDedx_k;
   TH2 * h_lineShapeVsDedx_p;
+  TH2 * h_lineShapeVsDedx_sum;
 
+  TH2 * h_omegaVsDedx_pi;
+  TH2 * h_omegaVsDedx_k;
+  TH2 * h_omegaVsDedx_p;
+  TH2 * h_omegaVsDedx_sum;
+
+  TH1 * h_mcYield_pi;
+  TH1 * h_mcYield_k;
+  TH1 * h_mcYield_p;
 
   ClassDef(LineShape,0)
 };
