@@ -220,7 +220,6 @@ void GlobalAnalyzer::importHistograms(TFile & inputFile)
 
 void GlobalAnalyzer::analyzeEvent()
 {
-  incrementTaskExecuted();
   Event & event = * getEventStream(0);
   // count eventStreams used to fill histograms and for scaling at the end..
   // resetParticleCounters();

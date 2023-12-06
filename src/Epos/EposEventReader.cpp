@@ -34,10 +34,7 @@ void EposEventReader::configure()
 
 void EposEventReader::importEvent()
 {
-  incrementTaskExecuted();
-  //EventFilter & eventFilter = * eventFilters[0];
   ParticleFilter & particleFilter = * particleFilters[0];
-  incrementTaskExecuted();
   Event & event = * eventStreams[0];
   event.reset();
   particleFactory->reset();

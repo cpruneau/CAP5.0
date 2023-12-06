@@ -36,8 +36,6 @@ void CalibrationProducer::setDefaultConfiguration()
 
 void CalibrationProducer::execute()
 {
-  if (reportStart(__FUNCTION__))
-    ;
   incrementTaskExecuted();
   bool   histosForceRewrite     = getValueBool(  "HistogramsForceRewrite");
   int    efficiencyOpt          = getValueInt(   "EfficiencyOpt");
@@ -50,19 +48,19 @@ void CalibrationProducer::execute()
     {
     cout
     << endl
-    << "   Starting Calibration Producer for :" << endl
-    << "           histoInputPath: " << histoInputPath  << endl
-    << "       histoRatioFileName: " << histoRatioFileName << endl
-    << "    histoDetectorFileName: " << histoDetectorFileName << endl
-    << "          HistogramsExportPath: " << HistogramsExportPath  << endl
-    << "         histoEffFileName: " << histoEffFileName  << endl;
+    << "Starting Calibration Producer for :" << endl;
+    printItem("histoInputPath",histoInputPath);
+    printItem("histoRatioFileName",histoRatioFileName);
+    printItem("histoDetectorFileName",histoDetectorFileName);
+    printItem("HistogramsExportPath",HistogramsExportPath);
+    printItem("histoEffFileName",histoEffFileName);
     switch (efficiencyOpt)
       {
-        case 0: cout << "           efficiencyOpt: eff vs. pt" << endl; break;
-        case 1: cout << "           efficiencyOpt: eff vs. pt vs eta" << endl; break;
-        case 2: cout << "           efficiencyOpt: eff vs. pt vs y" << endl; break;
-        case 3: cout << "           efficiencyOpt: eff vs. pt vs phi vs eta" << endl; break;
-        case 4: cout << "           efficiencyOpt: eff vs. pt vs phi vs y" << endl; break;
+        case 0: cout << "efficiencyOpt: eff vs. pt" << endl; break;
+        case 1: cout << "efficiencyOpt: eff vs. pt vs eta" << endl; break;
+        case 2: cout << "efficiencyOpt: eff vs. pt vs y" << endl; break;
+        case 3: cout << "efficiencyOpt: eff vs. pt vs phi vs eta" << endl; break;
+        case 4: cout << "efficiencyOpt: eff vs. pt vs phi vs y" << endl; break;
       }
     }
 

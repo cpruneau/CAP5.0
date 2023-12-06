@@ -39,10 +39,6 @@ void ParticleDecayerTask::setDefaultConfiguration()
 // ====================================================================
 void ParticleDecayerTask::execute()
 {
-  
-  if (reportStart(__FUNCTION__))
-    ;
-  incrementTaskExecuted();
   Event & event = * eventStreams[0];
   int nParticles = event.getNParticles();
   if (nParticles< 1)

@@ -166,10 +166,6 @@ void MeasurementPerformanceSimulator::importHistograms(TFile & inputFile)
 //!
 void MeasurementPerformanceSimulator::createEvent()
 {
-  
-  if (reportStart(__FUNCTION__))
-    ;
-  incrementTaskExecuted();
   Event & genEvent  = *eventStreams[0];
   Event & recoEvent = *eventStreams[1];
   unsigned long nRunPartSingleAnalysisGen   = genEvent.getParticleCount();

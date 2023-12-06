@@ -30,7 +30,6 @@ void EventPlaneRandomizerTask::setDefaultConfiguration()
 
 void EventPlaneRandomizerTask::createEvent()
 {
-  incrementTaskExecuted();
   double eventAngle= CAP::Math::twoPi() * gRandom->Rndm();
   Event * event = eventStreams[0];
   unsigned int nParticles = event->getNParticles();

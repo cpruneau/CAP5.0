@@ -184,8 +184,6 @@ void PythiaEventGenerator::initialize()
 
 void PythiaEventGenerator::createEvent()
 {
-
-  incrementTaskExecuted();
   Event & event = *eventStreams[0];
   EventProperties & eventProperties = * event.getEventProperties();
   Particle * interaction;

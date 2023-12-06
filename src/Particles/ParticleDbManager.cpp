@@ -82,16 +82,11 @@ void ParticleDbManager::execute()
 
 void ParticleDbManager::initialize()
 {
-  if (reportStart(__FUNCTION__))
-    ;
   incrementTaskExecuted();
   if (particleDbImport || particleDbExport)
     {
     importParticleDb();
-    //initializeParticleDb();
     }
-  if (reportEnd(__FUNCTION__))
-    ;
 }
 
 

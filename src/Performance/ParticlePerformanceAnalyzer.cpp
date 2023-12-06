@@ -141,28 +141,23 @@ void ParticlePerformanceAnalyzer::importHistograms(TFile & inputFile)
 
 void ParticlePerformanceAnalyzer::analyzeEvent()
 {
-  
-  if (reportStart(__FUNCTION__))
-    ;
-  incrementTaskExecuted();
-
   Event & recoEvent = *eventStreams[1];
-  unsigned int nEventFilters    = eventFilters.size();
-  unsigned int nParticleFilters = particleFilters.size();
-  unsigned long nParticles      = recoEvent.getParticleCount();
+  Size_t nEventFilters    = eventFilters.size();
+  Size_t nParticleFilters = particleFilters.size();
+  Size_t nParticles      = recoEvent.getParticleCount();
 
-  for (unsigned int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
+  for (Size_t iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {
     //cout<< "ParticlePerformanceAnalyzer::analyzeEvent() -- 4 --" << endl;
     if (!eventFilters[iEventFilter]->accept(recoEvent)) continue;
     //cout<< "ParticlePerformanceAnalyzer::analyzeEvent() -- 5 --" << endl;
     incrementNEventsAccepted(iEventFilter);
     ParticlePerformanceHistos * histos = (ParticlePerformanceHistos *) histogramManager.getGroup(0,0);
-    for (unsigned int iParticle=0; iParticle<nParticles; iParticle++)
+    for (Size_t iParticle=0; iParticle<nParticles; iParticle++)
       {
       //cout<< "ParticlePerformanceAnalyzer::analyzeEvent() -- 6 --" << endl;
       Particle & recoParticle = * recoEvent.getParticleAt(iParticle);
-      for (unsigned int iParticleFilter=0; iParticleFilter<nParticleFilters; iParticleFilter++ )
+      for (Size_t iParticleFilter=0; iParticleFilter<nParticleFilters; iParticleFilter++ )
         {
         //cout<< "ParticlePerformanceAnalyzer::analyzeEvent() -- 7 --" << endl;
         if (particleFilters[iParticleFilter]->accept(recoParticle))

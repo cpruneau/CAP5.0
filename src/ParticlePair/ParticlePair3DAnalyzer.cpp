@@ -150,10 +150,6 @@ void ParticlePair3DAnalyzer::HistogramsImport(TFile & inputFile)
 
 void ParticlePair3DAnalyzer::analyzeEvent()
 {
-  //
-  //  if (reportStart(__FUNCTION__))
-  //    ;
-  incrementTaskExecuted();
   Event & event = *eventStreams[0];
 
   //Is this event accepted by this task's event filters?

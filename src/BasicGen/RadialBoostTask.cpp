@@ -79,10 +79,8 @@ void RadialBoostTask::importHistograms(TFile & inputFile)
 // this function is not correct -- needs to be fixed.
 void RadialBoostTask::createEvent()
 {
-  
   if (reportStart(__FUNCTION__))
     ;
-  incrementTaskExecuted();
   double beta, betax, betay;
   double rx=0;
   double ry=0;

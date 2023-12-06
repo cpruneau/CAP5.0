@@ -47,10 +47,8 @@ void AACollisionGenerator::initialize()
 
 void AACollisionGenerator::createEvent()
 {
-  
   if (reportStart(__FUNCTION__))
     ;
-  incrementTaskExecuted();
   unsigned int nParticles = eventStreams[0]->getNParticles()
   for (unsigned int iParticle = 0; iParticle < nParticles; iParticle++)
   {

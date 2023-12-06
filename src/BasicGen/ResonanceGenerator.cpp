@@ -81,7 +81,6 @@ void ResonanceGenerator::createEvent()
 {
   if (reportStart(__FUNCTION__))
     ;
-  incrementTaskExecuted();
   Event & event = *eventStreams[0];
   EventProperties & ep = * eventStreams[0]->getEventProperties();
 

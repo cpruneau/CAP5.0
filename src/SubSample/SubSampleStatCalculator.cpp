@@ -96,7 +96,7 @@ void SubSampleStatCalculator::execute()
 
   
   bool prependPath = true;
-  bool verbose = true;
+  bool verbose = false;
   VectorString  allFilesToSum = listFilesInDir(histosImportPath,includePatterns,excludePatterns, prependPath, verbose, maximumDepth,0);
   int nFilesToSum = allFilesToSum.size();
   int groupSize = (nFilesToSum>defaultGroupSize) ? defaultGroupSize : nFilesToSum;
@@ -114,7 +114,6 @@ void SubSampleStatCalculator::execute()
       cout << "========================================================================"  << endl;
       }
     throw TaskException("nFilesToSum<1","SubSampleStatCalculator::execute()");
-    return;
     }
   if (reportInfo(__FUNCTION__))
     {
@@ -127,11 +126,12 @@ void SubSampleStatCalculator::execute()
     printItem("HistogramsImportPath", histosImportPath);
     printItem("HistogramsExportPath", histosExportPath);
     printItem("HistogramsExportFile", histosExportFile);
-    cout << endl;
+    cout << " Files to sum:" << endl;
+    for (Size_t iFile=0;iFile<nFilesToSum; iFile++)
+      cout << "    " << iFile << "    " << allFilesToSum[iFile] << endl;
     }
-  
-
-  for (int iGroup =0; iGroup<nGroups; iGroup++  )
+   
+   for (int iGroup =0; iGroup<nGroups; iGroup++  )
     {
     int first = iGroup*groupSize;
     int last  = (iGroup+1)*groupSize;
@@ -180,7 +180,7 @@ void SubSampleStatCalculator::execute()
       }
     else
       {
-      if (reportWarning(__FUNCTION__)) cout << "nEventFilters is null" << endl;
+      throw TaskException("nEventFilters is null","SubSampleStatCalculator::execute()");
       }
 
     for (int iFile=first+1; iFile<last; iFile++)
@@ -189,7 +189,6 @@ void SubSampleStatCalculator::execute()
       TFile * inputFile = openRootFile("", histosImportFile, "READ");
       collection = new HistogramCollection(histosImportFile,getSeverityLevel());;
       collection->loadCollection(*inputFile);
-      collectionAvg->squareDifferenceCollection(*collection, double(sumEventsProcessed), double(nEventsProcessed), (iFile==(last-1)) ? nInputFile : -iFile);
       try
       {
       parameterName      = "nTaskExecuted";
@@ -214,7 +213,10 @@ void SubSampleStatCalculator::execute()
       else
         {
         if (reportWarning(__FUNCTION__)) cout << "nEventFilters is null" << endl;
+        throw TaskException("nEventFilters is null","SubSampleStatCalculator::execute()");
         }
+      collectionAvg->squareDifferenceCollection(*collection, double(sumEventsProcessed), double(nEventsProcessed), (iFile==(last-1)) ? nInputFile : -iFile);
+
       delete collection;
       inputFile->Close();
       if (reportInfo(__FUNCTION__))
@@ -243,18 +245,12 @@ void SubSampleStatCalculator::execute()
         }
       }
 
-    cout << " -- 1 --" << endl;
     collectionAvg->exportHistograms(*rootOutputFile);
-    cout << " -- 2 --" << endl;
     firstFile->Close();
-    cout << " -- 2b --" << endl;
     collectionAvg->setOwnership(0);
     delete collectionAvg;
-    cout << " -- 3 --" << endl;
     rootOutputFile->Close();
-    cout << " -- 4 --" << endl;
     }
-  if (reportEnd(__FUNCTION__))
-    ;
+
 }
 

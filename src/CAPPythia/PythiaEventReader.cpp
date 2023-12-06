@@ -40,9 +40,6 @@ void PythiaEventReader::importEvent()
 {
   if (reportStart(__FUNCTION__))
     ;
-  
-  //cout << "eventStreams.size() : " << eventStreams.size() << endl;
-  incrementTaskExecuted();
   Event & event = * eventStreams[0];
   event.reset();
   particleFactory->reset();

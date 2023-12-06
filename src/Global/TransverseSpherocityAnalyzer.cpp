@@ -153,12 +153,7 @@ void TransverseSpherocityAnalyzer::importHistograms(TFile & inputFile)
 
 void TransverseSpherocityAnalyzer::analyzeEvent()
 {
-//  
-//  if (reportStart(__FUNCTION__))
-//    ;
-  incrementTaskExecuted();
   static double factor = CAP::Math::pi()*CAP::Math::pi()/4.0;
-  incrementTaskExecuted();
   Event & event = * getEventStream(0);
    // count eventStreams used to fill histograms and for scaling at the end..
   // resetParticleCounters();

@@ -33,11 +33,6 @@ void ClosureCalculator::setDefaultConfiguration()
 
 void ClosureCalculator::execute()
 {
-  if (reportStart(__FUNCTION__))
-    ;
-
-  incrementTaskExecuted();
-
   String histosGeneratorFileName ="";
   String histosDetectorFileName  ="";
   String histosClosureFileName  ="";
@@ -47,16 +42,16 @@ void ClosureCalculator::execute()
   if (reportInfo(__FUNCTION__))
     {
     cout << endl;
-    cout << "   Starting closure test calculation for :" << endl;
-    cout << "   HistoInputPath....................: " << histosImportPath  << endl;
-    cout << "   HistoGeneratorFileName............: " << histosGeneratorFileName << endl;
-    cout << "   HistoDetectorFileName.............: " << histosDetectorFileName << endl;
-    cout << "   HistogramsExportPath..............: " << histosExportPath  << endl;
-    cout << "   HistogramsClosureFileName.........: " << histosClosureFileName  << endl;
+    printItem("Starting closure test calculation");
+    printItem("HistoInputPath",histosImportPath);
+    printItem("HistoGeneratorFileName",histosGeneratorFileName);
+    printItem("HistoDetectorFileName",histosDetectorFileName);
+    printItem("HistogramsExportPath",histosExportPath);
+    printItem("HistogramsClosureFileName",histosClosureFileName);
     switch (selectedMethod)
       {
-        case 0: cout << "   SelectedMethod...............: Difference" << endl; break;
-        case 1: cout << "   SelectedMethod...............: Ratio" << endl; break;
+        case 0: printItem("SelectedMethod","Difference"); break;
+        case 1: printItem("SelectedMethod","Ratio"); break;
       }
     }
   String option = "NEW";

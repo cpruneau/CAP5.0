@@ -62,7 +62,7 @@ public:
   //!
   //! Execute this task based on the configuration and class variable specified at construction
   //!
-  virtual void createEvent();
+  virtual void analyzeEvent();
   
 protected:
   

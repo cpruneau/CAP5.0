@@ -159,7 +159,6 @@ void NuDynAnalyzer::importHistograms(TFile & inputFile)
 
 void NuDynAnalyzer::analyzeEvent()
 {
-  incrementTaskExecuted();
   unsigned int nEventFilters    = eventFilters.size();
   //unsigned int nParticleFilters = particleFilters.size();
   Event * event = eventStreams[0];
@@ -250,7 +249,6 @@ void NuDynAnalyzer::calculateDerivedHistograms()
 {
   if (reportStart(__FUNCTION__))
     ;
-  //incrementTaskExecuted();
   unsigned int nEventFilters    = eventFilters.size();
   unsigned int nParticleFilters = particleFilters.size();
   if (reportInfo(__FUNCTION__))

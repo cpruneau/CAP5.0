@@ -63,6 +63,12 @@ void TaskIterator::configure()
   bunchLabel             = getValueString("BunchLabel");
   subbunchLabel          = getValueString("SubbunchLabel");
 
+  if (isGrid) // just doing a sub bunch
+    {
+    // nEventsPerSubbunch is past to RunAna.C via the launching script.
+    nEventsRequested = nEventsPerSubbunch;
+    }
+
   if (reportInfo(__FUNCTION__))
     {
     cout <<  endl;

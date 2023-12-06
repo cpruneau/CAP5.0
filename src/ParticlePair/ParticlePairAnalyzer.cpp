@@ -281,9 +281,7 @@ void ParticlePairAnalyzer::importHistograms(TFile & inputFile)
 
 void ParticlePairAnalyzer::analyzeEvent()
 {
-  incrementTaskExecuted();
   Event & event = *eventStreams[0];
-
   vector<Particle*> & particles = event.getParticles();
   unsigned int nParticles = particles.size();
   if (false)
@@ -456,10 +454,9 @@ void ParticlePairAnalyzer::scaleHistograms()
   int index = 0;
   for (int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {
-    long nAccepted = getAcceptedEventCount();
+    long nAccepted = getAcceptedEventCount(iEventFilter);
     if (nAccepted>1)
       {
-
       scalingFactor = 1.0/double(nAccepted);
       for (int iParticleFilter=0; iParticleFilter<nParticleFilters; iParticleFilter++ )
         {
@@ -614,7 +611,7 @@ void ParticlePairAnalyzer::calculateDerivedHistograms()
           cout << "  dPairHistos............:" << dPairHistos->getName() << endl;
           }
         dPairHistos->calculatePairDerivedHistograms(*bSingleHistos1,*bSingleHistos2,*dSingleHistos1,*dSingleHistos2,*bPairHistos,binCorrPP);
-        if (reportDebug(__FUNCTION__)) cout << "   WTF 8" << endl;
+
         }
       }
     }

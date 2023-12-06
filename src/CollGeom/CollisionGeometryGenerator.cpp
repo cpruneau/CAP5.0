@@ -150,12 +150,9 @@ void CollisionGeometryGenerator::reset()
 
 void CollisionGeometryGenerator::createEvent()
 {
-  
   if (reportStart(__FUNCTION__))
     ;
-  incrementTaskExecuted();
   Event & event = *eventStreams[0];
-  //event.reset();
   Nucleus & nucleusA = event.getNucleusA();
   Nucleus & nucleusB = event.getNucleusB();
   double rr = gRandom->Rndm();

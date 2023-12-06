@@ -137,10 +137,8 @@ void CollisionGeometryAnalyzer::importHistograms(TFile & inputFile)
 
 void CollisionGeometryAnalyzer::analyzeEvent()
 {
-  
   if (reportStart(__FUNCTION__))
     ;
-  incrementTaskExecuted();
   Event & event = *eventStreams[0];
   for (int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {

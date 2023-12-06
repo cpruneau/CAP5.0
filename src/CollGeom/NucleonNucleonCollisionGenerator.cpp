@@ -27,7 +27,6 @@ EventTask(_name, _configuration)
 
 void NucleonNucleonCollisionGenerator::generate(Particle * parent)
 {
-  incrementTaskExecuted();
 }
 
 }  // namespace CAP

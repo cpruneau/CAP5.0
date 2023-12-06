@@ -196,20 +196,17 @@ void ParticlePair3DDerivedHistogramCalculator::HistogramsImport(TFile & inputFil
 // ====================================
 void ParticlePair3DDerivedHistogramCalculator::execute()
 {
-  
   if (reportStart(__FUNCTION__))
     ;
-  //incrementTaskExecuted();
-  //const Configuration & config  = getConfiguration();
    if (reportDebug(__FUNCTION__))
     {
     cout << endl;
     cout << "Computing derived histograms for: " << endl;
-    cout << "                   nEventFilters: " << nEventFilters << endl;
-    cout << "                nParticleFilters: " << nParticleFilters << endl;
-    cout << "                   nSingleHistos: " << getNBaseSingleHistograms() << endl;
-    cout << "                     nPairHistos: " << getNBasePairHistograms() << endl;
-    cout << "                  nDerivedHistos: " << getNDerivedPairHistograms() << endl;
+    printItem("nEventFilters",nEventFilters);
+    printItem("nParticleFilters",nParticleFilters);
+    printItem("nSingleHistos",getNBaseSingleHistograms());
+    printItem("PairHistos",getNBasePairHistograms());
+    printItem("nDerivedHistos",getNDerivedPairHistograms());
     }
   ParticleHistos        * bSingleHistos1;
   ParticleHistos        * bSingleHistos2;
@@ -220,7 +217,12 @@ void ParticlePair3DDerivedHistogramCalculator::execute()
   
   for (int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {
-    if (reportDebug(__FUNCTION__)) cout << "  iEventFilter:" << iEventFilter << endl;
+    if (reportDebug(__FUNCTION__))
+      {
+      cout << endl;
+      printItem("iEventFilter",iEventFilter);
+      }
+
     unsigned int index;
     unsigned int baseSingle        = iEventFilter*nParticleFilters;
     unsigned int basePair          = iEventFilter*nParticleFilters*nParticleFilters;

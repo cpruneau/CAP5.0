@@ -61,9 +61,8 @@ void EventVertexRandomizerTask::initialize()
   tRms = configuration.getValueDouble(getName(),"tRms");
 }
 
-void EventVertexRandomizerTask::createEvent()
+void EventVertexRandomizerTask::analyzeEvent()
 {
-  incrementTaskExecuted();
   double eventX = gRandom->Gaus(rConversion*xAvg, rConversion*xRms);
   double eventY = gRandom->Gaus(rConversion*yAvg, rConversion*yRms);
   double eventZ = gRandom->Gaus(rConversion*zAvg, rConversion*zRms);

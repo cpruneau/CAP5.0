@@ -361,11 +361,8 @@ void ParticleSingleAnalyzer::importDerivedHistograms(TFile & inputFile __attribu
 
 void ParticleSingleAnalyzer::calculateDerivedHistograms()
 {
-  if (reportStart(__FUNCTION__))
-    ;
-  //incrementTaskExecuted();
-  unsigned int nEventFilters    = eventFilters.size();
-  unsigned int nParticleFilters = particleFilters.size();
+  Size_t nEventFilters    = eventFilters.size();
+  Size_t nParticleFilters = particleFilters.size();
   if (reportDebug(__FUNCTION__))
     {
     cout << endl;

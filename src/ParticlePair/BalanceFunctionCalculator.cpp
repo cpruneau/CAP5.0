@@ -451,7 +451,8 @@ void BalanceFunctionCalculator::execute()
 //  cout << "histosExportFile : " << histosExportFile << endl;
 //  exit(1);
 
-  if (histosImportFile.Contains("none") ||
+  if (histosImportFile.Contains("DEFAULT") ||
+      histosImportFile.Contains("none") ||
       histosImportFile.Contains("null") ||
       histosImportFile.Contains("nil") ||
       histosImportFile.IsNull() )
@@ -593,9 +594,10 @@ void BalanceFunctionCalculator::execute()
         pObservableNames.push_back("A2_DyDphi_shft");
         pObservableNames.push_back("B2_DyDphi_shft");
         pObservableNames.push_back("C2_DyDphi_shft");
+        pObservableNames.push_back("D2_DyDphi_shft");
         pObservableNames.push_back("R2_DyDphi_shft");
         pObservableNames.push_back("B2_yY");
-        pObservableNames.push_back("B2_phiPhi");
+        //pObservableNames.push_back("B2_phiPhi");
         break;
       }
 

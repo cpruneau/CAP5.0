@@ -868,7 +868,7 @@ void HistogramCollection::squareDifferenceHistos(TH1 *hAvg, TH1 *h, double sumWe
   double sum = weight + sumWeights;
   double rwn = weight/sum;
   double rw  = sumWeights/sum;
-  double sqrtN = sqrt(n);
+  double sqrtN = sqrt(double(n));
   if (h->IsA()==TH1::Class() || h->IsA()==TH1F::Class() || h->IsA()==TH1D::Class() || h->IsA()==TH1I::Class() )
     {
     int nx = hAvg->GetNbinsX();

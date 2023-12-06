@@ -257,6 +257,58 @@ int PlotBF(int choice = 10)
                          bf_Width_DeltaYMax);
       break;
 
+      case 9:
+      bf_DeltaYDeltPhiMin = -0.05;
+      bf_DeltaYDeltPhiMax =  0.3;
+      bf_DeltaYMin = -0.05;
+      bf_DeltaYMax =  0.5;
+      bf_DeltPhiMin = -0.05;
+      bf_DeltPhiMax =  0.2499;
+      bf_Integral_DeltaYMin =  0.0;
+      bf_Integral_DeltaYMax =  1.1;
+      bf_IntegralSum_DeltaYMin =  0.0;
+      bf_IntegralSum_DeltaYMax =  1.1;
+      bf_Width_DeltaYMin =  0.0;
+      bf_Width_DeltaYMax =  1.1;
+
+
+      plotter->bf_General_Titles.push_back(TString("PYTHIA; pp #sqrt{s}=13 TeV"));
+      plotter->correlationOption  = 2;
+      plotter->speciesOption      = 1;
+      plotter->rapidityOption     = 0;
+      plotter->bfOption           = 2;
+      plotter->outputPathNameBase = "/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/PP/Plots/";
+      //      plotter->outputFileNameBase = "PYTHIA_Monash_pp_PiKP_A2Based_";
+      //      plotter->deltaY_Minimum = -20.0;
+      //      plotter->deltaY_Maximum = 20.0;
+      plotter->outputFileNameBase = "PYTHIA_Monash_pp_PiKP_A2Based_Deltay20_";
+      //      plotter->deltaY_Minimum = -4.0;
+      //      plotter->deltaY_Maximum = 4.0;
+      plotter->deltaY_Minimum = -20.0;
+      plotter->deltaY_Maximum = 20.0;
+
+      plotter->addSystem("/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/OUT202312011613",
+                         "PairGenBalFctSum0TO9.root",
+                         "Monash",
+                         "PairGen_All_",
+                         "PairGen_All_",
+                         "13000_PiKp_Y10_",
+                         2,
+                         bf_DeltaYDeltPhiMin,
+                         bf_DeltaYDeltPhiMax,
+                         bf_DeltaYMin,
+                         bf_DeltaYMax,
+                         bf_DeltPhiMin,
+                         bf_DeltPhiMax,
+                         bf_Integral_DeltaYMin,
+                         bf_Integral_DeltaYMax,
+                         bf_IntegralSum_DeltaYMin,
+                         bf_IntegralSum_DeltaYMax,
+                         bf_Width_DeltaYMin,
+                         bf_Width_DeltaYMax);
+
+      break;
+
       case 10:
       bf_DeltaYDeltPhiMin = -0.05;
       bf_DeltaYDeltPhiMax =  0.3;

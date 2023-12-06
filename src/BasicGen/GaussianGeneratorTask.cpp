@@ -65,7 +65,6 @@ GaussianGeneratorTask::~GaussianGeneratorTask()
 // needs to be reimplemented.
 void GaussianGeneratorTask::createEvent()
 {
-//  incrementTaskExecuted();
 //  Event & event = * eventStreams[0];
 //
 //  int nParticles = event.getNParticles();
