@@ -32,9 +32,9 @@ void loadSubSample(const TString & includeBasePath);
 void loadExec(const TString & includeBasePath);
 
 
-int RunDerived(TString configFile,
-               TString pathName,
-               int nBunches=5)
+int RunDerived(TString configFile="AnalysisPythia_pp13TeV_CH_Y2_inclusive",
+               TString pathName="/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/PiKP/Y2/",
+               int nBunches=20)
 {
   TString includeBasePath = getenv("CAP_SRC");
   loadBase(includeBasePath);
@@ -77,6 +77,7 @@ int RunDerived(TString configFile,
   }
 
   configuration.addParameter("Run:nBunches",                  nBunches);
+  configuration.addParameter("Run:Analysis:nBunches",         nBunches);
 
   configuration.addParameter("Run:HistogramsExportPath",      pathName);
   configuration.addParameter("Run:HistogramsImportPath",      pathName);
@@ -88,9 +89,9 @@ int RunDerived(TString configFile,
   configuration.addParameter("Run:RunEventAnalysisGen",       false);
   configuration.addParameter("Run:RunEventAnalysisReco",      false);
   configuration.addParameter("Run:RunDerived",                true);
-  configuration.addParameter("Run:RunDerivedGen",             false);
+  configuration.addParameter("Run:RunDerivedGen",             true);
   configuration.addParameter("Run:RunDerivedReco",            false);
-  configuration.addParameter("Run:RunBalFct",                 false);
+  configuration.addParameter("Run:RunBalFct",                 true);
   configuration.addParameter("Run:RunBalFctGen",              true);
   configuration.addParameter("Run:RunBalFctReco",             false);
 

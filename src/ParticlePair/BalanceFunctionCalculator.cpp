@@ -33,9 +33,8 @@ allFilesToAnalyze(),
 appendedString("BalFct"),
 calculateCI(1),
 calculateCD(1),
-calculateBFv1(1),
-calculateDiffs(0),
-calculateBFv2(1)
+calculateBF(1),
+calculateDiffs(0)
 {
   appendClassName("BalanceFunctionCalculator");
 }
@@ -51,9 +50,8 @@ void BalanceFunctionCalculator::setDefaultConfiguration()
   addParameter("AppendedString",         TString("BalFct"));
   addParameter("calculateCI",            true);
   addParameter("calculateCD",            true);
-  addParameter("calculateBFv1",          true);
-  addParameter("calculateDiffs",         true);
-  addParameter("calculateBFv2",          true);
+  addParameter("calculateBF",          true);
+  addParameter("calculateDiffs",         false);
   addParameter("FillEta",                true);
   addParameter("FillY",                  false);
   addParameter("FillP2",                 false);
@@ -406,9 +404,8 @@ void BalanceFunctionCalculator::configure()
   appendedString      = getValueString("AppendedString");
   calculateCI         = getValueBool("calculateCI" );
   calculateCD         = getValueBool("calculateCD" );
-  calculateBFv1       = getValueBool("calculateBFv1" );
+  calculateBF         = getValueBool("calculateBF" );
   calculateDiffs      = getValueBool("calculateDiffs" );
-  calculateBFv2       = getValueBool("calculateBFv2" );
 
   if (reportInfo(__FUNCTION__))
     {
@@ -422,9 +419,8 @@ void BalanceFunctionCalculator::configure()
     printItem("AppendedString",        appendedString);
     printItem("calculateCI",           calculateCI);
     printItem("calculateCD",           calculateCD);
-    printItem("calculateBFv1",         calculateBFv1);
+    printItem("calculateBF",           calculateBF);
     printItem("calculateDiffs",        calculateDiffs);
-    printItem("calculateBFv2",         calculateBFv2);
     cout << endl;
     }
 }
@@ -512,9 +508,8 @@ void BalanceFunctionCalculator::execute()
     printItem("AppendedString",        appendedString);
     printItem("calculateCI",           calculateCI);
     printItem("calculateCD",           calculateCD);
-    printItem("calculateBFv1",         calculateBFv1);
+    printItem("calculateBF",           calculateBF);
     printItem("calculateDiffs",        calculateDiffs);
-    printItem("calculateBFv2",         calculateBFv2);
     cout << endl;
     }
 
@@ -530,9 +525,8 @@ void BalanceFunctionCalculator::execute()
     if (reportInfo(__FUNCTION__))
       {
       cout << endl;
-      cout << " CalculateBF...................: "  << calculateBFv2       << endl;
-      cout << " From..........................: "  << histosImportFile << endl;
-      cout << " Saved to:.....................: "  << histosExportFile << endl;
+      printItem("From",histosImportFile);
+      printItem("Saved to",histosExportFile);
       }
 
     // Use histogramGroup  as helper to load and calculate histograms, etc.
@@ -642,7 +636,7 @@ void BalanceFunctionCalculator::execute()
             if (calculateCD)
               calculate_CD(getName(),eventClassName,particleName1,particleName2, pObservableNames[iObservable],obs_1_2,obs_1Bar_2,obs_1_2Bar,obs_1Bar_2Bar,histogramGroup );
 
-            if (calculateBFv1)
+            if (calculateBF)
               {
               TH2* bfa = calculate_BalFct(getName(),eventClassName,particleName1,particleName2, pObservableNames[iObservable], "B2_1_2Bar",rho1_2Bar, obs_1_2Bar, obs_1Bar_2Bar,histogramGroup );
               TH2* bfb = calculate_BalFct(getName(),eventClassName,particleName1,particleName2, pObservableNames[iObservable], "B2_1Bar_2",rho1_2,    obs_1Bar_2, obs_1_2,histogramGroup );

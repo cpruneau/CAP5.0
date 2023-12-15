@@ -32,9 +32,9 @@ void loadSubSample(const TString & includeBasePath);
 void loadExec(const TString & includeBasePath);
 
 
-int RunSum(TString configFile,
-           TString pathName,
-           int nBunches,
+int RunSum(TString configFile="AnalysisPythia_pp13TeV_CH_Y2_inclusive",
+           TString pathName="/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/PiKP/Y2/",
+           int nBunches=20,
            bool isGrid=true)
 {
   TString includeBasePath = getenv("CAP_SRC");
@@ -79,6 +79,7 @@ int RunSum(TString configFile,
   return 1;
   }
   configuration.addParameter("Run:nBunches",                  nBunches);
+  configuration.addParameter("Run:Analysis:nBunches",         nBunches);
 
   configuration.addParameter("Run:HistogramsExportPath",      pathName);
   configuration.addParameter("Run:HistogramsImportPath",      pathName);

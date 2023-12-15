@@ -12,7 +12,7 @@
 void loadBase(const TString & includeBasePath);
 void loadPlotting(const TString & includeBasePath);
 
-int PlotBF(int choice = 10)
+int PlotBF(int choice = 9)
 {
   const bool YES = true;
   const bool NO  = false;
@@ -277,7 +277,7 @@ int PlotBF(int choice = 10)
       plotter->speciesOption      = 1;
       plotter->rapidityOption     = 0;
       plotter->bfOption           = 2;
-      plotter->outputPathNameBase = "/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/PP/Plots/";
+      plotter->outputPathNameBase = "/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/PiKP/";
       //      plotter->outputFileNameBase = "PYTHIA_Monash_pp_PiKP_A2Based_";
       //      plotter->deltaY_Minimum = -20.0;
       //      plotter->deltaY_Maximum = 20.0;
@@ -287,12 +287,12 @@ int PlotBF(int choice = 10)
       plotter->deltaY_Minimum = -20.0;
       plotter->deltaY_Maximum = 20.0;
 
-      plotter->addSystem("/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/OUT202312011613",
+      plotter->addSystem("/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/PiKP/Y2/",
                          "PairGenBalFctSum0TO9.root",
                          "Monash",
                          "PairGen_All_",
                          "PairGen_All_",
-                         "13000_PiKp_Y10_",
+                         "13000_PiKp_Y2_",
                          2,
                          bf_DeltaYDeltPhiMin,
                          bf_DeltaYDeltPhiMax,
@@ -306,7 +306,44 @@ int PlotBF(int choice = 10)
                          bf_IntegralSum_DeltaYMax,
                          bf_Width_DeltaYMin,
                          bf_Width_DeltaYMax);
-
+      plotter->addSystem("/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/PiKP/Y6/",
+                         "PairGenBalFctSum0TO9.root",
+                         "Monash",
+                         "PairGen_All_",
+                         "PairGen_All_",
+                         "13000_PiKp_Y2_",
+                         2,
+                         bf_DeltaYDeltPhiMin,
+                         bf_DeltaYDeltPhiMax,
+                         bf_DeltaYMin,
+                         bf_DeltaYMax,
+                         bf_DeltPhiMin,
+                         bf_DeltPhiMax,
+                         bf_Integral_DeltaYMin,
+                         bf_Integral_DeltaYMax,
+                         bf_IntegralSum_DeltaYMin,
+                         bf_IntegralSum_DeltaYMax,
+                         bf_Width_DeltaYMin,
+                         bf_Width_DeltaYMax);
+      plotter->addSystem("/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/PiKP/Y10/",
+                         "PairGenBalFctSum0TO9.root",
+                         "Monash",
+                         "PairGen_All_",
+                         "PairGen_All_",
+                         "13000_PiKp_Y2_",
+                         2,
+                         bf_DeltaYDeltPhiMin,
+                         bf_DeltaYDeltPhiMax,
+                         bf_DeltaYMin,
+                         bf_DeltaYMax,
+                         bf_DeltPhiMin,
+                         bf_DeltPhiMax,
+                         bf_Integral_DeltaYMin,
+                         bf_Integral_DeltaYMax,
+                         bf_IntegralSum_DeltaYMin,
+                         bf_IntegralSum_DeltaYMax,
+                         bf_Width_DeltaYMin,
+                         bf_Width_DeltaYMax);
       break;
 
       case 10:
@@ -527,13 +564,49 @@ int PlotBF(int choice = 10)
       break;
     }
   //plotter->outputPath = "./TestOutput/";
+  try
+  {
   plotter->execute();
+  }
+  catch (CAP::TaskException & te)
+  {
+  te.print(); exit(1);
+  }
+  catch (CAP::ConfigurationException & ce)
+  {
+  ce.print(); exit(1);
+  }
+  catch (CAP::MathException & me)
+  {
+  me.print(); exit(1);
+  }
+  catch (CAP::FileException & fe)
+  {
+  fe.print(); exit(1);
+  }
+  catch (CAP::MemoryException & mme)
+  {
+  mme.print(); exit(1);
+  }
+  catch (CAP::HistogramException & he)
+  {
+  he.print(); exit(1);
+  }
+  catch (CAP::FactoryException & ffe)
+  {
+  ffe.print(); exit(1);
+  }
+  catch (CAP::Exception & e)
+  {
+  e.print(); exit(1);
+  }
   return 0;
 }
 
 void loadBase(const TString & includeBasePath)
 {
   TString includePath = includeBasePath + "/Base/";
+  gSystem->Load(includePath+"Exception.hpp");
   gSystem->Load(includePath+"Timer.hpp");
   gSystem->Load(includePath+"MessageLogger.hpp");
   gSystem->Load(includePath+"Task.hpp");

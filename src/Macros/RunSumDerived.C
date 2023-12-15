@@ -33,9 +33,8 @@ void loadExec(const TString & includeBasePath);
 
 
 
-int RunSumDerived(TString configFile="ResoAnalysis.txt",
-                  TString pathName="/Volumes/ClaudeDisc4/OutputFiles/Reso",
-                  int nBunches=1)
+int RunSumDerived(TString configFile="AnalysisPythia_pp13TeV_CH_Y2_inclusive",
+                  TString pathName="/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/PiKP/Y2/")
 {
   TString includeBasePath = getenv("CAP_SRC");
   loadBase(includeBasePath);
@@ -61,7 +60,6 @@ int RunSumDerived(TString configFile="ResoAnalysis.txt",
   std::cout << "Executing RunSumDerived" << endl;
   std::cout << "configFile......: " << configFile << endl;
   std::cout << "pathName........: " << pathName   << endl;
-  std::cout << "nBunches........: " << nBunches   << endl;
   std::cout << "==================================================================================" << std::endl;
   CAP::Configuration configuration;
 
@@ -109,21 +107,21 @@ int RunSumDerived(TString configFile="ResoAnalysis.txt",
   configuration.addParameter("Run:RunSubsampleBalFct",        false);
   configuration.addParameter("Run:RunSubsampleBalFctGen",     false);
   configuration.addParameter("Run:RunSubsampleBalFctReco",    false);
-
   configuration.addParameter("Run:Bunched",                   true);
-  configuration.addParameter("Run:nBunches",                  nBunches);
+  configuration.addParameter("Run:nBunches",                  1);
+  configuration.addParameter("Run:Analysis:nBunches",         1);
   configuration.addParameter("Run:MaximumDepth",              1);
-  configuration.addParameter("Run:RunPartSingleAnalysisGen",      true);
-  configuration.addParameter("Run:RunPartSingleAnalysisReco",     false);
-  configuration.addParameter("Run:RunPartPairAnalysisGen",        true);
-  configuration.addParameter("Run:RunPartPairAnalysisReco",       false);
+  configuration.addParameter("Run:Analysis:RunPartSingleAnalysisGen",      true);
+  configuration.addParameter("Run:Analysis:RunPartSingleAnalysisReco",     false);
+  configuration.addParameter("Run:Analysis:RunPartPairAnalysisGen",        true);
+  configuration.addParameter("Run:Analysis:RunPartPairAnalysisReco",       false);
 
-  configuration.addParameter("Run:RunGlobalAnalysisGen",          false);
-  configuration.addParameter("Run:RunGlobalAnalysisReco",         false);
-  configuration.addParameter("Run:RunSpherocityAnalysisGen",      false);
-  configuration.addParameter("Run:RunSpherocityAnalysisReco",     false);
-  configuration.addParameter("Run:RunNuDynAnalysisGen",           false);
-  configuration.addParameter("Run:RunNuDynAnalysisReco",          false);
+  configuration.addParameter("Run:Analysis:RunGlobalAnalysisGen",          false);
+  configuration.addParameter("Run:Analysis:RunGlobalAnalysisReco",         false);
+  configuration.addParameter("Run:Analysis:RunSpherocityAnalysisGen",      false);
+  configuration.addParameter("Run:Analysis:RunSpherocityAnalysisReco",     false);
+  configuration.addParameter("Run:Analysis:RunNuDynAnalysisGen",           false);
+  configuration.addParameter("Run:Analysis:RunNuDynAnalysisReco",          false);
 
 
 
@@ -133,7 +131,7 @@ int RunSumDerived(TString configFile="ResoAnalysis.txt",
 
   configuration.addParameter("Run:RunSubsampleBalFct",     true);
   configuration.addParameter("Run:RunSubsampleBalFctGen",  true);
-  configuration.addParameter("Run:RunSubsampleDerivedGen", false);
+  configuration.addParameter("Run:RunSubsampleDerivedGen", true);
   CAP::RunAnalysis * analysisB = new CAP::RunAnalysis("Run", configuration);
   analysisB->configure();
   analysisB->execute();

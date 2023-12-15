@@ -224,10 +224,8 @@ protected:
   String appendedString;
   bool calculateCI;
   bool calculateCD;
-  bool calculateBFv1;
+  bool calculateBF;
   bool calculateDiffs;
-  bool calculateBFv2;
-
 
   ClassDef(BalanceFunctionCalculator,0)
 };

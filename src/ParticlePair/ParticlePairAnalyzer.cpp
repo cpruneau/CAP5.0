@@ -185,12 +185,12 @@ void ParticlePairAnalyzer::createHistograms()
   if (reportInfo(__FUNCTION__))
     {
     cout << endl;
-    cout << "Creating HistogramGroup...........: " << bn << endl;
-    cout << "nEventFilters.................: " << nEventFilters << endl;
-    cout << "nParticleFilters..............: " << nParticleFilters << endl;
-    cout << "FillEta.......................: " << fillEta  << endl;
-    cout << "FillY.........................: " << fillY    << endl;
-    cout << "FillP2........................: " << fillP2   << endl;
+    printItem("Creating HistogramGroup",bn);
+    printItem("nEventFilters",nEventFilters);
+    printItem("nParticleFilters",nParticleFilters);
+    printItem("FillEta",fillEta);
+    printItem("FillY",fillY);
+    printItem("FillP2",fillP2);
     cout << endl;
     }
 
@@ -239,12 +239,12 @@ void ParticlePairAnalyzer::importHistograms(TFile & inputFile)
   if (reportInfo(__FUNCTION__))
     {
     cout << endl;
-    cout << "Loading HistogramGroup............: " << bn << endl;
-    cout << "nEventFilters.................: " << nEventFilters << endl;
-    cout << "nParticleFilters..............: " << nParticleFilters << endl;
-    cout << "FillEta.......................: " << fillEta  << endl;
-    cout << "FillY.........................: " << fillY    << endl;
-    cout << "FillP2........................: " << fillP2   << endl;
+    printItem("Loading HistogramGroup",bn);
+    printItem("nEventFilters",nEventFilters);
+    printItem("nParticleFilters",nParticleFilters);
+    printItem("FillEta",fillEta);
+    printItem("FillY",fillY);
+    printItem("FillP2",fillP2);
     cout << endl;
     }
   for (int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
@@ -477,9 +477,9 @@ void ParticlePairAnalyzer::scaleHistograms()
       if (reportWarning(__FUNCTION__))
         {
         cout << endl;
-        cout << "                            iEventFilter: " <<  iEventFilter<< endl;
-        cout << "      nEventsAcceptedTotal[iEventFilter]: " <<  nAccepted<< endl;
-        cout << "                    no scaling performed: " <<  endl;
+        printItem("iEventFilter",iEventFilter);
+        printItem("nEventsAcceptedTotal[iEventFilter]",nAccepted);
+        printItem("no scaling performed");
         }
       }
     }
@@ -497,20 +497,28 @@ void ParticlePairAnalyzer::createDerivedHistograms()
   if (reportInfo(__FUNCTION__))
     {
     cout << endl;
-    cout << "Creating Derived HistogramGroup....: " << bn << endl;
-    cout << "nEventFilters..................: " << nEventFilters << endl;
-    cout << "nParticleFilters...............: " << nParticleFilters << endl;
+    printItem("Creating Derived HistogramGroup",bn);
+    printItem("nEventFilters",nEventFilters);
+    printItem("nParticleFilters",nParticleFilters);
     cout << endl;
     }
   for (int iEventFilter=0; iEventFilter<nEventFilters; iEventFilter++ )
     {
     String efn = eventFilters[iEventFilter]->getName();
-    if (reportDebug(__FUNCTION__)) cout << "Event filter:" << efn << endl;
+    if (reportDebug(__FUNCTION__)) 
+      {
+      cout << endl;
+      printItem("Event filter",efn);
+      }
     // singles
     for (int iParticleFilter1=0; iParticleFilter1<nParticleFilters; iParticleFilter1++ )
       {
       String pfn1 = particleFilters[iParticleFilter1]->getName();
-      if (reportDebug(__FUNCTION__)) cout << "Particle with filter: " << pfn1 << endl;
+      if (reportDebug(__FUNCTION__)) 
+        {
+        cout << endl;
+        printItem("Particle with filter",pfn1);
+        }
       histos = new ParticleSingleDerivedHistos(this,createName(bn,efn,pfn1),configuration);
       histos->createHistograms();
       histogramManager.addGroupInSet(2,histos);
@@ -522,7 +530,6 @@ void ParticlePairAnalyzer::createDerivedHistograms()
       for (int iParticleFilter2=0; iParticleFilter2<nParticleFilters; iParticleFilter2++ )
         {
         String pfn2 = particleFilters[iParticleFilter2]->getName();
-        if (reportDebug(__FUNCTION__)) cout << "Particle pairs with filter: " << pfn1 << " & " << pfn2 << endl;
         histos = new ParticlePairDerivedHistos(this,createName(bn,efn,pfn1,pfn2),configuration);
         histos->createHistograms();
         histogramManager.addGroupInSet(3,histos);
@@ -540,16 +547,14 @@ void ParticlePairAnalyzer::importDerivedHistograms(TFile & inputFile __attribute
 
 void ParticlePairAnalyzer::calculateDerivedHistograms()
 {
-  if (reportStart(__FUNCTION__))
-    ;
   bool binCorrPP = getValueDouble("binCorrPP");
 
   if (reportInfo(__FUNCTION__))
     {
     cout << endl;
-    cout << "Computing derived histograms for.......: " << endl;
-    cout << "nEventFilters..........................: " << nEventFilters << endl;
-    cout << "nParticleFilters.......................: " << nParticleFilters << endl;
+    printItem("Computing derived histograms");
+    printItem("nEventFilters",nEventFilters);
+    printItem("nParticleFilters",nParticleFilters);
     }
   ParticleSingleHistos        * bSingleHistos1;
   ParticleSingleHistos        * bSingleHistos2;
@@ -603,18 +608,15 @@ void ParticlePairAnalyzer::calculateDerivedHistograms()
         if (reportDebug(__FUNCTION__))
           {
           cout << endl;
-          cout << "  bSingleHistos1.........:" << bSingleHistos1->getName() << endl;
-          cout << "  bSingleHistos2.........:" << bSingleHistos2->getName() << endl;
-          cout << "  dSingleHistos1.........:" << dSingleHistos1->getName() << endl;
-          cout << "  dSingleHistos2.........:" << dSingleHistos2->getName() << endl;
-          cout << "  bPairHistos............:" << bPairHistos->getName() << endl;
-          cout << "  dPairHistos............:" << dPairHistos->getName() << endl;
+          printItem("bSingleHistos1",bSingleHistos1->getName());
+          printItem("bSingleHistos2",bSingleHistos2->getName());
+          printItem("dSingleHistos1",dSingleHistos1->getName());
+          printItem("dSingleHistos2",dSingleHistos2->getName());
+          printItem("bPairHistos",bPairHistos->getName());
+          printItem("dPairHistos",dPairHistos->getName());
           }
         dPairHistos->calculatePairDerivedHistograms(*bSingleHistos1,*bSingleHistos2,*dSingleHistos1,*dSingleHistos2,*bPairHistos,binCorrPP);
-
         }
       }
     }
-  if (reportEnd(__FUNCTION__))
-    ;
 }
