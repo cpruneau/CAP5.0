@@ -13,7 +13,7 @@ void hello()
 void loadBase(const TString & includeBasePath)
 {
   TString includePath = includeBasePath + "/Base/";
-  gSystem->Load(includePath+"Exception.hpp");
+  gSystem->Load(includePath+"Exceptions.hpp");
   gSystem->Load(includePath+"Timer.hpp");
   gSystem->Load(includePath+"MessageLogger.hpp");
   gSystem->Load(includePath+"Task.hpp");
