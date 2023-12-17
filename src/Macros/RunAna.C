@@ -42,13 +42,13 @@ void loadTherminator(const TString & includeBasePath);
 //! nSubbunchesPerBunch : number of sub-bunches  (must be 1 on grid)
 //! nBunches :  number of bunches  (must be 1 on grid)
 //!
-int RunAna(TString configFile,
-           TString histogramPath,
+int RunAna(TString configFile="Pythia/test/AnalysisPythia_pp13TeV_CH_Y2_inclusive.ini",
+           TString histogramPath="./test/",
            long seed=1121331,
            bool isGrid=false,
-           long nEventsPerSubbunch=100000,
-           int  nSubbunchesPerBunch=5,
-           int  nBunches=3)
+           long nEventsPerSubbunch=10,
+           int  nSubbunchesPerBunch=1,
+           int  nBunches=1)
 {
   TString includeBasePath = getenv("CAP_SRC");
   cout << " includeBasePath: " << includeBasePath << endl;

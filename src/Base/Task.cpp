@@ -761,9 +761,9 @@ vector<String> Task::listFilesInDir(const String & pathname,
   if (verbose && reportInfo(__FUNCTION__))
     {
     cout << endl;
-    printItem("Searching",dirname);
-    printItem("maximumDepth",maximumDepth);
-    printItem("currentDepth",depth);
+    cout << "Searching" << endl;
+    cout << "maximumDepth:" << maximumDepth << endl;
+    cout << "currentDepth:" << depth << endl;
     }
   TSystemDirectory dir(dirname, dirname);
   TList *files = dir.GetListOfFiles();
@@ -825,7 +825,7 @@ vector<String> Task::listFilesInDir(const String & pathname,
   if (verbose && reportInfo(__FUNCTION__))
     {
     cout << endl;
-    printItem("Number of files  found",fileNames.size());
+    cout << "Number of files  found" << fileNames.size() << endl;;
     for (Size_t k=0; k<fileNames.size();k++)
       {
       cout << "  k: " << k << " : " << fileNames[k] << endl;

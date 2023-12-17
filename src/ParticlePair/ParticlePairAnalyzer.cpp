@@ -552,7 +552,7 @@ void ParticlePairAnalyzer::calculateDerivedHistograms()
   if (reportInfo(__FUNCTION__))
     {
     cout << endl;
-    printItem("Computing derived histograms");
+    cout << "Computing derived histograms" << endl;
     printItem("nEventFilters",nEventFilters);
     printItem("nParticleFilters",nParticleFilters);
     }

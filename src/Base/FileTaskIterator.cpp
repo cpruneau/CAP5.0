@@ -83,8 +83,8 @@ void FileTaskIterator::execute()
   if (reportInfo(__FUNCTION__))
     {
     cout << endl;
-    printItem("Completed with status",getStateName());
-    cout << "            "; timer.print(cout);
+    cout << "Completed with status:" << getStateName() << endl;
+    cout << "                      "; timer.print(cout);
     cout << endl << endl<< endl << endl;
     }
 }

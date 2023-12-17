@@ -46,20 +46,20 @@ ParticleFilter & ParticleFilter::operator=(const ParticleFilter & otherFilter)
 
 bool ParticleFilter::accept(const Particle & particle)
 {
-
   //cout << " ParticleFilter::accept(const Particle & particle): "  << endl;
-//  const LorentzVector & momentum1 = particle.getMomentum();
+  const LorentzVector & momentum1 = particle.getMomentum();
 //  double pt1   = momentum1.Pt();
 //  double e1    = momentum1.E();
 //  double phi1  = momentum1.Phi();
 //  double eta1  = momentum1.Eta();
 //  double y1    = momentum1.Rapidity();
-//  cout << "particle: " << particle.getType().getName() << "  y1: " << y1 << "  phi1: " << phi1 << " pt1: " << pt1 << endl;
+  //cout << "particle: " << particle.getType().getName() << "  y1: " << y1 << "  phi1: " << phi1 << " pt1: " << pt1 << endl;
 
   unsigned int nConditions = getNConditions();
   if (nConditions<1) return true;
-  double value;
-  bool   accepting;
+
+  double value     = 0.0;
+  bool   accepting = false;
   ParticleType & type = particle.getType();
 
   //cout << "ParticleFilter::accept() nConditions = " << nConditions << endl;
@@ -69,11 +69,7 @@ bool ParticleFilter::accept(const Particle & particle)
     Condition & condition = *(conditions[k]);
     unsigned int filterType    = condition.filterType;
     unsigned int filterSubType = condition.filterSubtype;
-
-//    cout << "filterType: " << filterType << endl;
-//    cout << "filterSubType: " << filterSubType << endl;
-
-
+    //cout << "filterType: " << filterType << "   filterSubType: " << filterSubType << endl;
     switch (filterType)
       {
         case 0: // live or not to be considered at all
@@ -83,8 +79,7 @@ bool ParticleFilter::accept(const Particle & particle)
             case  1: accepting = particle.isLive(); break;   // undecayed particles only
             case  2: accepting = 1; break;                   // all
           }
-        //cout << " case 0: accepting: " << accepting << endl;
-
+        //if (!accepting) return false;
         break;
 
         case 1: // Charge, Neutral, Plus, or Minus
@@ -97,9 +92,8 @@ bool ParticleFilter::accept(const Particle & particle)
               case  2: accepting = (charge<0);  break;  // accepts -ve only
               case  3: accepting = (charge>0);  break;  // accepts +ve only
             }
+          //if (!accepting) return false;
           }
-        //cout << " case 1: accepting: " << accepting << endl;
-
         break;
 
         case 2: // PDG Code
@@ -118,12 +112,12 @@ bool ParticleFilter::accept(const Particle & particle)
 //          cout << "       case 2: accepting: " << accepting << endl;
 //          }
         }
+        //if (!accepting) return false;
         break;
 
         case 3: // Particle index
         accepting = condition.accept(type.getIndex());
-        //cout << " case 3: accepting: " << accepting << endl;
-
+        //if (!accepting) return false;
         break;
 
         case 4: // Type selection
@@ -214,47 +208,26 @@ bool ParticleFilter::accept(const Particle & particle)
             case 1248: accepting = type.isOmegaM();       break;
             case 1249: accepting = type.isAntiOmegaM();   break;
           }
-        //cout << " case 4: accepting: " << accepting << endl;
-
+        //if (!accepting) return false;
         break;
 
         case 5: // kinematic selection/filtering
         const LorentzVector & momentum = particle.getMomentum();
         switch (filterSubType)
           {
-            case 0: value = momentum.P(); break;    // momentum
-            case 1: value = momentum.Pt(); break;   // transverse momentum
-            case 2: value = momentum.E(); break;    // energy
-            case 3: value = momentum.Px(); break;   // p_x
-            case 4: value = momentum.Py(); break;   // p_y
-            case 5: value = momentum.Pz(); break;   // p_z
+            case 0: value = momentum.P();   break;    // momentum
+            case 1: value = momentum.Pt();  break;   // transverse momentum
+            case 2: value = momentum.E();   break;    // energy
+            case 3: value = momentum.Px();  break;   // p_x
+            case 4: value = momentum.Py();  break;   // p_y
+            case 5: value = momentum.Pz();  break;   // p_z
             case 6: value = momentum.Phi(); break;   // phi azimuth
-            case 7: value = momentum.Eta();
-
-            break;   // pseudo rapidity
+            case 7: value = momentum.Eta(); break;   // pseudo rapidity
             case 8: value = momentum.Rapidity(); break;   // rapidity
           }
         accepting = conditions[k]->accept(value);
-//        if (filterSubType==7)
-//          {
-//          std::cout << " ParticleFilter:accept() filterType==5 filterSubType==" << filterSubType << " value:" << value << std::endl;
-//          std::cout << " k: " << k << std::endl;
-//          conditions[k]->printProperties(std::cout);
-//          std::cout << " accepting = " << accepting << std::endl;
-//          }
-
-//        int pdg = type.getPdgCode();
-//        if (pdg==-211)
-//          {
-//          const LorentzVector & momentum1 = particle.getMomentum();
-//          double pt1   = momentum1.Pt();
-//          double e1    = momentum1.E();
-//          double phi1  = momentum1.Phi();
-//          double eta1  = momentum1.Eta();
-//          double y1    = momentum1.Rapidity();
-////          cout << "      particle: " << particle.getType().getName() << "  y1: " << y1 << "  phi1: " << phi1 << " pt1: " << pt1 << endl;
-////          cout << "      case 5: accepting: " << accepting << endl;
-//          }
+        //cout << "k:" << k << " case 5: filterSubType: " << filterSubType << " value:" << value << " accepting:" << accepting << endl;
+        //if (!accepting) return false;
         break;
       }
     if (!accepting)  return false;

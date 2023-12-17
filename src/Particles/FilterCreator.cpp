@@ -323,16 +323,17 @@ void FilterCreator::createParticleFilters(unsigned int type)
     cout << endl;
     printItem("Particle Filter Type",type);
     printItem("Selection",selection);
-    printItem("filterPt",filterPt);
+    printItem("filterPt", filterPt);
     printItem("filterEta",filterEta);
-    printItem("filterY",filterY);
-    printItem("minPt",minPt);
-    printItem("maxPt",maxPt);
-    printItem("minEta",minEta);
-    printItem("maxEta",maxEta);
-    printItem("minY",minY);
-    printItem("maxY",maxY);
+    printItem("filterY",  filterY);
+    printItem("minPt",    minPt);
+    printItem("maxPt",    maxPt);
+    printItem("minEta",   minEta);
+    printItem("maxEta",   maxEta);
+    printItem("minY",     minY);
+    printItem("maxY",     maxY);
     }
+
   // =========================================
   // Setup all particle filters
   // =========================================

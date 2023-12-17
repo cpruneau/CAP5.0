@@ -724,7 +724,7 @@ void ParticlePairDerivedHistos::calculateOmegaFactor(TH2 * source, vector<double
     {
     double dy = source->GetXaxis()->GetBinCenter(iY);
     omegaFactor.push_back(1.0- TMath::Abs(dy/y0));
-    cout << " index : " << iY << "  dy: " << dy << " Omega: " << omegaFactor[iY] << endl;
+    //cout << " index : " << iY << "  dy: " << dy << " Omega: " << omegaFactor[iY] << endl;
     }
 }
 

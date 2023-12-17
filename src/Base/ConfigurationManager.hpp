@@ -67,10 +67,21 @@ public:
 
   void printItem(const char * keyword, ostream & output=cout, int size=50, int style=0) const
   {
-  switch (style)
+  if (configuration.isFound(keyword))
     {
-      case 0: output <<  left << setw(size) << setfill('.')<< keyword << " : " << configuration.getParameter(keyword) << setfill(' ') << endl; break;
-      case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << configuration.getParameter(keyword) << endl; break;
+    switch (style)
+      {
+        case 0: output <<  left << setw(size) << setfill('.')<< keyword << " : " << configuration.getParameter(keyword) << setfill(' ') << endl; break;
+        case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << configuration.getParameter(keyword) << endl; break;
+      }
+    }
+  else
+    {
+    switch (style)
+      {
+        case 0: output <<  left << setw(size) << setfill('.')<< keyword << " : " << setfill(' ') << endl; break;
+        case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << endl; break;
+      }
     }
   }
 
@@ -83,16 +94,6 @@ public:
       case 1: output <<  left << setw(size) << setfill(' ')<< keyword << " : " << value << endl; break;
     }
   }
-
-
-//  virtual void printItem(const char * keyword, ostream & output=cout, int size=50, int style=0) const;
-//  virtual void printItem(const char * keyword, bool   value, ostream & output=cout, int size=50, int style=0) const;
-//  virtual void printItem(const char * keyword, unsigned int  value, ostream & output=cout, int size=50, int style=0) const;
-//  virtual void printItem(const char * keyword, int    value, ostream & output=cout, int size=50, int style=0) const;
-//  virtual void printItem(const char * keyword, long   value, ostream & output=cout, int size=50, int style=0) const;
-//  virtual void printItem(const char * keyword, double value, ostream & output=cout, int size=50, int style=0) const;
-//  virtual void printItem(const char * keyword, const char * value, ostream & output=cout, int size=50, int style=0) const;
-
 
   //!
   //!Generates and stores in the configuration of this task a list of key,value parameters based on the given parameters.value
