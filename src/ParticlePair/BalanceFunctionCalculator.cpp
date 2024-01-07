@@ -585,12 +585,12 @@ void BalanceFunctionCalculator::execute()
         case 5: // y based observables, only DeltaEta vs DeltaPhi
         sObservableNames.push_back("n1_y");
         sObservableNames.push_back("n1_phi");
-        pObservableNames.push_back("A2_DyDphi_shft");
-        pObservableNames.push_back("B2_DyDphi_shft");
+//      //pObservableNames.push_back("A2_DyDphi_shft");
+//      //pObservableNames.push_back("B2_DyDphi_shft");
         pObservableNames.push_back("C2_DyDphi_shft");
-        pObservableNames.push_back("D2_DyDphi_shft");
-        pObservableNames.push_back("R2_DyDphi_shft");
-        pObservableNames.push_back("B2_yY");
+//      //pObservableNames.push_back("D2_DyDphi_shft");
+//      //pObservableNames.push_back("R2_DyDphi_shft");
+        //pObservableNames.push_back("B2_yY");
         //pObservableNames.push_back("B2_phiPhi");
         break;
       }
@@ -600,6 +600,10 @@ void BalanceFunctionCalculator::execute()
       {
       cout << endl;
       printItem("nSpecies",nSpecies);
+      for (unsigned int iPart1=0; iPart1<nSpecies; iPart1++)
+        {
+        cout << "iPart1:" <<  iPart1 << "  named: "<< particleFilters[iPart1]->getName() << endl;
+        }
       printItem("sObservableNames.size()",int(sObservableNames.size()));
       for (unsigned int k=0; k<sObservableNames.size(); k++)
         printItem("   ",sObservableNames[k]);

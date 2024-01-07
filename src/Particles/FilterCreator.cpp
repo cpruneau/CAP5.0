@@ -599,17 +599,7 @@ vector<ParticleFilter*> FilterCreator::createPlusMinusHadronFilters(bool filteri
   if (filteringOnY)    filter->addCondition(5, 8, minY,   maxY);
   filters.push_back(filter);
 
-  filter = new ParticleFilter();
-  filter->setName("PiM");
-  filter->setLongName("PiM");
-  filter->setTitle("#pi^{-}");
-  filter->setLongTitle("#pi^{-}");
-  filter->addCondition(0, 1,  0.0, 0.0);  // live particles only
-  filter->addCondition(2, -211, 0.0, 0.0);  // pi-
-  if (filteringOnPt)   filter->addCondition(5, 1, minPt,  maxPt);
-  if (filteringOnEta)  filter->addCondition(5, 7, minEta, maxEta);
-  if (filteringOnY)    filter->addCondition(5, 8, minY,   maxY);
-  filters.push_back(filter);
+
 
   filter = new ParticleFilter();
   filter->setName("KP");
@@ -618,6 +608,30 @@ vector<ParticleFilter*> FilterCreator::createPlusMinusHadronFilters(bool filteri
   filter->setLongTitle("K^{+}");
   filter->addCondition(0, 1,  0.0, 0.0);  // live particles only
   filter->addCondition(2, 321, 0.0, 0.0);  // K+
+  if (filteringOnPt)   filter->addCondition(5, 1, minPt,  maxPt);
+  if (filteringOnEta)  filter->addCondition(5, 7, minEta, maxEta);
+  if (filteringOnY)    filter->addCondition(5, 8, minY,   maxY);
+  filters.push_back(filter);
+
+  filter = new ParticleFilter();
+  filter->setName("PP");
+  filter->setLongName("PP");
+  filter->setTitle("p");
+  filter->setLongTitle("p");
+  filter->addCondition(0, 1,  0.0, 0.0);  // live particles only
+  filter->addCondition(2, 2212, 0.0, 0.0);  // p+
+  if (filteringOnPt)   filter->addCondition(5, 1, minPt,  maxPt);
+  if (filteringOnEta)  filter->addCondition(5, 7, minEta, maxEta);
+  if (filteringOnY)    filter->addCondition(5, 8, minY,   maxY);
+  filters.push_back(filter);
+
+  filter = new ParticleFilter();
+  filter->setName("PiM");
+  filter->setLongName("PiM");
+  filter->setTitle("#pi^{-}");
+  filter->setLongTitle("#pi^{-}");
+  filter->addCondition(0, 1,  0.0, 0.0);  // live particles only
+  filter->addCondition(2, -211, 0.0, 0.0);  // pi-
   if (filteringOnPt)   filter->addCondition(5, 1, minPt,  maxPt);
   if (filteringOnEta)  filter->addCondition(5, 7, minEta, maxEta);
   if (filteringOnY)    filter->addCondition(5, 8, minY,   maxY);
@@ -635,17 +649,7 @@ vector<ParticleFilter*> FilterCreator::createPlusMinusHadronFilters(bool filteri
   if (filteringOnY)    filter->addCondition(5, 8, minY,   maxY);
   filters.push_back(filter);
 
-  filter = new ParticleFilter();
-  filter->setName("PP");
-  filter->setLongName("PP");
-  filter->setTitle("p");
-  filter->setLongTitle("p");
-  filter->addCondition(0, 1,  0.0, 0.0);  // live particles only
-  filter->addCondition(2, 2212, 0.0, 0.0);  // p+
-  if (filteringOnPt)   filter->addCondition(5, 1, minPt,  maxPt);
-  if (filteringOnEta)  filter->addCondition(5, 7, minEta, maxEta);
-  if (filteringOnY)    filter->addCondition(5, 8, minY,   maxY);
-  filters.push_back(filter);
+
 
   filter = new ParticleFilter();
   filter->setName("PM");
