@@ -12,7 +12,7 @@
 void loadBase(const TString & includeBasePath);
 void loadPlotting(const TString & includeBasePath);
 
-int PlotBF(int choice = 9)
+int PlotBF(int choice = -1)
 {
   const bool YES = true;
   const bool NO  = false;
@@ -35,7 +35,7 @@ int PlotBF(int choice = 9)
   double bf_Width_DeltaYMax;
 
   CAP::BalFctPlotter * plotter = new CAP::BalFctPlotter();
-  plotter->rangeOption               = 0;
+  plotter->rangeOption               = 2;
   plotter->doPlotsBfVsDeltaYDeltaPhi = NO;
   plotter->doPlotsBfVsDeltaY         = YES;
   plotter->doPlotsBfVsDeltaPhi       = NO;
@@ -68,10 +68,10 @@ int PlotBF(int choice = 9)
       bf_Width_DeltaYMin =  0.0;
       bf_Width_DeltaYMax =  1.1;
 
-      plotter->correlationOption  = 2;
+      // plotter->correlationOption  = 2;
       plotter->speciesOption      = 2;
       plotter->rapidityOption     = 0;
-      plotter->bfOption           = 2;
+      // plotter->bfOption           = 2;
       plotter->bf_General_Titles.push_back(TString("PYTHIA; pp at #sqrt{s}=13 TeV"));
       plotter->outputPathNameBase = "/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/PP/Plots/BaryonsAt13TeV/";
       plotter->outputFileNameBase = "PYTHIA_pp_BaryonsVsS_A2Based_";
@@ -83,6 +83,7 @@ int PlotBF(int choice = 9)
                          "PairGen_All_",
                          "13000_Baryons_Y10_",
                          2,
+                         0,
                          bf_DeltaYDeltPhiMin,
                          bf_DeltaYDeltPhiMax,
                          bf_DeltaYMin,
@@ -112,10 +113,10 @@ int PlotBF(int choice = 9)
       bf_Width_DeltaYMax =  1.1;
 
       plotter->bf_General_Titles.push_back(TString("PYTHIA; pp collisions"));
-      plotter->correlationOption  = 2;
+      // plotter->correlationOption  = 2;
       plotter->speciesOption      = 2;
       plotter->rapidityOption     = 0;
-      plotter->bfOption           = 2;
+      // plotter->bfOption           = 2;
       plotter->outputPathNameBase = "/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/PP/Plots/BaryonsVsS/";
       plotter->outputFileNameBase = "PYTHIA_pp_BaryonsVsS_A2Based_";
       plotter->addSystem("/Volumes/ClaudeDisc5/OutputFiles/PYTHIA/PP/900/Baryons/Y10/",
@@ -125,6 +126,7 @@ int PlotBF(int choice = 9)
                          "PairGen_All_",
                          "900_Baryons_Y10_",
                          2,
+                         0,
                          bf_DeltaYDeltPhiMin,
                          bf_DeltaYDeltPhiMax,
                          bf_DeltaYMin,
@@ -144,6 +146,7 @@ int PlotBF(int choice = 9)
                          "PairGen_All_",
                          "13000_Baryons_Y10_",
                          2,
+                         0,
                          bf_DeltaYDeltPhiMin,
                          bf_DeltaYDeltPhiMax,
                          bf_DeltaYMin,
@@ -163,6 +166,7 @@ int PlotBF(int choice = 9)
                          "PairGen_All_",
                          "30000_Baryons_Y10_",
                          2,
+                         0,
                          bf_DeltaYDeltPhiMin,
                          bf_DeltaYDeltPhiMax,
                          bf_DeltaYMin,
@@ -192,10 +196,10 @@ int PlotBF(int choice = 9)
       bf_Width_DeltaYMax =  1.1;
 
       plotter->bf_General_Titles.push_back(TString("PYTHIA; pp collisions"));
-      plotter->correlationOption  = 2;
+      // plotter->correlationOption  = 2;
       plotter->speciesOption      = 2;
       plotter->rapidityOption     = 0;
-      plotter->bfOption           = 2;
+      // plotter->bfOption           = 2;
       plotter->outputPathNameBase = "/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/PP/Plots/BaryonsVsTune/";
       plotter->outputFileNameBase = "PYTHIA_pp_BaryonsVsTune_A2Based_";
       plotter->addSystem("/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/PP/13000/Baryons/Y10",
@@ -205,6 +209,7 @@ int PlotBF(int choice = 9)
                          "PairGen_All_",
                          "13000_Baryons_Y10_",
                          2,
+                         0,
                          bf_DeltaYDeltPhiMin,
                          bf_DeltaYDeltPhiMax,
                          bf_DeltaYMin,
@@ -224,6 +229,7 @@ int PlotBF(int choice = 9)
                          "PairGen_All_",
                          "13000_ropes_Baryons_Y10_",
                          2,
+                         0,
                          bf_DeltaYDeltPhiMin,
                          bf_DeltaYDeltPhiMax,
                          bf_DeltaYMin,
@@ -243,6 +249,7 @@ int PlotBF(int choice = 9)
                          "PairGen_All_",
                          "13000_shoving_Baryons_Y10_",
                          2,
+                         0,
                          bf_DeltaYDeltPhiMin,
                          bf_DeltaYDeltPhiMax,
                          bf_DeltaYMin,
@@ -273,27 +280,41 @@ int PlotBF(int choice = 9)
 
 
       plotter->bf_General_Titles.push_back(TString("PYTHIA; pp #sqrt{s}=13 TeV"));
-      plotter->correlationOption  = 2;
       plotter->speciesOption      = 1;
       plotter->rapidityOption     = 0;
-      plotter->bfOption           = 2;
       plotter->outputPathNameBase = "/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/PiKP/";
-      //      plotter->outputFileNameBase = "PYTHIA_Monash_pp_PiKP_A2Based_";
-      //      plotter->deltaY_Minimum = -20.0;
-      //      plotter->deltaY_Maximum = 20.0;
       plotter->outputFileNameBase = "PYTHIA_Monash_pp_PiKP_A2Based_Deltay20_";
-      //      plotter->deltaY_Minimum = -4.0;
-      //      plotter->deltaY_Maximum = 4.0;
       plotter->deltaY_Minimum = -20.0;
       plotter->deltaY_Maximum = 20.0;
 
       plotter->addSystem("/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/PiKP/Y2/",
-                         "PairGenBalFctSum0TO9.root",
-                         "Monash",
+                         "PairGenBalFctSum0TO19.root",
+                         "|Y|<2 (D)",
                          "PairGen_All_",
                          "PairGen_All_",
                          "13000_PiKp_Y2_",
                          2,
+                         3,
+                         bf_DeltaYDeltPhiMin,
+                         bf_DeltaYDeltPhiMax,
+                         bf_DeltaYMin,
+                         bf_DeltaYMax,
+                         bf_DeltPhiMin,
+                         bf_DeltPhiMax,
+                         bf_Integral_DeltaYMin,
+                         bf_Integral_DeltaYMax,
+                         bf_IntegralSum_DeltaYMin,
+                         bf_IntegralSum_DeltaYMax,
+                         bf_Width_DeltaYMin,
+                         bf_Width_DeltaYMax);
+      plotter->addSystem("/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/PiKP/Y2/",
+                         "PairGenBalFctSum0TO19.root",
+                         "|Y|<2 (A)",
+                         "PairGen_All_",
+                         "PairGen_All_",
+                         "13000_PiKp_Y2_",
+                         2,
+                         0,
                          bf_DeltaYDeltPhiMin,
                          bf_DeltaYDeltPhiMax,
                          bf_DeltaYMin,
@@ -307,12 +328,13 @@ int PlotBF(int choice = 9)
                          bf_Width_DeltaYMin,
                          bf_Width_DeltaYMax);
       plotter->addSystem("/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/PiKP/Y6/",
-                         "PairGenBalFctSum0TO9.root",
-                         "Monash",
+                         "PairGenBalFctSum0TO19.root",
+                         "|Y|<6 (D)",
                          "PairGen_All_",
                          "PairGen_All_",
-                         "13000_PiKp_Y2_",
+                         "13000_PiKp_Y6_",
                          2,
+                         3,
                          bf_DeltaYDeltPhiMin,
                          bf_DeltaYDeltPhiMax,
                          bf_DeltaYMin,
@@ -325,13 +347,35 @@ int PlotBF(int choice = 9)
                          bf_IntegralSum_DeltaYMax,
                          bf_Width_DeltaYMin,
                          bf_Width_DeltaYMax);
+      plotter->addSystem("/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/PiKP/Y6/",
+                         "PairGenBalFctSum0TO19.root",
+                         "|Y|<6 (A)",
+                         "PairGen_All_",
+                         "PairGen_All_",
+                         "13000_PiKp_Y6_",
+                         2,
+                         0,
+                         bf_DeltaYDeltPhiMin,
+                         bf_DeltaYDeltPhiMax,
+                         bf_DeltaYMin,
+                         bf_DeltaYMax,
+                         bf_DeltPhiMin,
+                         bf_DeltPhiMax,
+                         bf_Integral_DeltaYMin,
+                         bf_Integral_DeltaYMax,
+                         bf_IntegralSum_DeltaYMin,
+                         bf_IntegralSum_DeltaYMax,
+                         bf_Width_DeltaYMin,
+                         bf_Width_DeltaYMax);
+
       plotter->addSystem("/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/PiKP/Y10/",
-                         "PairGenBalFctSum0TO9.root",
-                         "Monash",
+                         "PairGenBalFctSum0TO19.root",
+                         "|Y|<10 (A)",
                          "PairGen_All_",
                          "PairGen_All_",
-                         "13000_PiKp_Y2_",
+                         "13000_PiKp_Y10_",
                          2,
+                         0,
                          bf_DeltaYDeltPhiMin,
                          bf_DeltaYDeltPhiMax,
                          bf_DeltaYMin,
@@ -344,6 +388,7 @@ int PlotBF(int choice = 9)
                          bf_IntegralSum_DeltaYMax,
                          bf_Width_DeltaYMin,
                          bf_Width_DeltaYMax);
+
       break;
 
       case 10:
@@ -362,10 +407,10 @@ int PlotBF(int choice = 9)
 
 
       plotter->bf_General_Titles.push_back(TString("PYTHIA; pp #sqrt{s}=13 TeV"));
-      plotter->correlationOption  = 2;
+      // plotter->correlationOption  = 2;
       plotter->speciesOption      = 1;
       plotter->rapidityOption     = 0;
-      plotter->bfOption           = 2;
+      // plotter->bfOption           = 2;
       plotter->outputPathNameBase = "/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/PP/Plots/";
 //      plotter->outputFileNameBase = "PYTHIA_Monash_pp_PiKP_A2Based_";
 //      plotter->deltaY_Minimum = -20.0;
@@ -383,6 +428,7 @@ int PlotBF(int choice = 9)
                          "PairGen_All_",
                          "13000_PiKp_Y10_",
                          2,
+                         0,
                          bf_DeltaYDeltPhiMin,
                          bf_DeltaYDeltPhiMax,
                          bf_DeltaYMin,
@@ -413,10 +459,10 @@ int PlotBF(int choice = 9)
       bf_Width_DeltaYMax =  1.1;
 
       plotter->bf_General_Titles.push_back(TString("PYTHIA; pp collisions"));
-      plotter->correlationOption  = 2;
+      // plotter->correlationOption  = 2;
       plotter->speciesOption      = 1;
       plotter->rapidityOption     = 0;
-      plotter->bfOption           = 2;
+      // plotter->bfOption           = 2;
       plotter->outputPathNameBase = "/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/PP/Plots/";
       plotter->outputFileNameBase = "PYTHIA_pp_PiKPVsTune_A2Based";
       plotter->deltaY_Minimum = -4.0;
@@ -429,6 +475,7 @@ int PlotBF(int choice = 9)
                          "PairGen_All_",
                          "13000_PiKp_Y10_",
                          2,
+                         0,
                          bf_DeltaYDeltPhiMin,
                          bf_DeltaYDeltPhiMax,
                          bf_DeltaYMin,
@@ -448,6 +495,7 @@ int PlotBF(int choice = 9)
                          "PairGen_All_",
                          "13000_ropes_PiKp_Y10_",
                          2,
+                         0,
                          bf_DeltaYDeltPhiMin,
                          bf_DeltaYDeltPhiMax,
                          bf_DeltaYMin,
@@ -467,6 +515,7 @@ int PlotBF(int choice = 9)
                          "PairGen_All_",
                          "13000_shoving_PiKp_Y10_",
                          2,
+                         0,
                          bf_DeltaYDeltPhiMin,
                          bf_DeltaYDeltPhiMax,
                          bf_DeltaYMin,
@@ -497,10 +546,10 @@ int PlotBF(int choice = 9)
       bf_Width_DeltaYMax =  1.1;
 
       plotter->bf_General_Titles.push_back(TString("PYTHIA; pp collisions"));
-      plotter->correlationOption  = 2;
+      // plotter->correlationOption  = 2;
       plotter->speciesOption      = 1;
       plotter->rapidityOption     = 0;
-      plotter->bfOption           = 2;
+      // plotter->bfOption           = 2;
       plotter->outputPathNameBase = "/Volumes/ClaudeDisc4/OutputFiles/PYTHIA/PP/Plots/";
       plotter->outputFileNameBase = "PYTHIA_pp_PiKPVsS_A2Based_";
 
@@ -511,6 +560,7 @@ int PlotBF(int choice = 9)
                          "PairGen_All_",
                          "5200_PiKp_Y10_",
                          2,
+                         0,
                          bf_DeltaYDeltPhiMin,
                          bf_DeltaYDeltPhiMax,
                          bf_DeltaYMin,
@@ -530,6 +580,7 @@ int PlotBF(int choice = 9)
                          "PairGen_All_",
                          "13000_PiKp_Y10_",
                          2,
+                         0,
                          bf_DeltaYDeltPhiMin,
                          bf_DeltaYDeltPhiMax,
                          bf_DeltaYMin,
@@ -549,6 +600,7 @@ int PlotBF(int choice = 9)
                          "PairGen_All_",
                          "100000_PiKp_Y10_",
                          2,
+                         0,
                          bf_DeltaYDeltPhiMin,
                          bf_DeltaYDeltPhiMax,
                          bf_DeltaYMin,

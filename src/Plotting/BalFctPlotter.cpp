@@ -21,6 +21,8 @@ Plotter(),
 groupName("group"),
 outputPath("./"),
 canvasBaseName("baseName"),
+bf_Types(),
+bf_Sources(),
 bf_InputFiles(),
 bf_rebin2Ds(),
 bf_rebinFactorsX(),
@@ -127,15 +129,16 @@ void BalFctPlotter::loadHistograms()
       printItem("iPair",iPair);
       printItem("pairName", pairNames[iPair]);
       printItem("pairTitle",pairTitles[iPair]);
-      printItem("bf_DeltaYDeltaPhi_HistoName",bf_DeltaYDeltaPhi_HistoNames[iPair]);
-      printItem("bf_DeltaY_HistoNames",bf_DeltaY_HistoNames[iPair]);
-      printItem("bf_DeltaPhi_HistoNames",bf_DeltaPhi_HistoNames[iPair]);
+      Size_t index = iFile*pairNames.size() + iPair;
+      printItem("bf_DeltaYDeltaPhi_HistoName",bf_DeltaYDeltaPhi_HistoNames[index]);
+      printItem("bf_DeltaY_HistoNames",bf_DeltaY_HistoNames[index]);
+      printItem("bf_DeltaPhi_HistoNames",bf_DeltaPhi_HistoNames[index]);
 
       // load 2D
-      TH2 * h2  = (TH2*) bf_InputFiles[iFile]->Get(bf_DeltaYDeltaPhi_HistoNames[iPair]);
+      TH2 * h2  = (TH2*) bf_InputFiles[iFile]->Get(bf_DeltaYDeltaPhi_HistoNames[index]);
       if (!h2)
         {
-        String s = "Failed to load 2d histo named:"; s += bf_DeltaYDeltaPhi_HistoNames[iPair]; s+= " at iPair: "; s+= iPair;
+        String s = "Failed to load 2d histo named:"; s += bf_DeltaYDeltaPhi_HistoNames[index]; s+= " at iPair: "; s+= iPair;
         throw CAP::Exception(s, "loadHistograms()");
         }
       if (bf_rebin2Ds[iFile])
@@ -151,17 +154,17 @@ void BalFctPlotter::loadHistograms()
         }
 
       // load 1D vs Delta y
-      TH1 * h1x = (TH1*) bf_InputFiles[iFile]->Get(bf_DeltaY_HistoNames[iPair]);
+      TH1 * h1x = (TH1*) bf_InputFiles[iFile]->Get(bf_DeltaY_HistoNames[index]);
       if (!h1x)
         {
-        String s = "Failed to load 1d histo named:"; s += bf_DeltaY_HistoNames[iPair]; s+= " at iPair: "; s+= iPair;
+        String s = "Failed to load 1d histo named:"; s += bf_DeltaY_HistoNames[index]; s+= " at iPair: "; s+= iPair;
         throw CAP::Exception(s, "loadHistograms()");
         }
       // load 1D vs Delta phi
-      TH1 * h1y = (TH1*) bf_InputFiles[iFile]->Get(bf_DeltaPhi_HistoNames[iPair]);
+      TH1 * h1y = (TH1*) bf_InputFiles[iFile]->Get(bf_DeltaPhi_HistoNames[index]);
       if (!h1y)
         {
-        String s = "Failed to load 1d histo named:"; s += bf_DeltaPhi_HistoNames[iPair]; s+= " at iPair: "; s+= iPair;
+        String s = "Failed to load 1d histo named:"; s += bf_DeltaPhi_HistoNames[index]; s+= " at iPair: "; s+= iPair;
         throw CAP::Exception(s, "loadHistograms()");
         }
       bf_DeltaYDeltaPhi_Histos.push_back(h2);
@@ -169,6 +172,13 @@ void BalFctPlotter::loadHistograms()
       bf_DeltaPhi_Histos.push_back(h1y);
       }
     }
+//  Size_t nn = bf_DeltaYDeltaPhi_Histos.size();
+//  cout << "bf_DeltaYDeltaPhi_Histos:Size() " <<  nn << endl;
+//  for (Size_t k=0;k<nn; k++)
+//    {
+//    cout << " k:" << k << " : " << bf_DeltaYDeltaPhi_Histos[k]->GetName() << endl;
+//    }
+//  exit(1);
 }
 
 
@@ -337,6 +347,7 @@ void BalFctPlotter::addSystem(const String & inputPathName,
                               const String & histoBaseTitle,
                               const String & canvasBaseName,
                               int    bf_Type,
+                              int    bf_Source,
                               double bf_DeltaYDeltPhiMin,
                               double bf_DeltaYDeltPhiMax,
                               double bf_DeltaYMin,
@@ -363,6 +374,7 @@ void BalFctPlotter::addSystem(const String & inputPathName,
   bf_rebinFactorsX.push_back(rebinFactorX);
   bf_rebinFactorsY.push_back(rebinFactorY);
   bf_Types.push_back(bf_Type);
+  bf_Sources.push_back(bf_Source);
   bf_DeltaYDeltaPhi_Minima.push_back(bf_DeltaYDeltPhiMin);
   bf_DeltaYDeltaPhi_Maxima.push_back(bf_DeltaYDeltPhiMax);
   bf_DeltaY_Minima.push_back(bf_DeltaYMin);
@@ -558,6 +570,23 @@ void BalFctPlotter::plotBfVsPairvsDeltaYVsFile()
   vector<double> minima;
   vector<double> maxima;
   String bf_Title = "B^{s}";
+  
+  switch (rangeOption)
+    {
+      case 0:
+      deltaY_Minimum = -20.0;
+      deltaY_Maximum = +20.0;
+      break;
+      case 1:
+      deltaY_Minimum = -10.0;
+      deltaY_Maximum = +10.0;
+      break;
+      case 2:
+      deltaY_Minimum = -4.0;
+      deltaY_Maximum = +4.0;
+    }
+
+
   double bf_min = 0.0;
   double bf_max = 1.0;
   double xMin   = -100.0;
@@ -568,6 +597,7 @@ void BalFctPlotter::plotBfVsPairvsDeltaYVsFile()
   double yMax   = bf_max;
   double yRange = yMax-yMin;
   double y      = 0.0;
+
 
 
   for (Size_t iTrigger=0; iTrigger<nSpecies; iTrigger++)
@@ -675,6 +705,20 @@ void BalFctPlotter::plotBfVsPairvsDeltaY()
   double yRange = yMax-yMin;
   double y      = 0.0;
 
+  switch (rangeOption)
+    {
+      case 0:
+      deltaY_Minimum = -20.0;
+      deltaY_Maximum =  20.0;
+      break;
+      case 1:
+      deltaY_Minimum = -10.0;
+      deltaY_Maximum =  10.0;
+      break;
+      case 2:
+      deltaY_Minimum = -4.0;
+      deltaY_Maximum =  4.0;
+    }
 
   for (Size_t iTrigger=0; iTrigger<nSpecies; iTrigger++)
     {
@@ -691,7 +735,7 @@ void BalFctPlotter::plotBfVsPairvsDeltaY()
     histos.push_back(h);
     minima.push_back(findHistoMinimum(h));
     maxima.push_back(findHistoMaximum(h));
-    bf_DeltaY_LegendConfig.addLegend("Sum");
+    bf_DeltaY_LegendConfig.addLegend("#sum");
 
     for (Size_t iAssoc=0; iAssoc<nSpecies; iAssoc++)
       {
@@ -714,7 +758,9 @@ void BalFctPlotter::plotBfVsPairvsDeltaY()
         }
       }
 
-    xMin = deltaY_Minimum;
+
+
+    xMin = deltaY_Minimum;  // ZZZZZZZ
     xMax = deltaY_Maximum;
     xRange =  xMax-xMin;
     x = xMin + 0.05*xRange;
@@ -823,7 +869,7 @@ void BalFctPlotter::plotBfIntegralVsPairvsDeltaY()
     Size_t index = iTrigger*nSpecies + nSpecies - 1;
     TGraph * g = bf_IntegralSum_DeltaY_Graphs[index];
     graphs.push_back(g);
-    bf_Integral_DeltaY_LegendConfig.addLegend("Sum");
+    bf_Integral_DeltaY_LegendConfig.addLegend("#sum");
 
     for (Size_t iAssoc=0; iAssoc<nSpecies; iAssoc++)
       {
@@ -1104,11 +1150,20 @@ void BalFctPlotter::plotRmsWidths()
 
 void BalFctPlotter::execute()
 {
+  if (reportInfo(__FUNCTION__))
+    {
+    cout << endl;
+    printItem("rangeOption",rangeOption);
+    //printItem("correlationOption",correlationOption);
+    printItem("speciesOption",speciesOption);
+    printItem("rapidityOption",rapidityOption);
+    }
+
   setDefaultOptions(1);
-  setSpeciesArrays(speciesOption);
+  setSpeciesArrays();
   openInputFiles();
-  createNames(rapidityOption,bfOption);
-  setLegendConfigurations();
+  createNames();
+
   loadHistograms();
   Size_t nFiles   = bf_InputFiles.size();
   Size_t nSpecies = speciesNames.size();
@@ -1161,13 +1216,13 @@ void BalFctPlotter::execute()
     printAllCanvas(outputPath,doPrintGif,doPrintPdf,doPrintSvg,doPrintPng,doPrintC);
 }
 
-void BalFctPlotter::setSpeciesArrays(int option)
+void BalFctPlotter::setSpeciesArrays()
 {
-  if (reportInfo(__FUNCTION__)) printItem("SpeciesOption",option);
+  if (reportInfo(__FUNCTION__)) printItem("SpeciesOption",speciesOption);
   speciesNames.clear();
   speciesTitles.clear();
   speciesPath = "";
-  switch (option)
+  switch (speciesOption)
     {
       case 0:
       speciesNames.push_back(String("HP"));
@@ -1299,14 +1354,9 @@ void BalFctPlotter::setSpeciesArrays(int option)
 
 
 
-void BalFctPlotter::createNames(int rapidityOption, int bfOption)
+
+void BalFctPlotter::createNames()
 {
-  if (reportInfo(__FUNCTION__))
-    {
-    cout << endl;
-    printItem("rapidityOption",rapidityOption);
-    printItem("bfOption",bfOption);
-    }
   deltaPhi_Name  = "DeltaPhi";
   deltaPhi_Title = "#Delta #varphi";
   switch (rapidityOption)
@@ -1315,40 +1365,40 @@ void BalFctPlotter::createNames(int rapidityOption, int bfOption)
       case 0: deltaY_Title   = "#Delta y";    deltaY_Name    = "DeltaY";    break;
       case 1: deltaY_Title   = "#Delta #eta"; deltaY_Name    = "DeltaEta";  break;
     }
-  correlatorSourceNames.push_back(String("_B2_DyDphi_shft_B2_1Bar_2"));
-  correlatorSourceNames.push_back(String("_B2_DyDphi_shft_B2_1_2Bar"));
-  correlatorSourceNames.push_back(String("_B2_DyDphi_shft_B2_12Sum"));
-  correlatorSourceNames.push_back(String("_A2_DyDphi_shft_B2_1Bar_2"));
-  correlatorSourceNames.push_back(String("_A2_DyDphi_shft_B2_1_2Bar"));
-  correlatorSourceNames.push_back(String("_A2_DyDphi_shft_B2_12Sum"));
 
-  // bfOption == 0
-  bf_TypeNames.push_back(String("BAbarB"));
-  bf_IntegralTypeNames.push_back(String("IAbarB"));
-  bf_IntegralSumTypeNames.push_back(String("SumIAbarB"));
-  bf_WidthDeltaYTypeNames.push_back(String("SigmaBAbarB"));
+  // correlation source name
+  correlatorSourceNames.push_back(String("_A2_DyDphi_shft_"));
+  correlatorSourceNames.push_back(String("_B2_DyDphi_shft_"));
+  correlatorSourceNames.push_back(String("_C2_DyDphi_shft_"));
+  correlatorSourceNames.push_back(String("_D2_DyDphi_shft_"));
+
+  // bf_Type == 0
+  bf_TypeNames.push_back(String("B2_1Bar_2"));
+  bf_IntegralTypeNames.push_back(String("I2_1Bar_2"));
+  bf_IntegralSumTypeNames.push_back(String("SumI2_1Bar_2"));
+  bf_WidthDeltaYTypeNames.push_back(String("SigmaB2_1Bar_2"));
 
   bf_TypeTitles.push_back(String("B^{#bar{#alpha}#beta}"));
   bf_IntegralTypeTitles.push_back(String("I^{#bar{#alpha}#beta}"));
   bf_IntegralSumTypeTitles.push_back(String("#sum I^{#bar{#alpha}#beta}"));
   bf_WidthDeltaYTypeTitles.push_back(String("#sigma^{B^{#bar{#alpha}#beta}}_{#Delta y}"));
 
-  // bfOption == 1
-  bf_TypeNames.push_back(String("BABbar"));
-  bf_IntegralTypeNames.push_back(String("IABbar"));
-  bf_IntegralSumTypeNames.push_back(String("SumIABbar"));
-  bf_WidthDeltaYTypeNames.push_back(String("SigmaBABbar"));
+  // bf_Type == 1
+  bf_TypeNames.push_back(String("B2_1_2Bar"));
+  bf_IntegralTypeNames.push_back(String("I2_1_2Bar"));
+  bf_IntegralSumTypeNames.push_back(String("SumI2_1_2Bar"));
+  bf_WidthDeltaYTypeNames.push_back(String("SigmaB2_1_2Bar"));
 
   bf_TypeTitles.push_back(String("B^{#alpha#bar#beta}"));
-  bf_IntegralTypeTitles.push_back(String("I^{#bar{#alpha#bar#beta}"));
-  bf_IntegralSumTypeTitles.push_back(String("#sum I^{#alpha#bar#beta}"));
-  bf_WidthDeltaYTypeTitles.push_back(String("#sigma^{B^{#alpha#bar#beta}}_{#Delta y}"));
+  bf_IntegralTypeTitles.push_back(String("I^{#bar{#alpha}#bar{#beta}}"));
+  bf_IntegralSumTypeTitles.push_back(String("#sum I^{#alpha#bar{#beta}}"));
+  bf_WidthDeltaYTypeTitles.push_back(String("#sigma^{B^{#alpha#bar{#beta}}_{#Delta y}}"));
 
-  // bfOption == 2
-  bf_TypeNames.push_back(String("Bs"));
-  bf_IntegralTypeNames.push_back(String("Is"));
-  bf_IntegralSumTypeNames.push_back(String("SumIs"));
-  bf_WidthDeltaYTypeNames.push_back(String("SigmaBs"));
+  // bf_Type == 2
+  bf_TypeNames.push_back(String("B2_12Sum"));
+  bf_IntegralTypeNames.push_back(String("I2_12Sum"));
+  bf_IntegralSumTypeNames.push_back(String("SumI2_12Sum"));
+  bf_WidthDeltaYTypeNames.push_back(String("SigmaB2_12Sum"));
 
   bf_TypeTitles.push_back(String("B^{s}"));
   bf_IntegralTypeTitles.push_back(String("I^{s}"));
@@ -1373,11 +1423,13 @@ void BalFctPlotter::createNames(int rapidityOption, int bfOption)
     baseHistoName  = bf_HistoNameBases[iFile];
     baseHistoTitle = bf_HistoTitleBases[iFile];
     baseCanvasName = bf_CanvasNameBases[iFile];
-    correlatorSourceName = correlatorSourceNames[bf_Types[iFile]];
+    correlatorSourceName = correlatorSourceNames[bf_Sources[iFile]];
+    correlatorSourceName += bf_TypeNames[bf_Types[iFile]];
     printItem("baseHistoName",baseHistoName);
     printItem("baseHistoTitle",baseHistoTitle);
     printItem("baseCanvasName",baseCanvasName);
     printItem("correlatorSourceName",correlatorSourceName);
+
 
     for (Size_t iPair=0; iPair<pairNames.size(); iPair++)
       {

@@ -61,6 +61,7 @@ public:
   unsigned int nBins_y;
   double       min_y;
   double       max_y;
+  double       max_yAcc;
   unsigned int nBins_Dphi;
   double       min_Dphi;
   double       max_Dphi;

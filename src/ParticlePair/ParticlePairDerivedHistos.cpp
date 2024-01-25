@@ -181,6 +181,8 @@ void ParticlePairDerivedHistos::createHistograms()
   nBins_y = configuration.getValueInt(ppn,"nBins_y");
   min_y   = configuration.getValueDouble(ppn,"Min_y");
   max_y   = configuration.getValueDouble(ppn,"Max_y");
+  max_yAcc= configuration.getValueDouble(ppn,"Max_yAcc");
+
   double range_y = max_y - min_y;
 
   nBins_Dy  = 2*nBins_y-1;
@@ -719,8 +721,23 @@ void ParticlePairDerivedHistos::calculatePairDerivedHistograms(ParticleSingleHis
 void ParticlePairDerivedHistos::calculateOmegaFactor(TH2 * source, vector<double> & omegaFactor)
 {
   int nY  = source->GetNbinsX(); // bins in delta rapidity
-  double y0 = source->GetXaxis()->GetBinUpEdge(nY);
-  for (int iY=0; iY<nY; iY++) // delta rapidity loop
+  double y0;
+//  String name = source->GetName();
+//  name += "_tempo_x";
+//  TH1 * proj = source->ProjectionX(name);
+//  int iRap = nY;
+//  double y0 = proj->GetXaxis()->GetBinUpEdge(nY);
+//  for (int iY=0; iY<(nY+1)/2; iY++)
+//    {
+//    if (proj->GetBinContent(iRap)>0)
+//      {
+//      y0 = proj->GetXaxis()->GetBinUpEdge(iRap);
+//      break;
+//      }
+//    iRap--;
+//    }
+  y0 = 2.0*max_yAcc;
+  for (int iY=1; iY<=nY; iY++) // delta rapidity loop
     {
     double dy = source->GetXaxis()->GetBinCenter(iY);
     omegaFactor.push_back(1.0- TMath::Abs(dy/y0));
@@ -733,20 +750,27 @@ void ParticlePairDerivedHistos::calculateAverageYbar(TH2 * source,
                                                      TH2 * target,
                                                      vector<double> & omegaFactor)
 {
+  cout << "calculateAverageYbar(TH2 *source,TH2*target,vector<double>&omegaFactor)" << endl;
+
   double scale = 1.0;
   int nX = source->GetNbinsX();
   int nY = source->GetNbinsY();
+  //cout << " HISTO: " << source->GetName() << endl;
+  //cout << " nX: " << nX << "    nY:" << nY << endl;
   for (int iX=1; iX<=nX; iX++)
     {
     scale = 1.0/omegaFactor[iX-1];
+    //if (iX>180 && iX<220) cout << " iX: " << iX << " omegaFactor: " << omegaFactor[iX-1] << " scale:" << scale << endl;
     for (int iY=1; iY<=nY; iY++)
       {
       double v  =  source->GetBinContent(iX,iY);
       double ev =  source->GetBinError(iX,iY);
+      //if (iX>190 && iX<210) cout << " v: " << v << "+-" << ev << " v*scale:" << v*scale << "+-" << ev*scale << endl;
       target->SetBinContent(iX,iY,v*scale);
       target->SetBinError(iX,iY,ev*scale);
       }
     }
+//  exit(1);
 }
 
 

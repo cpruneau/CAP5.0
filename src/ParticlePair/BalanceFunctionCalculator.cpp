@@ -582,15 +582,15 @@ void BalanceFunctionCalculator::execute()
         //        pObservableNames.push_back("n2_phiPhi");
         break;
 
-        case 5: // y based observables, only DeltaEta vs DeltaPhi
+        case 5: // y based observables
         sObservableNames.push_back("n1_y");
         sObservableNames.push_back("n1_phi");
-//      //pObservableNames.push_back("A2_DyDphi_shft");
-//      //pObservableNames.push_back("B2_DyDphi_shft");
+        pObservableNames.push_back("A2_DyDphi_shft");
+        pObservableNames.push_back("B2_DyDphi_shft");
         pObservableNames.push_back("C2_DyDphi_shft");
-//      //pObservableNames.push_back("D2_DyDphi_shft");
-//      //pObservableNames.push_back("R2_DyDphi_shft");
-        //pObservableNames.push_back("B2_yY");
+        pObservableNames.push_back("D2_DyDphi_shft");
+        pObservableNames.push_back("R2_DyDphi_shft");
+        pObservableNames.push_back("B2_yY");
         //pObservableNames.push_back("B2_phiPhi");
         break;
       }

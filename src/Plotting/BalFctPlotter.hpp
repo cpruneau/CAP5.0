@@ -41,10 +41,10 @@ public:
 
 
   int rangeOption;
-  int correlationOption;
+  //int correlationOption;
   int speciesOption;
   int rapidityOption;
-  int bfOption;
+  //int bfOption;
 
 //  String inputPathName;
 //  String inputFileNameBase;
@@ -53,7 +53,8 @@ public:
   String outputPathNameBase;
   String outputFileNameBase;
 
-  vector<int>     bf_Types;
+  vector<int>     bf_Types;   // B1Bar2, B12Bar, Bs
+  vector<int>     bf_Sources; // A, B, C, or D correlations
   vector<TFile*>  bf_InputFiles;
   vector<int>     bf_rebin2Ds;
   vector<int>     bf_rebinFactorsX;
@@ -65,6 +66,9 @@ public:
   vector<String>  bf_HistoNameBases;
   vector<String>  bf_HistoTitleBases;
   vector<String>  bf_CanvasNameBases;
+
+
+
 
   vector<String>  bf_DeltaYDeltaPhi_HistoNames;
   vector<String>  bf_DeltaY_HistoNames;
@@ -94,8 +98,9 @@ public:
   vector<String> bf_IntegralSumTypeTitles;
   vector<String> bf_WidthDeltaYTypeTitles;
 
-  vector<String> correlatorSourceNames;
+  vector<String> bf_SourceNames;
   vector<String> bf_TypeNames;
+  vector<String> correlatorSourceNames;
   vector<String> bf_IntegralTypeNames;
   vector<String> bf_IntegralSumTypeNames;
   vector<String> bf_WidthDeltaYTypeNames;
@@ -201,8 +206,8 @@ public:
 
   virtual ~BalFctPlotter() {}
 
-  void setSpeciesArrays(int option);
-  void createNames(int rapidityOption, int bfOption);
+  void setSpeciesArrays();
+  void createNames();
   void setLegendConfigurations();
   void openInputFiles();
 
@@ -215,6 +220,7 @@ public:
                  const String & histoBaseName,
                  const String & canvasBaseName,
                  int    bf_Type,
+                 int    bf_Source,
                  double bf_DeltaYDeltPhiMin,
                  double bf_DeltaYDeltPhiMax,
                  double bf_DeltaYMin,
