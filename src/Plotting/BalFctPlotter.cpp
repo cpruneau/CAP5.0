@@ -787,7 +787,7 @@ void BalFctPlotter::plotBfVsPairvsDeltaY()
     bf_DeltaY_LegendConfig.addParameter("useLabels",true);
     bf_DeltaY_LegendConfig.addParameter("useNDC",false);
     bf_DeltaY_LegendConfig.addParameter("textColor",    1);
-    bf_DeltaY_LegendConfig.addParameter("textSize",     0.07);
+    bf_DeltaY_LegendConfig.addParameter("textSize",     0.06);
     if (histos.size()<5)
       bf_DeltaY_LegendConfig.addParameter("nColumns",     1);
     else
@@ -886,23 +886,48 @@ void BalFctPlotter::plotBfIntegralVsPairvsDeltaY()
 
     printItem("graphs.size()",graphs.size());
     bf_Title = bf_IntegralTypeTitles[bf_Types[0]];
-    x = 0.2;
-    yMin   = bf_min;
-    yMax   = bf_max;
-    yRange = yMax-yMin;
-    y = yMax - 0.1*yRange;
-    bf_Integral_DeltaY_LegendConfig.addLabel(bf_General_Titles[0],x,y,0.0,1,0.06);
-    bf_Integral_DeltaY_LegendConfig.addParameter("xLeft", x);
-    bf_Integral_DeltaY_LegendConfig.addParameter("xRight",x+0.15*xRange);
-    bf_Integral_DeltaY_LegendConfig.addParameter("yLow",  yMax - 0.5*yRange);
-    bf_Integral_DeltaY_LegendConfig.addParameter("yHigh", yMax - 0.2*yRange);
-    bf_Integral_DeltaY_LegendConfig.addParameter("useLegend",true);
-    bf_Integral_DeltaY_LegendConfig.addParameter("useTitles",false);
-    bf_Integral_DeltaY_LegendConfig.addParameter("useLabels",true);
-    bf_Integral_DeltaY_LegendConfig.addParameter("useNDC",false);
-    bf_Integral_DeltaY_LegendConfig.addParameter("textColor",    1);
-    bf_Integral_DeltaY_LegendConfig.addParameter("textSize",     0.05);
-    bf_Integral_DeltaY_LegendConfig.addParameter("nColumns",     1);
+
+    if (false)
+      {
+      x = 0.2;
+      yMin   = bf_min;
+      yMax   = bf_max;
+      yRange = yMax-yMin;
+      y = yMax - 0.1*yRange;
+      bf_Integral_DeltaY_LegendConfig.addLabel(bf_General_Titles[0],x,y,0.0,1,0.06);
+      bf_Integral_DeltaY_LegendConfig.addParameter("xLeft", x);
+      bf_Integral_DeltaY_LegendConfig.addParameter("xRight",x+0.15*xRange);
+      bf_Integral_DeltaY_LegendConfig.addParameter("yLow",  yMax - 0.5*yRange);
+      bf_Integral_DeltaY_LegendConfig.addParameter("yHigh", yMax - 0.2*yRange);
+      bf_Integral_DeltaY_LegendConfig.addParameter("useLegend",true);
+      bf_Integral_DeltaY_LegendConfig.addParameter("useTitles",false);
+      bf_Integral_DeltaY_LegendConfig.addParameter("useLabels",true);
+      bf_Integral_DeltaY_LegendConfig.addParameter("useNDC",false);
+      bf_Integral_DeltaY_LegendConfig.addParameter("textColor",    1);
+      bf_Integral_DeltaY_LegendConfig.addParameter("textSize",     0.05);
+      bf_Integral_DeltaY_LegendConfig.addParameter("nColumns",     1);
+      }
+    else
+      {
+      x = 0.25;
+      y = 1.35;
+      bf_max = 1.5;
+      yRange = 0.3;
+      bf_Integral_DeltaY_LegendConfig.addLabel(bf_General_Titles[0],x,y,0.0,1,0.06);
+      bf_Integral_DeltaY_LegendConfig.addParameter("xLeft", 0.25);
+      bf_Integral_DeltaY_LegendConfig.addParameter("xRight",1.20);
+      bf_Integral_DeltaY_LegendConfig.addParameter("yLow",  0.60);
+      bf_Integral_DeltaY_LegendConfig.addParameter("yHigh", 1.250);
+      bf_Integral_DeltaY_LegendConfig.addParameter("useLegend",true);
+      bf_Integral_DeltaY_LegendConfig.addParameter("useTitles",false);
+      bf_Integral_DeltaY_LegendConfig.addParameter("useLabels",true);
+      bf_Integral_DeltaY_LegendConfig.addParameter("useNDC",false);
+      bf_Integral_DeltaY_LegendConfig.addParameter("textColor",    1);
+      bf_Integral_DeltaY_LegendConfig.addParameter("textSize",     0.055);
+      bf_Integral_DeltaY_LegendConfig.addParameter("nColumns",     3);
+      }
+
+
 
     String canvasName =  outputFileNameBase;
     canvasName += "_";
@@ -948,6 +973,7 @@ void BalFctPlotter::plotBfIntegralVsPairvsDeltaYVsFile()
     throw TaskException("bf_Integral_DeltaY_Graphs.size()<1","plotBfIntegralVsPairvsDeltaYVsFile()");
     }
 
+
   for (Size_t iTrigger=0; iTrigger<nSpecies; iTrigger++)
     {
     cout << endl;
@@ -975,14 +1001,14 @@ void BalFctPlotter::plotBfIntegralVsPairvsDeltaYVsFile()
         xMax = h->GetXaxis()->GetXmax();
         xRange =  xMax-xMin;
         bf_Integral_DeltaY_LegendConfig.addLegend(bf_InputFileTitles[iFile]);
-        }
+   }
 
       printItem("graphs.size()",graphs.size());
       printItem("minima.size()",minima.size());
       printItem("maxima.size()",maxima.size());
       bf_Title = bf_IntegralTypeTitles[bf_Types[0]];
       bf_min   = findMinimum(minima);
-      bf_max   = findMaximum(maxima);
+      bf_max   = 1.3*findMaximum(maxima);
 
       printItem("bf_Title",bf_Title);
       printItem("pre-tweak - bf_min",bf_min);
@@ -992,7 +1018,7 @@ void BalFctPlotter::plotBfIntegralVsPairvsDeltaYVsFile()
       printItem("post-tweak - bf_min",bf_min);
       printItem("post-tweak - bf_max",bf_max);
 
-      x = 0.20;
+      x = 0.25;
       yMin   = bf_min;
       yMax   = bf_max;
       yRange = yMax-yMin;
@@ -1001,19 +1027,21 @@ void BalFctPlotter::plotBfIntegralVsPairvsDeltaYVsFile()
       y = yMax - 0.19*yRange;
       bf_Integral_DeltaY_LegendConfig.addLabel(pairTitles[iTrigger*nSpecies+iAssoc],x,y,0.0,1,0.055);
 
-      bf_Integral_DeltaY_LegendConfig.addParameter("xLeft", x);
-      bf_Integral_DeltaY_LegendConfig.addParameter("xRight",x+0.9*xRange);
-      //    bf_Integral_DeltaY_LegendConfig.addParameter("yLow",  yMax - 0.5*yRange);
-      //    bf_Integral_DeltaY_LegendConfig.addParameter("yHigh", yMax - 0.2*yRange);
-      bf_Integral_DeltaY_LegendConfig.addParameter("yLow",  yMax + 0.015*yRange);
-      bf_Integral_DeltaY_LegendConfig.addParameter("yHigh", yMax + 0.35*yRange);
+      bf_Integral_DeltaY_LegendConfig.addParameter("xLeft", 0.25);
+      bf_Integral_DeltaY_LegendConfig.addParameter("xRight",0.65);
+//      bf_Integral_DeltaY_LegendConfig.addParameter("xLeft", x);
+//      bf_Integral_DeltaY_LegendConfig.addParameter("xRight",x+0.12*xRange);
+      bf_Integral_DeltaY_LegendConfig.addParameter("yLow",  yMax - 0.55*yRange);
+      bf_Integral_DeltaY_LegendConfig.addParameter("yHigh", yMax - 0.25*yRange);
+//      bf_Integral_DeltaY_LegendConfig.addParameter("yLow",  yMax + 0.015*yRange);
+//      bf_Integral_DeltaY_LegendConfig.addParameter("yHigh", yMax + 0.35*yRange);
       bf_Integral_DeltaY_LegendConfig.addParameter("useLegend",true);
       bf_Integral_DeltaY_LegendConfig.addParameter("useTitles",false);
       bf_Integral_DeltaY_LegendConfig.addParameter("useLabels",true);
       bf_Integral_DeltaY_LegendConfig.addParameter("useNDC",false);
       bf_Integral_DeltaY_LegendConfig.addParameter("textColor",    1);
-      bf_Integral_DeltaY_LegendConfig.addParameter("textSize",     0.045);
-      bf_Integral_DeltaY_LegendConfig.addParameter("nColumns",     3);
+      bf_Integral_DeltaY_LegendConfig.addParameter("textSize",     0.06);
+      bf_Integral_DeltaY_LegendConfig.addParameter("nColumns",     1);
 
 
       String canvasName =  outputFileNameBase;
