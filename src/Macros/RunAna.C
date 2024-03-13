@@ -42,8 +42,8 @@ void loadTherminator(const TString & includeBasePath);
 //! nSubbunchesPerBunch : number of sub-bunches  (must be 1 on grid)
 //! nBunches :  number of bunches  (must be 1 on grid)
 //!
-int RunAna(TString configFile="Pythia/test/AnalysisPythia_pp13TeV_CH_Y2_inclusive.ini",
-           TString histogramPath="./test/",
+int RunAna(TString configFile="Therminator/AnalysisTherminator_bwT180_CH_Y10.ini",
+           TString histogramPath="./therminatorTest/",
            long seed=1121331,
            bool isGrid=false,
            long nEventsPerSubbunch=10,
