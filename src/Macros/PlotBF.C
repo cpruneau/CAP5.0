@@ -12,7 +12,7 @@
 void loadBase(const TString & includeBasePath);
 void loadPlotting(const TString & includeBasePath);
 
-int PlotBF(int choice = -1)
+int PlotBF(int choice = -2)
 {
   const bool YES = true;
   const bool NO  = false;
@@ -54,6 +54,53 @@ int PlotBF(int choice = -1)
   plotter->deltaY_Maximum = 20.0;
   switch (choice)
     {
+      case -2:
+
+      bf_DeltaYDeltPhiMin = -0.05;
+      bf_DeltaYDeltPhiMax =  0.3;
+      bf_DeltaYMin = -0.05;
+      bf_DeltaYMax =  0.3;
+      bf_DeltPhiMin = -0.05;
+      bf_DeltPhiMax =  0.2499;
+      bf_Integral_DeltaYMin =  0.0;
+      bf_Integral_DeltaYMax =  1.1;
+      bf_IntegralSum_DeltaYMin =  0.0;
+      bf_IntegralSum_DeltaYMax =  1.1;
+      bf_Width_DeltaYMin =  0.0;
+      bf_Width_DeltaYMax =  1.1;
+
+      // plotter->correlationOption  = 2;
+      plotter->speciesOption      = 1;
+      plotter->rapidityOption     = 0;
+      plotter->deltaY_Minimum = -20.0;
+      plotter->deltaY_Maximum = 20.0;
+      plotter->bf_General_Titles.push_back(TString("Therminator; T=180 MeV"));
+      plotter->outputPathNameBase = "/Volumes/ClaudeDisc4/OutputFiles/Therminator/T180/";
+      plotter->outputFileNameBase = "Therminator_piKp_A2Based_";
+
+      plotter->addSystem("/Volumes/ClaudeDisc4/OutputFiles/Therminator/BW/BW_T180_Y10",
+                         "PairGenBalFctSum0TO39.root",
+                         "Therminator",
+                         "PairGen_All_",
+                         "PairGen_All_",
+                         "_T180_piKp_Y10_",
+                         2,
+                         3,
+                         bf_DeltaYDeltPhiMin,
+                         bf_DeltaYDeltPhiMax,
+                         bf_DeltaYMin,
+                         bf_DeltaYMax,
+                         bf_DeltPhiMin,
+                         bf_DeltPhiMax,
+                         bf_Integral_DeltaYMin,
+                         bf_Integral_DeltaYMax,
+                         bf_IntegralSum_DeltaYMin,
+                         bf_IntegralSum_DeltaYMax,
+                         bf_Width_DeltaYMin,
+                         bf_Width_DeltaYMax);
+      break;
+
+
       case -1:
       bf_DeltaYDeltPhiMin = -0.05;
       bf_DeltaYDeltPhiMax =  0.3;
@@ -712,7 +759,7 @@ int PlotBF(int choice = -1)
 void loadBase(const TString & includeBasePath)
 {
   TString includePath = includeBasePath + "/Base/";
-  gSystem->Load(includePath+"Exception.hpp");
+  gSystem->Load(includePath+"Exceptions.hpp");
   gSystem->Load(includePath+"Timer.hpp");
   gSystem->Load(includePath+"MessageLogger.hpp");
   gSystem->Load(includePath+"Task.hpp");

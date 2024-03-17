@@ -809,8 +809,11 @@ vector<CAP::GraphConfiguration*> Plotter::createGraphConfigurationPalette(int n,
     //    gc[k]->addParameter("yLabelSize",   double(0.07));
     //    gc[k]->addParameter("lineColor",    int(21+2*k));
     //    gc[k]->addParameter("markerColor",  int(21+2*k));
-    //    gc[k]->addParameter("markerStyle",  int(kFullSquare));
-    //    gc[k]->addParameter("markerSize",   double(0.9));
+    if (k==1)
+      {
+      gc[k]->addParameter("markerStyle",  int(kFullCircle));
+      gc[k]->addParameter("markerSize",   double(1.9));
+      }
     }
   return gc;
 }
